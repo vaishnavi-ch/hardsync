@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>hardsync - Unlock Unlimited Practice</title>
+<!-- Tailwind CSS CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Newsreader (Editorial Serif) & Plus Jakarta Sans / Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#fbf9f5',
+              dark: '#14221a',
+              forest: '#375342',
+              sage: '#577662',
+              'sage-light': '#ebf2ed',
+              'sage-tag': '#53725e',
+              muted: '#616d66',
+              border: '#e7e2d7',
+              peach: '#faede7',
+              'peach-text': '#5a3d35'
+            }
+          },
+          fontFamily: {
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="base-typography">
+    body {
+      background-color: #fbf9f5;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      color: #14221a;
+    }
+    .font-serif-title {
+      font-family: 'Newsreader', serif;
+      letter-spacing: -0.02em;
+    }
+  </style>
+</head>
+<body class="bg-[#fbf9f5] min-h-screen flex justify-center selection:bg-brand-sage-light">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="w-full max-w-[420px] bg-[#fbf9f5] min-h-screen flex flex-col relative overflow-hidden shadow-2xl border-x border-[#f0ece1]">
+<!-- BEGIN: iOSStatusBar -->
+<header class="w-full pt-3 px-7 flex justify-between items-center z-20 shrink-0 text-brand-dark">
+<!-- Time -->
+<span class="text-[15px] font-semibold tracking-tight">9:41</span>
+<!-- Status Icons -->
+<div class="flex items-center space-x-2 text-brand-dark">
+<!-- Cellular Signal -->
+<svg class="w-4 h-3.5 fill-current" viewbox="0 0 17 12">
+<rect height="3.5" rx="0.7" width="2.8" x="0" y="8.5"></rect>
+<rect height="6" rx="0.7" width="2.8" x="4.5" y="6"></rect>
+<rect height="8.5" rx="0.7" width="2.8" x="9" y="3.5"></rect>
+<rect height="12" rx="0.7" width="2.8" x="13.5" y="0"></rect>
+</svg>
+<!-- Wifi -->
+<svg class="w-4 h-3.5 fill-current" viewbox="0 0 16 12">
+<path d="M8 2.8C10.7 2.8 13.1 3.9 14.8 5.7L16 4.5C13.9 2.4 11.1 1.1 8 1.1C4.9 1.1 2.1 2.4 0 4.5L1.2 5.7C2.9 3.9 5.3 2.8 8 2.8ZM8 6.4C9.7 6.4 11.2 7.1 12.3 8.2L13.5 7C12.1 5.6 10.1 4.7 8 4.7C5.9 4.7 3.9 5.6 2.5 7L3.7 8.2C4.8 7.1 6.3 6.4 8 6.4ZM8 10C8.8 10 9.5 10.7 9.5 11.5C9.5 12.3 8.8 13 8 13C7.2 13 6.5 12.3 6.5 11.5C6.5 10.7 7.2 10 8 10Z"></path>
+</svg>
+<!-- Battery -->
+<svg class="w-6 h-3 fill-current" viewbox="0 0 25 12">
+<rect fill="none" height="11" rx="3.5" stroke="currentColor" stroke-width="1" width="21" x="0.5" y="0.5"></rect>
+<rect fill="currentColor" height="8" rx="2" width="16" x="2" y="2"></rect>
+<path d="M23 4C23.6 4.3 24 5.1 24 6C24 6.9 23.6 7.7 23 8V4Z" fill="currentColor"></path>
+</svg>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: AppHeader -->
+<section class="w-full px-5 pt-3 pb-2 flex justify-between items-center z-20">
+<!-- hardsync Logo Brand -->
+<div class="flex items-center space-x-2.5">
+<svg class="w-6 h-7 text-[#4f6f59]" fill="none" viewbox="0 0 28 32" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.5 28C6 26.5 4 23.5 4 19C4 12 11 7 13 4C13.5 8 15 13 13 18C12 20.5 10 24 8.5 28Z" fill="#587963"></path>
+<path d="M12.5 26C11 24 10 20 12 15C13.5 11 19 6.5 24 4C23 9.5 21 16 16.5 20C14.5 21.8 13.5 24.5 12.5 26Z" fill="#3c5746"></path>
+<path d="M7 29C11 25.5 13 21 14 16.5" stroke="#3c5746" stroke-linecap="round" stroke-width="1.8"></path>
+</svg>
+<div class="flex flex-col">
+<span class="text-xl font-semibold tracking-[-0.03em] leading-tight text-[#16211c] font-sans">hardsync</span>
+<span class="text-[8.5px] font-semibold tracking-[0.22em] text-[#6d7971] uppercase leading-none mt-0.5">Practice Bravely</span>
+</div>
+</div>
+<!-- Close Button -->
+<button aria-label="Close" class="w-8 h-8 rounded-full bg-[#ece8df]/70 hover:bg-[#ece8df] flex items-center justify-center transition-colors" type="button">
+<svg class="w-4 h-4 text-[#39453e]" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</section>
+<!-- END: AppHeader -->
+<!-- BEGIN: HeroAndIllustrationSection -->
+<main class="flex-1 px-5 pt-2 pb-3 flex flex-col relative z-10">
+<!-- Background Woman Illustration positioned at top right -->
+<div class="absolute right-[-10px] top-[-28px] w-[58%] pointer-events-none z-0">
+<div class="relative w-full aspect-square">
+<img alt="Young professional woman rehearsing mindfully at her desk" class="w-full h-full object-contain drop-shadow-sm select-none" loading="eager" src="https://lh3.googleusercontent.com/aida/AEtjO1UYx9Cfr4tqUnx2ErL-CNJorzzLCzzwnWL327AWG7Ys3GuucCCJMqrLcL1km3jHpSuRXWgluVQ39GnepQheivEP-GVDAEquavaSVHPM6Sd8jN5vYTddm4bxZuDRzeVS3X-zl9gbOapvR4KP-F8rhDERErm9XYbwk6ZO_rFzaLVbZelouFtJMha5NokzWrQU5k0cw_wZqdiSqOA4hz4iVtVik3bX846Fl_I7Oe3-Ic-hb6MHXJE0LBrh8w"/>
+<!-- Gentle gradient overlay along bottom and left to blend seamlessly with cream background -->
+<div class="absolute inset-0 bg-gradient-to-l from-transparent via-[#fbf9f5]/20 to-[#fbf9f5]"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-[#fbf9f5] via-transparent to-transparent"></div>
+</div>
+</div>
+<!-- Hero Heading & Copy (Left side emphasis) -->
+<section class="relative z-10 w-[68%] pt-1 mb-5">
+<h1 class="font-serif-title text-[32px] sm:text-[34px] leading-[1.12] text-[#14221a] font-normal tracking-[-0.02em]">
+          Unlock Unlimited Practice Sessions
+        </h1>
+<p class="text-[13px] leading-[1.38] text-[#55615a] mt-2 font-normal">
+          Build your confidence for the conversations that matter most.
+        </p>
+</section>
+<!-- BEGIN: ValuePropositionChecklist -->
+<section aria-label="Membership Benefits" class="relative z-10 space-y-3.5 mb-5 max-w-[85%]">
+<!-- Benefit Item 1 -->
+<div class="flex items-start space-x-3">
+<span class="w-5 h-5 rounded-full bg-[#466552] flex items-center justify-center text-white shrink-0 mt-0.5">
+<svg class="w-3 h-3 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</span>
+<div class="flex flex-col leading-tight">
+<span class="text-[13.5px] font-bold text-[#14221a]">Unlimited Voice Rehearsals</span>
+<span class="text-[12px] text-[#606d65] mt-0.5">Practice anytime, with any scenario</span>
+</div>
+</div>
+<!-- Benefit Item 2 -->
+<div class="flex items-start space-x-3">
+<span class="w-5 h-5 rounded-full bg-[#466552] flex items-center justify-center text-white shrink-0 mt-0.5">
+<svg class="w-3 h-3 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</span>
+<div class="flex flex-col leading-tight">
+<span class="text-[13.5px] font-bold text-[#14221a]">Custom Scenario Creator</span>
+<span class="text-[12px] text-[#606d65] mt-0.5">Turn your real situations into practice</span>
+</div>
+</div>
+<!-- Benefit Item 3 -->
+<div class="flex items-start space-x-3">
+<span class="w-5 h-5 rounded-full bg-[#466552] flex items-center justify-center text-white shrink-0 mt-0.5">
+<svg class="w-3 h-3 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</span>
+<div class="flex flex-col leading-tight">
+<span class="text-[13.5px] font-bold text-[#14221a]">Detailed Post-Session Feedback</span>
+<span class="text-[12px] text-[#606d65] mt-0.5">Get personalized, actionable insights</span>
+</div>
+</div>
+</section>
+<!-- END: ValuePropositionChecklist -->
+<!-- BEGIN: PricingCards -->
+<section aria-label="Subscription Pricing Options" class="relative z-10 flex flex-col space-y-3 mb-3.5">
+<!-- Option 1: Annual Pass (Selected) -->
+<div class="relative bg-white rounded-[16px] border-2 border-[#476753] pt-3 pb-3 px-3.5 shadow-sm">
+<!-- Top Floating Pill Tag -->
+<div class="absolute -top-[11px] left-3.5 bg-[#4c6b57] text-white text-[10.5px] font-medium px-2.5 py-0.5 rounded-full shadow-xs">
+            Most Popular
+          </div>
+<div class="flex items-center justify-between">
+<!-- Left: Radio & Details -->
+<div class="flex items-start space-x-3">
+<!-- Selected Custom Radio Icon -->
+<div class="mt-1 w-5 h-5 rounded-full border-2 border-[#3c5746] flex items-center justify-center shrink-0">
+<div class="w-2.5 h-2.5 bg-[#3c5746] rounded-full"></div>
+</div>
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-[15px] font-bold text-[#14221a]">Annual Pass</span>
+<span class="bg-[#ebf2ed] text-[#3c5a47] text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                    7-Day Free Trial
+                  </span>
+</div>
+<div class="mt-0.5 flex items-baseline space-x-1">
+<span class="text-[17px] font-bold text-[#14221a] tracking-tight">$14.99</span>
+<span class="text-[12.5px] font-medium text-[#46514b]">/ month</span>
+</div>
+<p class="text-[11px] text-[#717c75] mt-0.5">
+                  Billed annually at $179.88
+                </p>
+</div>
+</div>
+<!-- Right: Value Proposition Badge -->
+<div class="bg-[#f0f6f2] rounded-xl px-2.5 py-2 text-right shrink-0 min-w-[96px]">
+<span class="block text-[11.5px] font-bold text-[#2e523b]">Save 40%</span>
+<span class="block text-[10px] text-[#55695d] leading-tight mt-0.5">
+                Best value for<br/>your growth journey
+              </span>
+</div>
+</div>
+</div>
+<!-- Option 2: Monthly Pass (Unselected) -->
+<div class="relative bg-white rounded-[16px] border border-[#e4dfd4] pt-3 pb-3 px-3.5">
+<div class="flex items-center justify-between">
+<!-- Left: Radio & Details -->
+<div class="flex items-start space-x-3">
+<!-- Unselected Custom Radio Icon -->
+<div class="mt-1 w-5 h-5 rounded-full border border-[#b9c1bc] shrink-0 bg-transparent"></div>
+<div>
+<span class="text-[15px] font-bold text-[#14221a] block">Monthly Pass</span>
+<div class="mt-0.5 flex items-baseline space-x-1">
+<span class="text-[17px] font-bold text-[#14221a] tracking-tight">$24.99</span>
+<span class="text-[12.5px] font-medium text-[#46514b]">/ month</span>
+</div>
+<p class="text-[11px] text-[#717c75] mt-0.5">
+                  Billed monthly
+                </p>
+</div>
+</div>
+<!-- Right: Flexible Badge -->
+<div class="bg-[#fcf5f1] rounded-xl px-2.5 py-2 text-right shrink-0 min-w-[96px]">
+<span class="block text-[11px] font-medium text-[#734335]">Flexible<br/>and simple</span>
+<span class="block text-[10px] text-[#8c6b61] mt-0.5">Cancel anytime</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: PricingCards -->
+<!-- BEGIN: TestimonialCard -->
+<section aria-label="User Testimonial" class="relative z-10 bg-[#f7f5ef] border border-[#e9e4d8] rounded-[16px] p-3.5 mb-2.5 shadow-2xs">
+<div class="flex items-start space-x-3.5">
+<!-- Priya S. Headshot -->
+<img alt="Priya S." class="w-12 h-12 rounded-full object-cover shrink-0 border border-white/60 shadow-xs" src="https://lh3.googleusercontent.com/aida/AEtjO1XLIKPL0ldgMQLESQ1pHGYI4wruKggAjoy5s-jAICmMF8Jpa5qXzg0vFp2hB5oZvp72WAfUOwl-VFLDbNRlZ27NAHsqzzCDu8Mv9os_nBzalsWZTx0Ppt6B4vapO3VMm5NvUvZwJfrRPXDsoasiELX1G7TA8_B4g5fxdgygxC3zEEoQsFyNDN2rRVlNoy66goCfxGqbMCdywMpeNge9Mm3-8KjeBjAkkS7O87WCAdOch-vd_vUA9qHTXSw"/>
+<!-- Quote & Attribution -->
+<div class="flex-1">
+<blockquote class="font-serif italic text-[13px] leading-[1.3] text-[#1c2922]">
+              “hardsync helped me finally say the hard things with confidence. It’s like having a coach in your pocket.”
+            </blockquote>
+<div class="mt-1.5 flex items-center space-x-1.5 text-[11px]">
+<span class="font-medium text-[#2d3932]">— Priya S.</span>
+<span class="text-[#727d76]">Engineering Manager</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: TestimonialCard -->
+<!-- Carousel Pagination Dots -->
+<div class="flex justify-center items-center space-x-1.5 py-1 mb-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#52715e]"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#d0c9bc]"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#d0c9bc]"></span>
+</div>
+</main>
+<!-- END: HeroAndIllustrationSection -->
+<!-- BEGIN: StickyBottomCTA -->
+<footer class="w-full px-5 pb-5 pt-1 bg-[#fbf9f5] z-20 shrink-0">
+<!-- Primary Action Button -->
+<button class="w-full h-12 bg-[#355240] hover:bg-[#2c4435] active:scale-[0.99] transition-all rounded-xl flex items-center justify-center text-white font-medium text-[15px] shadow-md space-x-1.5" type="button">
+<span>Start 7-Day Free Trial</span>
+<span class="text-base font-light leading-none">→</span>
+</button>
+<!-- Guarantee Guarantee Text -->
+<p class="text-center text-[11.5px] text-[#717e76] mt-2 font-normal">
+        No charge today. Cancel anytime.
+      </p>
+<!-- Footer Legal Links -->
+<nav class="flex justify-center items-center space-x-3 text-[11px] text-[#55635b] mt-3.5">
+<a class="hover:text-brand-dark transition-colors" href="#restore">Restore Purchase</a>
+<span class="text-[#c8c2b5] font-light">|</span>
+<a class="hover:text-brand-dark transition-colors" href="#terms">Terms of Service</a>
+<span class="text-[#c8c2b5] font-light">|</span>
+<a class="hover:text-brand-dark transition-colors" href="#privacy">Privacy Policy</a>
+</nav>
+<!-- iOS Home Indicator -->
+<div class="w-full flex justify-center pt-3 pb-1">
+<div class="w-32 h-1 bg-[#1c2922] rounded-full opacity-90"></div>
+</div>
+</footer>
+<!-- END: StickyBottomCTA -->
+</div>
+<!-- END: MobileDeviceFrame -->
+</body></html>

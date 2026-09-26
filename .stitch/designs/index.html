@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>hardsync — Stitch Design System & Screen Gallery</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0F1412; color: #E8ECE9; }
+    .font-serif { font-family: 'Newsreader', Georgia, serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .phone-shadow {
+      box-shadow: 0 25px 70px -15px rgba(0, 0, 0, 0.7), 0 0 0 12px #1E2622, 0 0 0 13px rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Navigation Header -->
+  <header class="border-b border-[#222E28] bg-[#141C18]/90 backdrop-blur px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 rounded-xl bg-[#4A6B56] flex items-center justify-center text-white font-bold text-lg shadow-md">TB</div>
+      <div>
+        <h1 class="text-base font-semibold tracking-tight text-white flex items-center gap-2">
+          hardsync <span class="text-xs px-2 py-0.5 rounded-full bg-[#203629] text-[#78B48F] font-mono border border-[#2B4B38]">Stitch Live Screens</span>
+        </h1>
+        <p class="text-xs text-[#8A9E92]">Google Stitch Project: <code class="font-mono text-[#A8BEB0]">7694332069323488725</code></p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-3">
+      <span class="text-xs font-mono text-[#8A9E92] bg-[#1A2420] px-3 py-1.5 rounded-lg border border-[#2A3830]">
+        15 Screens Synced
+      </span>
+      <button onclick="toggleViewport()" id="viewportBtn" class="text-xs font-medium px-3 py-1.5 rounded-lg bg-[#24332B] hover:bg-[#31453A] text-white border border-[#3A4F43] transition">
+        📱 Mobile Frame (390px)
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Split Layout -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- Sidebar: Screen Categories & Navigation -->
+    <aside class="w-80 border-r border-[#222E28] bg-[#121915] flex flex-col shrink-0 overflow-y-auto">
+      <div class="p-4 border-b border-[#222E28]">
+        <div class="text-[11px] uppercase tracking-wider text-[#697D72] font-semibold mb-2">Category Filter</div>
+        <div class="grid grid-cols-2 gap-1.5 text-xs">
+          <button onclick="filterCategory('all')" class="cat-btn active px-2.5 py-1.5 rounded-lg bg-[#2A3B31] text-[#A6CDB5] font-medium text-left">All (15)</button>
+          <button onclick="filterCategory('auth')" class="cat-btn px-2.5 py-1.5 rounded-lg bg-[#18221D] hover:bg-[#202E26] text-[#8EA096] text-left">Auth & Access</button>
+          <button onclick="filterCategory('pay')" class="cat-btn px-2.5 py-1.5 rounded-lg bg-[#18221D] hover:bg-[#202E26] text-[#8EA096] text-left">Paywall & Sub</button>
+          <button onclick="filterCategory('flight')" class="cat-btn px-2.5 py-1.5 rounded-lg bg-[#18221D] hover:bg-[#202E26] text-[#8EA096] text-left">Simulator Hub</button>
+        </div>
+      </div>
+
+      <!-- Screen List Items -->
+      <div class="p-3 space-y-1.5 flex-1" id="screenList">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Footer Info -->
+      <div class="p-4 border-t border-[#222E28] bg-[#0E1411] text-[11px] text-[#718579] space-y-1">
+        <div>Connected: <span class="text-[#78B48F]">Supabase (reqwhdhkpazfvvefvsnv)</span></div>
+        <div>Billing: <span class="text-[#78B48F]">RevenueCat Sandbox (StoreKit/Stripe)</span></div>
+        <div>Storage: <span class="text-[#78B48F]">Cloudflare R2 Replays</span></div>
+      </div>
+    </aside>
+
+    <!-- Main Preview Stage -->
+    <main class="flex-1 bg-[#0A0E0C] p-6 flex flex-col items-center justify-center relative overflow-hidden">
+      
+      <!-- Screen Toolbar -->
+      <div class="w-full max-w-4xl mb-4 flex items-center justify-between text-xs">
+        <div class="flex items-center space-x-2">
+          <span id="activeScreenBadge" class="px-2 py-0.5 rounded bg-[#273B30] text-[#8CD2A7] font-mono">auth_signin</span>
+          <h2 id="activeScreenTitle" class="text-sm font-medium text-white">hardsync - Sign In Sheet State</h2>
+        </div>
+        <div class="flex items-center space-x-2">
+          <a id="openNewTabBtn" href="sign_in_sheet_state.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-[#1C2621] hover:bg-[#283830] text-[#B0C5BA] border border-[#2D3E35] flex items-center gap-1 transition">
+            <span>Open in Tab</span> ↗
+          </a>
+          <button onclick="reloadPreview()" class="px-3 py-1.5 rounded-lg bg-[#1C2621] hover:bg-[#283830] text-[#B0C5BA] border border-[#2D3E35] transition">
+            🔄 Reload
+          </button>
+        </div>
+      </div>
+
+      <!-- Responsive Preview Container -->
+      <div id="previewWrapper" class="phone-shadow rounded-[42px] overflow-hidden transition-all duration-300 relative bg-[#FBF9F5]" style="width: 390px; height: 820px;">
+        <iframe id="previewIframe" src="sign_in_sheet_state.html" class="w-full h-full border-0"></iframe>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    const screens = [
+      {
+        id: "auth_signin",
+        title: "Sign In Sheet State",
+        category: "auth",
+        file: "sign_in_sheet_state.html",
+        badge: "Auth & SSO",
+        desc: "Supabase Email/Password + Google/Apple OAuth bottom sheet with active inputs."
+      },
+      {
+        id: "paywall",
+        title: "Subscription Paywall (Pro)",
+        category: "pay",
+        file: "subscription_paywall.html",
+        badge: "RevenueCat Billing",
+        desc: "Annual ($99/yr) vs Monthly ($12/mo) subscription plans with feature checklist."
+      },
+      {
+        id: "home_dashboard",
+        title: "Leadership Home Dashboard",
+        category: "flight",
+        file: "home_dashboard.html",
+        badge: "Hub",
+        desc: "Alex Bennett coach card, streak badge, quick practice start, and recent scenarios."
+      },
+      {
+        id: "live_call",
+        title: "Live AI Video Roleplay Call",
+        category: "flight",
+        file: "live_ai_roleplay_call.html",
+        badge: "Live Simulator",
+        desc: "Alex photorealistic video stream with live transcription, mute, and end call controls."
+      },
+      {
+        id: "debrief",
+        title: "Executive Leadership Debrief",
+        category: "flight",
+        file: "leadership_debrief.html",
+        badge: "Debrief Radar",
+        desc: "Overall flight simulator score (84%), Clarity, Boundary Firmness, and Hedging analysis."
+      },
+      {
+        id: "session_replay",
+        title: "Session Replay & Transcript",
+        category: "flight",
+        file: "session_replay_transcript.html",
+        badge: "Cloudflare R2",
+        desc: "Scrubbable audio timeline, turn-by-turn dialogue, boundary tags, and R2 stream."
+      },
+      {
+        id: "custom_scenario",
+        title: "Custom Scenario Creator",
+        category: "flight",
+        file: "custom_scenario_creator.html",
+        badge: "Gemini AI",
+        desc: "Create new leadership challenges with custom AI persona, tension slider & objectives."
+      },
+      {
+        id: "practice_rehearsals",
+        title: "Leadership Practice & Rehearsals",
+        category: "flight",
+        file: "leadership_practice_rehearsals.html",
+        badge: "Library",
+        desc: "Catalog of curated conflict scenarios from former peer friction to crisis communications."
+      },
+      {
+        id: "prepare_session",
+        title: "Prepare for Your Session",
+        category: "flight",
+        file: "prepare_for_your_session.html",
+        badge: "Briefing",
+        desc: "Pre-flight dossier: persona background, boundary targets, and trap phrases to avoid."
+      },
+      {
+        id: "onboarding",
+        title: "Welcome & Onboarding",
+        category: "auth",
+        file: "welcome_onboarding.html",
+        badge: "Onboarding",
+        desc: "App introduction, executive coaching mission, and initial value proposition."
+      },
+      {
+        id: "onboarding_animated",
+        title: "Welcome & Onboarding (Animated)",
+        category: "auth",
+        file: "welcome_onboarding_animated.html",
+        badge: "Onboarding",
+        desc: "Animated hero card with headline transitions and fluid onboarding flow."
+      },
+      {
+        id: "onboarding_goals",
+        title: "Onboarding Goal Selection",
+        category: "auth",
+        file: "onboarding_goal_selection_state.html",
+        badge: "Personalization",
+        desc: "Select core focus: Difficult 1-on-1s, Holding Boundaries, or Executive Composure."
+      },
+      {
+        id: "mic_permission",
+        title: "Microphone Permission Prompt",
+        category: "flight",
+        file: "mic_permission_prompt_state.html",
+        badge: "System Dialog",
+        desc: "Audio/Video permission modal explaining why voice input is required."
+      },
+      {
+        id: "offline_network",
+        title: "Offline & Network Error State",
+        category: "flight",
+        file: "offline_network_error_state.html",
+        badge: "Resilience",
+        desc: "Graceful offline fallback with cached practice session options."
+      }
+    ];
+
+    let activeScreen = screens[0];
+    let isMobile = true;
+
+    function renderScreenList(filter = 'all') {
+      const listEl = document.getElementById('screenList');
+      listEl.innerHTML = '';
+      
+      const filtered = filter === 'all' ? screens : screens.filter(s => s.category === filter);
+      
+      filtered.forEach(s => {
+        const isActive = s.id === activeScreen.id;
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-xl cursor-pointer border transition text-left ${
+          isActive 
+            ? 'bg-[#1F2E25] border-[#43644F] text-white shadow-sm' 
+            : 'bg-[#151D18] hover:bg-[#1A251F] border-[#222E27] text-[#9FB3A7]'
+        }`;
+        item.onclick = () => selectScreen(s);
+        item.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-semibold ${isActive ? 'text-white' : 'text-[#D0DFD6]'}">${s.title}</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded ${
+              isActive ? 'bg-[#2E4637] text-[#86E4A8]' : 'bg-[#1B2720] text-[#758E80]'
+            }">${s.badge}</span>
+          </div>
+          <p class="text-[11px] text-[#718579] line-clamp-1 leading-snug">${s.desc}</p>
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    function selectScreen(s) {
+      activeScreen = s;
+      document.getElementById('previewIframe').src = s.file;
+      document.getElementById('activeScreenTitle').textContent = `hardsync - ${s.title}`;
+      document.getElementById('activeScreenBadge').textContent = s.badge;
+      document.getElementById('openNewTabBtn').href = s.file;
+      renderScreenList(document.querySelector('.cat-btn.active')?.dataset?.cat || 'all');
+    }
+
+    function reloadPreview() {
+      const iframe = document.getElementById('previewIframe');
+      iframe.src = iframe.src;
+    }
+
+    function toggleViewport() {
+      const wrapper = document.getElementById('previewWrapper');
+      const btn = document.getElementById('viewportBtn');
+      if (isMobile) {
+        // Switch to tablet/fluid
+        wrapper.style.width = '768px';
+        wrapper.style.height = '880px';
+        wrapper.style.borderRadius = '24px';
+        btn.textContent = '📱 Tablet (768px)';
+        isMobile = false;
+      } else {
+        // Switch to mobile
+        wrapper.style.width = '390px';
+        wrapper.style.height = '820px';
+        wrapper.style.borderRadius = '42px';
+        btn.textContent = '📱 Mobile Frame (390px)';
+        isMobile = true;
+      }
+    }
+
+    function filterCategory(cat) {
+      document.querySelectorAll('.cat-btn').forEach(b => {
+        b.classList.remove('active', 'bg-[#2A3B31]', 'text-[#A6CDB5]');
+        b.classList.add('bg-[#18221D]', 'text-[#8EA096]');
+      });
+      event.target.classList.add('active', 'bg-[#2A3B31]', 'text-[#A6CDB5]');
+      event.target.classList.remove('bg-[#18221D]', 'text-[#8EA096]');
+      renderScreenList(cat);
+    }
+
+    // Initialize
+    renderScreenList('all');
+  </script>
+</body>
+</html>

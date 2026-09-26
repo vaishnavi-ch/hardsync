@@ -1,0 +1,204 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>hardsync - Sign In</title>
+<!-- Tailwind CSS v3 with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Newsreader & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;display=swap" rel="stylesheet">
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              green: '#4A6B56',
+              greenDark: '#3A5544',
+              cream: '#FBF9F5',
+              cardCream: '#FAF7F2',
+              charcoal: '#1A2320',
+              muted: '#68726E',
+              border: '#E8E3DB',
+            }
+          },
+          fontFamily: {
+            serif: ['Newsreader', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+<style data-purpose="base-typography">
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #121614;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .font-editorial {
+      font-family: 'Newsreader', Georgia, serif;
+    }
+  </style>
+<style data-purpose="layout-and-sheet">
+    /* Bottom Sheet Elevation & Transition styling */
+    .sheet-shadow {
+      box-shadow: 0 -12px 36px -4px rgba(22, 33, 27, 0.22), 0 -4px 12px -2px rgba(22, 33, 27, 0.08);
+    }
+    /* Hide scrollbars for slick mobile app feel */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    * {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="flex justify-center items-center min-h-screen p-0 sm:p-4">
+<!-- BEGIN: MobileContainer -->
+<!-- iPhone 15 Pro / Max responsive canvas simulation frame -->
+<main class="relative w-full max-w-[420px] h-[900px] max-h-[100vh] bg-[#FBF9F5] overflow-hidden flex flex-col justify-between shadow-2xl sm:rounded-[48px] border-0 sm:border-[8px] sm:border-neutral-900 select-none">
+<!-- BEGIN: BackgroundView -->
+<!-- Preserved view of Screen 13 background under dim / blur state -->
+<div aria-hidden="true" class="absolute inset-0 z-0 flex flex-col pointer-events-none">
+<!-- Background Header & Illustration -->
+<div class="relative w-full h-[62%] overflow-hidden">
+<img alt="hardsync Onboarding Background" class="w-full h-full object-cover object-top opacity-60 filter blur-[2.5px] scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo08A_1BXmP2M436X5RMVa6sAabUHK_LGDI3tRDUyHwbj-R_I6ioxQJRGNNWE5e_CAH8TcLyVbXx8pJVo9_t2s_Nb5IeE-ovoBmlgsT0tHc9r0j5BgxOJwSHmBxlyJMIPsx9uB1tRCrIPO9ljpYZTY183zYoPkWhE568YEp-1S999AcgdyvrGcum6ycaTlKuevZmT-rbG0iP-5CoahHoyW3kTYGXmESP_vXPcskyMFtWl2mwjuLU_8i-D-80vSaR84wQ">
+<div class="absolute inset-0 bg-stone-900/35 backdrop-blur-[2px]"></div>
+</div>
+<!-- Background Bottom Elements -->
+<div class="flex-1 bg-[#FBF9F5] px-6 pt-4 flex flex-col justify-end pb-12 opacity-40 filter blur-[2px]">
+<h2 class="font-editorial text-3xl text-center text-brand-charcoal leading-tight mb-2">
+          Your safe space for hard conversations
+        </h2>
+<div class="h-12 w-full bg-stone-300 rounded-full mt-4"></div>
+</div>
+</div>
+<!-- END: BackgroundView -->
+<!-- BEGIN: iOSStatusBar -->
+<header class="relative z-30 flex justify-between items-center px-8 pt-3 text-stone-900 font-medium text-xs tracking-tight">
+<span class="font-semibold text-sm">9:41</span>
+<div class="flex items-center space-x-2">
+<!-- Cellular Signal Icon -->
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 17 12">
+<rect height="4" rx="0.8" width="3" x="0" y="8"></rect>
+<rect height="6" rx="0.8" width="3" x="4.5" y="6"></rect>
+<rect height="9" rx="0.8" width="3" x="9" y="3"></rect>
+<rect height="12" rx="0.8" width="3" x="13.5" y="0"></rect>
+</svg>
+<!-- Wifi Icon -->
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 16 12">
+<path d="M8 11.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm-4.34-4.5a6.08 6.08 0 018.68 0 .75.75 0 101.06-1.06 7.58 7.58 0 00-10.8 0 .75.75 0 101.06 1.06zm-2.12-2.12a9.1 9.1 0 0112.92 0 .75.75 0 001.06-1.06 10.6 10.6 0 00-15.04 0 .75.75 0 001.06 1.06z"></path>
+</svg>
+<!-- Battery Icon -->
+<div class="w-6 h-3 rounded-[4px] border border-stone-800 p-0.5 flex items-center">
+<div class="w-3.5 h-full bg-stone-900 rounded-[2px]"></div>
+</div>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: TopBarBrand -->
+<div class="relative z-20 flex justify-between items-center px-6 pt-1.5 opacity-90">
+
+<button aria-label="Dismiss Sign In" class="w-8 h-8 rounded-full bg-white/70 backdrop-blur-md border border-stone-200/60 flex items-center justify-center text-stone-600 active:scale-95 transition-transform" data-purpose="close-modal-trigger" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<!-- END: TopBarBrand -->
+<!-- Spacer to pin bottom sheet down -->
+<div class="flex-1"></div>
+<!-- BEGIN: SignInBottomSheet -->
+<section class="relative z-30 w-full bg-[#FAF7F2] rounded-t-[36px] border-t border-[#ECE6DC] sheet-shadow px-6 pt-3 pb-8 flex flex-col" data-purpose="sign-in-bottom-sheet">
+<!-- Bottom Sheet Drag Handle -->
+<div class="flex justify-center items-center pb-3">
+<div class="w-11 h-1.5 rounded-full bg-stone-300"></div>
+</div>
+<!-- Sheet Header -->
+<div class="text-center mb-5 mt-1">
+<h1 class="font-editorial text-[32px] leading-tight text-brand-charcoal font-medium">
+          Welcome Back
+        </h1>
+<p class="text-brand-muted text-[14px] mt-1 font-normal tracking-normal">
+          Continue your leadership practice journey.
+        </p>
+</div>
+<!-- BEGIN: SocialLogins -->
+<div class="space-y-2.5 mb-5" data-purpose="social-buttons">
+<!-- Continue with Apple -->
+<button class="w-full py-3 px-4 rounded-xl bg-white border border-[#E3DDD3] flex items-center justify-center gap-3 text-stone-800 text-[14.5px] font-medium shadow-sm active:bg-stone-50 transition-colors" type="button">
+<svg class="w-4 h-4 fill-current mb-0.5" viewBox="0 0 170 170">
+<path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.08-7.6-7.85-11.75-14.3-5.28-8.25-9.33-17.51-12.14-27.79-2.82-10.28-4.23-20.08-4.23-29.41 0-14.13 3.58-25.59 10.74-34.38 7.16-8.79 16.03-13.3 26.6-13.56 4.7 0 9.8 1.18 15.3 3.53 5.51 2.36 9.38 3.59 11.63 3.59 2.02 0 6.01-1.28 11.96-3.85 5.95-2.57 10.96-3.69 15.04-3.37 12.06 1.02 21.6 5.86 28.62 14.52-10.75 6.47-15.99 15.34-15.73 26.6.38 8.85 3.73 16.27 10.05 22.25 6.33 5.98 13.91 9.4 22.75 10.27-2.3 6.94-5.2 14.07-8.71 21.37zM119.22 33.02c0-7.39 2.65-14.16 7.95-20.31 5.3-6.15 11.78-10.38 19.45-12.71.13 1.02.19 1.96.19 2.83 0 7.2-2.78 14.06-8.34 20.58-5.56 6.52-12.22 10.45-19.98 11.78-.42-.72-.7-1.45-.85-2.17h-.42z"></path>
+</svg>
+<span class="">Continue with Apple</span>
+</button>
+<!-- Continue with Google -->
+<button class="w-full py-3 px-4 rounded-xl bg-white border border-[#E3DDD3] flex items-center justify-center gap-3 text-stone-800 text-[14.5px] font-medium shadow-sm active:bg-stone-50 transition-colors" type="button">
+<svg class="w-4 h-4" viewBox="0 0 24 24">
+<path d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z" fill="#4285F4"></path>
+<path d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.35 24 12 24z" fill="#34A853"></path>
+<path d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z" fill="#FBBC05"></path>
+<path d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z" fill="#EA4335"></path>
+</svg>
+<span class="">Continue with Google</span>
+</button>
+</div>
+<!-- END: SocialLogins -->
+<!-- Divider -->
+<div class="relative flex py-1 items-center mb-4">
+<div class="flex-grow border-t border-[#E8E2D8]"></div>
+<span class="flex-shrink mx-3 text-[12px] font-medium text-stone-400 tracking-wide lowercase">or continue with email</span>
+<div class="flex-grow border-t border-[#E8E2D8]"></div>
+</div>
+<!-- BEGIN: CredentialsForm -->
+<form class="space-y-3.5" data-purpose="email-password-form" onsubmit="event.preventDefault();">
+<!-- Email Field -->
+<div>
+<label class="block text-[12px] font-medium text-stone-600 mb-1 ml-0.5">Email address</label>
+<input class="w-full px-3.5 py-3 rounded-xl bg-white border border-[#DDD6CB] text-stone-800 placeholder-stone-400 text-[14px] focus:outline-none focus:ring-1 focus:ring-brand-green focus:border-brand-green transition-all" placeholder="name@company.com" required="" type="email">
+</div>
+<!-- Password Field -->
+<div>
+<div class="flex justify-between items-center mb-1 ml-0.5">
+<label class="block text-[12px] font-medium text-stone-600">Password</label>
+<a class="text-[12px] font-medium text-brand-green hover:underline" href="#">Forgot?</a>
+</div>
+<input class="w-full px-3.5 py-3 rounded-xl bg-white border border-[#DDD6CB] text-stone-800 placeholder-stone-400 text-[14px] focus:outline-none focus:ring-1 focus:ring-brand-green focus:border-brand-green transition-all" placeholder="••••••••••••" required="" type="password">
+</div>
+<!-- Primary Submit Button -->
+<button class="w-full mt-2 py-3.5 px-6 rounded-2xl bg-[#4A6B56] hover:bg-[#3E5B49] active:scale-[0.99] text-white font-medium text-[15.5px] flex items-center justify-center gap-2 shadow-sm transition-all" type="submit">
+<span class="">Sign In</span>
+<svg class="w-4 h-4 ml-0.5 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</form>
+<!-- END: CredentialsForm -->
+<!-- Footer Switcher Link -->
+<div class="mt-4 text-center">
+<p class="text-[13px] text-stone-600">
+          Don't have an account? 
+          <a class="font-semibold text-brand-green underline decoration-brand-green/40 underline-offset-2 ml-0.5" href="#">Sign up</a>
+</p>
+</div>
+<!-- Security / Trust Note -->
+<div class="mt-4 pt-3 border-t border-[#ECE6DC] flex items-center justify-center gap-1.5 text-stone-400 text-[11px]">
+<svg class="w-3.5 h-3.5 text-stone-400" fill="currentColor" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" fill-rule="evenodd"></path>
+</svg>
+<span class="">256-bit encryption • Confidential practice records</span>
+</div>
+</section>
+<!-- END: SignInBottomSheet -->
+<!-- BEGIN: HomeIndicator -->
+<div class="relative z-40 w-full flex justify-center pb-2 bg-[#FAF7F2]">
+<div class="w-32 h-1 bg-stone-800 rounded-full"></div>
+</div>
+<!-- END: HomeIndicator -->
+</main>
+<!-- END: MobileContainer -->
+</body></html>

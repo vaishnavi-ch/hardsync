@@ -1,0 +1,337 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Scenario Practice - Leadership</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Newsreader (Editorial Serif) & Plus Jakarta Sans / Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#FAF8F4',
+              surface: '#FFFFFF',
+              border: '#E8E4DA',
+              primary: '#557662',
+              primaryHover: '#4A6855',
+              dark: '#1C2420',
+              muted: '#626C66',
+              accent: '#C76A47',
+              accentHover: '#B55D3C',
+              streakBg: '#F7EDDC',
+              streakText: '#B8721D'
+            }
+          },
+          fontFamily: {
+            serif: ['"Newsreader"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<!-- Typography & Global Layout Styles -->
+<style data-purpose="custom-overrides">
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: #FAF8F4;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-brand-cream text-brand-dark font-sans flex justify-center min-h-screen">
+<!-- BEGIN: MobileDeviceContainer -->
+<div class="w-full max-w-[428px] bg-brand-cream min-h-screen relative flex flex-col pb-28 shadow-2xl border-x border-brand-border/40">
+<!-- BEGIN: iOSStatusBar -->
+<header class="pt-3 px-7 flex justify-between items-center text-sm font-semibold tracking-tight text-brand-dark select-none" data-purpose="status-bar">
+<span>9:41</span>
+<div class="flex items-center space-x-2">
+<!-- Signal Strength Icon -->
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 17 12">
+<rect height="4" rx="0.5" width="3" x="0" y="8"></rect>
+<rect height="6.5" rx="0.5" width="3" x="4.5" y="5.5"></rect>
+<rect height="9" rx="0.5" width="3" x="9" y="3"></rect>
+<rect height="12" rx="0.5" width="3" x="13.5" y="0"></rect>
+</svg>
+<!-- Wifi Icon -->
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 16 12">
+<path d="M8 2.8C10.5 2.8 12.8 3.8 14.5 5.4L16 3.9C13.9 1.9 11.1 0.7 8 0.7C4.9 0.7 2.1 1.9 0 3.9L1.5 5.4C3.2 3.8 5.5 2.8 8 2.8ZM8 6.5C9.7 6.5 11.3 7.2 12.4 8.4L13.9 6.9C12.4 5.3 10.3 4.4 8 4.4C5.7 4.4 3.6 5.3 2.1 6.9L3.6 8.4C4.7 7.2 6.3 6.5 8 6.5ZM8 10.2C8.9 10.2 9.7 10.6 10.3 11.2L8 13.5L5.7 11.2C6.3 10.6 7.1 10.2 8 10.2Z"></path>
+</svg>
+<!-- Battery Icon -->
+<div class="w-6 h-3 border-[1.5px] border-current rounded-sm p-0.5 flex items-center relative">
+<div class="bg-current w-full h-full rounded-2xs"></div>
+<div class="w-0.5 h-1.5 bg-current absolute -right-1 top-0.5 rounded-r"></div>
+</div>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: GreetingHeaderSection -->
+<section class="px-6 pt-5 pb-2" data-purpose="header-section">
+<div class="flex justify-between items-start">
+<div class="max-w-[210px]">
+<h1 class="font-serif text-[33px] leading-[1.12] tracking-[-0.015em] font-medium text-brand-dark">
+            Good morning,<br>Sarah
+          </h1>
+</div>
+<!-- Streak pill and Sarah Avatar -->
+<div class="flex items-center space-x-2 pt-1.5">
+<div class="flex items-center bg-[#F8F1E2] border border-[#ECD9BD] px-2.5 py-1 rounded-full space-x-1 shadow-xs">
+<span class="text-xs">🔥</span>
+<span class="text-[11.5px] font-semibold text-[#A26217] tracking-tight">3-day streak</span>
+</div>
+<div class="w-11 h-11 rounded-full overflow-hidden border border-brand-border/80 shadow-xs flex-shrink-0">
+<img alt="Sarah's profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADORMF2g1co398ynMTMC8qEr604LihEmKjCxzd1HvLsZF1JirDKWvHcQLu_Wh8weOYKG8dYxj5v4PG0EEaJh40r0bhvl9SBNCdIrEuKKMjJSE3og_Fl6SIcHM6sYCsxuVq2yLxbY9JBn7Btai-1lanNWp13DDadCUX2pL4tJ57DzHi82jZCm-HA6Di79XRscO4ihHEIAx-TohL_jshC3-OjHSyw-50Vbrqci_jwzj7B60Owt6NIbFl">
+</div>
+</div>
+</div>
+<p class="text-[13.5px] text-brand-muted mt-2 tracking-tight">
+        Practice today. Lead with confidence tomorrow.
+      </p>
+</section>
+<!-- END: GreetingHeaderSection -->
+<!-- BEGIN: SearchBarSection -->
+<section class="px-5 mt-3.5" data-purpose="search-bar">
+<div class="relative flex items-center">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+<svg class="w-[18px] h-[18px] text-brand-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M21 21l-4.35-4.35M16.65 11a5.65 5.65 0 11-11.3 0 5.65 5.65 0 0111.3 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<input class="w-full pl-10 pr-4 py-2.5 bg-transparent border border-brand-border rounded-full text-sm text-brand-dark placeholder-brand-muted/70 focus:outline-none focus:ring-1 focus:ring-brand-primary focus:border-brand-primary" placeholder="Search scenarios..." type="text">
+</div>
+</section>
+<!-- END: SearchBarSection -->
+<!-- BEGIN: CategoryFilterChips -->
+<nav class="mt-3.5 pl-5 overflow-x-auto no-scrollbar flex items-center space-x-2 text-xs font-medium select-none" data-purpose="filter-chips">
+<button class="bg-[#4E705A] text-white px-4 py-1.5 rounded-full shadow-xs whitespace-nowrap">
+        All
+      </button>
+<button class="bg-[#F2ECE1]/70 border border-brand-border text-brand-dark/90 px-3.5 py-1.5 rounded-full whitespace-nowrap">
+        Managing Former Peers
+      </button>
+<button class="bg-[#F2ECE1]/70 border border-brand-border text-brand-dark/90 px-3.5 py-1.5 rounded-full whitespace-nowrap">
+        Direct Feedback
+      </button>
+<button class="bg-[#F2ECE1]/70 border border-brand-border text-brand-dark/90 px-3.5 py-1.5 rounded-full whitespace-nowrap">
+        Boundaries
+      </button>
+</nav>
+<!-- END: CategoryFilterChips -->
+<!-- BEGIN: ScenarioCardList -->
+<main class="px-5 mt-4 space-y-3" data-purpose="scenario-cards-list">
+<!-- Scenario Card 1: Managing a Former Peer -->
+<article class="bg-white rounded-2xl border border-brand-border p-3 flex gap-3.5 relative shadow-[0_1px_3px_rgba(0,0,0,0.02)]" data-purpose="scenario-card">
+<div class="w-[94px] h-[98px] rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Alex avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOXU2SeEnM6nbL7qsZb99Eb4fGCT3XX3c5bpiTZhzQ7N_Je2l4EnVgRvcJQOhd2kI3n4PZ1vSeTl8mKQdPYcBkoO0u7Lyegh7aoazsRJOHkVWctFaems9NBWtt220rfe2TpCjc2Sw-t96ssgo58qcnAx1E-E9d5P1Lr1-nTa7rB59ENQj1eG8kQy3a76d3WJ463YqlJ-Yj_HFkSdcPpidWkDw_JDR4GfRTq_IGCY4KIiBkBm0uSZeJ">
+</div>
+<div class="flex-1 flex flex-col justify-between pr-0.5">
+<div>
+<div class="flex justify-between items-start">
+<h2 class="font-serif text-[16px] leading-snug font-semibold text-brand-dark pr-4">
+                Managing a<br>Former Peer
+              </h2>
+<button aria-label="Bookmark scenario" class="text-brand-dark/70 hover:text-brand-dark">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<p class="text-[11.5px] leading-snug text-brand-muted mt-1 tracking-tight">
+              Alex uses casual familiarity to resist deadlines and challenge your authority.
+            </p>
+</div>
+<div class="flex items-center justify-between mt-2.5">
+<span class="text-[10.5px] font-medium bg-[#E8EEF2] text-[#426176] px-2.5 py-0.5 rounded-full">
+              Intermediate
+            </span>
+<button class="bg-[#567462] hover:bg-brand-primaryHover text-white text-[11px] font-medium px-3 py-1 rounded-lg flex items-center space-x-1">
+<span>Practice</span>
+<span class="text-xs leading-none">→</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Scenario Card 2: The Boundary Fortress -->
+<article class="bg-white rounded-2xl border border-brand-border p-3 flex gap-3.5 relative shadow-[0_1px_3px_rgba(0,0,0,0.02)]" data-purpose="scenario-card">
+<div class="w-[94px] h-[98px] rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Executive portrait" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBISc6u6nwjCtexHysszHxJD4onDPXr_5EWDX4nOtL3FO60ZW2xsHBu9b42SSpwqI-zhVWeTZI4pYOGM4h75pxJSQdDm1tSPBMYc2w-9jnJW5L29_VA-S7yb7syzSOHODzwZZKktQrIFywkmr5TfkmwBNBpwVc0sSsxyNUCv7HrD3JwV9u_Y3HqMMuVpzvvm5G5ZjQaKv8M3ZERClSmxX3hnPn4vpXLfN4gludg3djCMMIEhiv0YUSG">
+</div>
+<div class="flex-1 flex flex-col justify-between pr-0.5">
+<div>
+<div class="flex justify-between items-start">
+<h2 class="font-serif text-[16px] leading-snug font-semibold text-brand-dark pr-4">
+                The Boundary Fortress
+              </h2>
+<button aria-label="Bookmark scenario" class="text-brand-dark/70 hover:text-brand-dark">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<p class="text-[11.5px] leading-snug text-brand-muted mt-1 tracking-tight">
+              A demanding executive drops high-priority requests at the last minute.
+            </p>
+</div>
+<div class="flex items-center justify-between mt-2.5">
+<span class="text-[10.5px] font-medium bg-[#FAECE8] text-[#B85741] px-2.5 py-0.5 rounded-full">
+              Advanced
+            </span>
+<button class="bg-[#567462] hover:bg-brand-primaryHover text-white text-[11px] font-medium px-3 py-1 rounded-lg flex items-center space-x-1">
+<span>Practice</span>
+<span class="text-xs leading-none">→</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Scenario Card 3: The Radical Candor Loop -->
+<article class="bg-white rounded-2xl border border-brand-border p-3 flex gap-3.5 relative shadow-[0_1px_3px_rgba(0,0,0,0.02)]" data-purpose="scenario-card">
+<div class="w-[94px] h-[98px] rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Direct report portrait" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAS2V6KOK4OUvNaDFNWKuzs5Yf-gMx1WsSeUBJKoTFjw-B0PsWikRqIDZq1Vz1WZJM0fUeDoA9oRgcPc9yj5OAXoT5EwN7WJl_42DFRMquajn3klXFmDo5DfO0fnv2QUoFDTi-XzGYeeCUNznn4rjQphyo0xSMJXMM5PGLpgyRLKZIdLygpgRDN_3hJQHvvBG6PmskvxMAcE8_6EH3uNHQB4IqdLhM3zODzZbE1CQXBkQZ_OQSSXmuz">
+</div>
+<div class="flex-1 flex flex-col justify-between pr-0.5">
+<div>
+<div class="flex justify-between items-start">
+<h2 class="font-serif text-[16px] leading-snug font-semibold text-brand-dark pr-4">
+                The Radical Candor Loop
+              </h2>
+<button aria-label="Bookmark scenario" class="text-brand-dark/70 hover:text-brand-dark">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<p class="text-[11.5px] leading-snug text-brand-muted mt-1 tracking-tight">
+              A talented but defensive direct report with slipping KPIs and team friction.
+            </p>
+</div>
+<div class="flex items-center justify-between mt-2.5">
+<span class="text-[10.5px] font-medium bg-[#EBF3EC] text-[#486B52] px-2.5 py-0.5 rounded-full">
+              Beginner
+            </span>
+<button class="bg-[#567462] hover:bg-brand-primaryHover text-white text-[11px] font-medium px-3 py-1 rounded-lg flex items-center space-x-1">
+<span>Practice</span>
+<span class="text-xs leading-none">→</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Scenario Card 4: Cross-Team Alignment -->
+<article class="bg-white rounded-2xl border border-brand-border p-3 flex gap-3.5 relative shadow-[0_1px_3px_rgba(0,0,0,0.02)]" data-purpose="scenario-card">
+<div class="w-[94px] h-[98px] rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Cross-functional lead portrait" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiNchASpM2owZXIdrlxQ7Clvp28-MkzkWdsRpAXhXTNCMgOHTYym1683wU6xl71JLR_cBr6Y1SGRdUYKgnTCMeTQ2vw_T-sKCF0zEBgGf4ZoxDxkKaZ5aCHEjMjwI0twpfj_T3x-Si4itVyMBr-ZzLEpum44ChYYP4P7mqfe5ZGywZ4-l8LOFet23yq4nBk8QzDcf-gqsgPFJc74MAVa-GjxS_9NS16Q4uV_pgBKN1a7ahtbbbQN0o">
+</div>
+<div class="flex-1 flex flex-col justify-between pr-0.5">
+<div>
+<div class="flex justify-between items-start">
+<h2 class="font-serif text-[16px] leading-snug font-semibold text-brand-dark pr-4">
+                Cross-Team Alignment
+              </h2>
+<button aria-label="Bookmark scenario" class="text-brand-dark/70 hover:text-brand-dark">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<p class="text-[11.5px] leading-snug text-brand-muted mt-1 tracking-tight">
+              A cross-functional lead is stonewalling shared resources.
+            </p>
+</div>
+<div class="flex items-center justify-between mt-2.5">
+<span class="text-[10.5px] font-medium bg-[#E8EEF2] text-[#426176] px-2.5 py-0.5 rounded-full">
+              Intermediate
+            </span>
+<button class="bg-[#567462] hover:bg-brand-primaryHover text-white text-[11px] font-medium px-3 py-1 rounded-lg flex items-center space-x-1">
+<span>Practice</span>
+<span class="text-xs leading-none">→</span>
+</button>
+</div>
+</div>
+</article>
+<!-- BEGIN: CustomScenarioBanner -->
+<section class="bg-[#EFE9DC]/85 border border-[#E3DC handle-border] border-brand-border/60 rounded-2xl p-4 mt-4 flex items-center justify-between shadow-xs cursor-pointer hover:bg-[#EAE3D4] transition-colors" data-purpose="custom-scenario-promo">
+<div class="flex items-center space-x-3.5">
+<!-- Olive/Sage Leaf Botanical Icon -->
+<div class="text-[#64846F] flex-shrink-0">
+<svg class="w-8 h-8 fill-current" viewBox="0 0 32 32">
+<path d="M15.5 3C15.5 3 13 8.5 15.5 13C17.5 16.5 21 17.5 21 17.5C21 17.5 21 12 18 8C16 5.5 15.5 3 15.5 3Z" opacity="0.9"></path>
+<path d="M12 9C12 9 8.5 13.5 10 17.5C11.5 21 15 22 15 22C15 22 16 16.5 14 13C12.5 10.5 12 9 12 9Z" opacity="0.75"></path>
+<path d="M13.5 28C13.5 28 14.2 21 17.5 17C21 12.8 26.5 11 26.5 11C26.5 11 25.5 18 21.5 22C18 25.5 13.5 28 13.5 28Z"></path>
+</svg>
+</div>
+<div>
+<h3 class="font-serif text-[15px] font-semibold text-brand-dark leading-tight">
+              Need something specific?
+            </h3>
+<p class="text-[11px] text-brand-muted mt-0.5 leading-snug">
+              Create a custom scenario based on your unique situation.
+            </p>
+</div>
+</div>
+<div class="text-brand-muted/70 pl-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</section>
+<!-- END: CustomScenarioBanner -->
+</main>
+<!-- END: ScenarioCardList -->
+<!-- BEGIN: BottomNavigation -->
+<nav class="fixed bottom-0 max-w-[428px] w-full bg-white border-t border-brand-border/80 px-4 pt-2.5 pb-6 flex justify-around items-end z-30" data-purpose="bottom-tab-navigation">
+<!-- Tab 1: Home (Active) -->
+<a class="flex flex-col items-center group w-14" href="#">
+<svg class="w-5 h-5 text-[#547360]" fill="currentColor" viewBox="0 0 24 24">
+<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path>
+</svg>
+<span class="text-[10px] font-semibold text-[#547360] mt-1">Home</span>
+</a>
+<!-- Tab 2: Library -->
+<a class="flex flex-col items-center group w-14 text-brand-muted" href="#">
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium mt-1">Library</span>
+</a>
+<!-- Center Action Button: New Scenario -->
+<div class="flex flex-col items-center -mt-6">
+<button aria-label="New Scenario" class="w-[50px] h-[50px] bg-[#C16241] hover:bg-brand-accentHover text-white rounded-full flex items-center justify-center shadow-lg shadow-[#C16241]/30 transition-transform active:scale-95">
+<svg class="w-7 h-7 stroke-white" fill="none" stroke-width="2.2" viewBox="0 0 24 24">
+<path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<span class="text-[10px] font-medium text-brand-muted mt-1 whitespace-nowrap">New Scenario</span>
+</div>
+<!-- Tab 3: Sessions -->
+<a class="flex flex-col items-center group w-14 text-brand-muted" href="#">
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium mt-1">Sessions</span>
+</a>
+<!-- Tab 4: Profile -->
+<a class="flex flex-col items-center group w-14 text-brand-muted" href="#">
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-width="1.8" viewBox="0 0 24 24">
+<path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium mt-1">Profile</span>
+</a>
+</nav>
+<!-- END: BottomNavigation -->
+<!-- BEGIN: iOSHomeIndicator -->
+<div class="fixed bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-black/85 rounded-full z-40 pointer-events-none" data-purpose="home-indicator"></div>
+<!-- END: iOSHomeIndicator -->
+</div>
+<!-- END: MobileDeviceContainer -->
+</body></html>

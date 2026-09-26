@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="../">
+  <title>HardSync · Leadership Conversation Practice</title>
+  
+  <!-- Curated Typography Trio: Newsreader (Editorial Serif) + Plus Jakarta Sans (Precision Sans) + JetBrains Mono (Cockpit Telemetry) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            cream: '#FAF8F4',
+            canvas: '#FAF8F4',
+            canvasWarm: '#F4EFE6',
+            canvasDeep: '#EAE2D5',
+            surface: '#FFFFFF',
+            charcoal: '#1C2420',
+            espresso: '#1C2420',
+            muted: '#626C66',
+            borderSubtle: '#ECE6DA',
+            sage: {
+              DEFAULT: '#557662',
+              hover: '#446150',
+              tint: '#E8EFEA',
+              subtle: '#F1F5F2',
+            },
+            forest: {
+              DEFAULT: '#557662',
+              hover: '#446150',
+              tint: '#E8EFEA',
+              subtle: '#F1F5F2',
+            },
+            terracotta: {
+              DEFAULT: '#C76A47',
+              deep: '#B05534',
+              hover: '#A34C2C',
+              tint: '#FDF2EE',
+            },
+            gold: {
+              DEFAULT: '#A26217',
+              tint: '#FEF7ED',
+              amber: '#D97706',
+            },
+            sunbeam: {
+              DEFAULT: '#A26217',
+              tint: '#FEF7ED',
+            },
+            lavender: {
+              DEFAULT: '#7B6FA0',
+              tint: '#F3F0F9',
+            }
+          },
+          boxShadow: {
+            'warm': '0 16px 36px -6px rgba(28, 36, 32, 0.06), 0 4px 12px -2px rgba(28, 36, 32, 0.03)',
+            'card': '0 10px 28px -4px rgba(28, 36, 32, 0.05), 0 2px 8px -2px rgba(28, 36, 32, 0.02)',
+            'card-hover': '0 16px 36px -4px rgba(28, 36, 32, 0.08), 0 4px 12px -2px rgba(28, 36, 32, 0.04)',
+            'float': '0 20px 48px -8px rgba(85, 118, 98, 0.16), 0 8px 16px -4px rgba(199, 106, 71, 0.08)',
+            'float-terracotta': '0 16px 40px -6px rgba(199, 106, 71, 0.28)',
+            'glass': '0 12px 32px 0 rgba(28, 36, 32, 0.08)',
+            'phone': '0 0 0 11px #1E2220, 0 0 0 13px rgba(255, 255, 255, 0.08), 0 32px 85px -15px rgba(0, 0, 0, 0.75)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #0F1311;
+      color: #E6EAE8;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      letter-spacing: -0.012em;
+    }
+
+    /* Ambient atmospheric background gradients adhering to 60-30-10 palette */
+    .bg-atmosphere-warm {
+      background: radial-gradient(130% 70% at 50% -5%, #FDEEE4 0%, #FAF8F4 45%, #F4EFE6 100%);
+    }
+
+    .bg-atmosphere-sage {
+      background: radial-gradient(120% 60% at 50% -5%, #E2EDE6 0%, #FAF8F4 50%, #F4EFE6 100%);
+    }
+
+    .bg-hero-glow {
+      background: linear-gradient(135deg, #C76A47 0%, #B05534 60%, #944021 100%);
+    }
+
+    .bg-hero-sage {
+      background: linear-gradient(135deg, #557662 0%, #446150 60%, #344B3D 100%);
+    }
+
+    /* Tactile 5-State Button Transition */
+    .tactile-btn {
+      transition: all 0.18s cubic-bezier(0.2, 0, 0, 1);
+    }
+    .tactile-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Glassmorphic Stat Badges (Dribbble Ref 7) */
+    .glass-badge {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 24px -4px rgba(28, 36, 32, 0.08);
+    }
+
+    .glass-badge-dark {
+      background: rgba(20, 26, 23, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Phone device frame styling */
+    .iphone-frame {
+      width: 393px;
+      height: 852px;
+      border-radius: 52px;
+      background: #FAF8F4;
+      box-shadow: 
+        0 0 0 11px #1E2220,
+        0 0 0 13px rgba(255, 255, 255, 0.08),
+        0 32px 85px -15px rgba(0, 0, 0, 0.75);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+    }
+
+    .android-frame {
+      width: 412px;
+      height: 890px;
+      border-radius: 40px;
+      background: #FAF8F4;
+      box-shadow: 
+        0 0 0 10px #1A1E1C,
+        0 0 0 12px rgba(255, 255, 255, 0.08),
+        0 32px 85px -15px rgba(0, 0, 0, 0.75);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+    }
+
+    .dynamic-island {
+      width: 120px;
+      height: 32px;
+      background: #000000;
+      border-radius: 20px;
+      position: absolute;
+      top: 11px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .home-indicator {
+      width: 136px;
+      height: 5px;
+      background: #1C2420;
+      opacity: 0.24;
+      border-radius: 9999px;
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Debrief and plan screens: editorial rhythm inspired by the local references. */
+    .story-screen { gap: 0; }
+    .debrief-screen { background: linear-gradient(160deg, #f4e9d9 0%, #faf8f4 39%, #f7f1e8 100%); }
+    .debrief-hero { min-height: 264px; isolation: isolate; display: flex; align-items: flex-end; padding: 0 0 18px; }
+    .debrief-hero::before { content: ""; position: absolute; z-index: -1; width: 245px; height: 245px; right: -58px; top: -12px; border-radius: 50%; background: radial-gradient(circle, rgba(222,190,142,.42), rgba(222,190,142,0) 70%); }
+    .debrief-art { position: absolute; z-index: -1; width: 220px; height: 225px; object-fit: contain; right: -17px; top: -7px; filter: drop-shadow(0 16px 22px rgba(92,75,53,.13)); }
+    .debrief-score { position: absolute; top: 10px; left: 2px; display:flex; align-items:baseline; color:#1c2420; text-shadow: 0 2px 18px #faf8f4; }
+    .debrief-score span { font: 600 46px/1 'Newsreader', Georgia, serif; letter-spacing:-.06em; }
+    .debrief-score small { margin-left:4px; color:#626c66; font: 11px 'JetBrains Mono', monospace; }
+    .debrief-copy { position:relative; z-index:1; max-width:260px; padding-top:158px; }
+    .debrief-kicker { color:#557662; font:600 10px 'Plus Jakarta Sans',sans-serif; letter-spacing:.02em; }
+    .debrief-copy h2 { margin:4px 0 5px; color:#1c2420; font:600 27px/1.02 'Newsreader',Georgia,serif; letter-spacing:-.035em; }
+    .debrief-copy p { margin:0; color:#626c66; font:11px/1.45 'Plus Jakarta Sans',sans-serif; }
+    .debrief-screen > div:first-child { display:flex; flex-direction:column; gap:12px; }
+    .debrief-screen > div:first-child > div:first-child { order:-1; }
+    .debrief-screen > div:first-child > .debrief-hero { order:-2; }
+    .debrief-screen > div:first-child > div:nth-child(2) { order:0; }
+    .debrief-screen > div:first-child > div:nth-child(3) { order:1; }
+    .debrief-screen > div:first-child > div:nth-child(4) { order:2; }
+    .debrief-screen > div:last-child { order:3; }
+    .debrief-screen .debrief-quote { display:flex; align-items:center; gap:10px; padding:11px 0; border-top:1px solid rgba(85,118,98,.18); border-bottom:1px solid rgba(85,118,98,.18); }
+    .debrief-quote img { width:27px; height:27px; object-fit:contain; }
+    .debrief-quote span { color:#557662; font:9px 'JetBrains Mono',monospace; }
+    .debrief-quote p { margin:3px 0 0; color:#1c2420; font:italic 14px/1.25 'Newsreader',Georgia,serif; }
+    .pro-screen { background:radial-gradient(ellipse at 50% 29%,#f2e6d7 0%,#faf8f4 47%,#f7f3eb 100%); }
+    .pro-brand-icon { width:19px;height:19px;object-fit:contain; }
+    .pro-screen { justify-content:space-between; }
+    .pro-screen > div:first-child { display:flex; flex-direction:column; gap:.55rem; }
+    .pro-hero { padding-top:0; }
+    .pro-art-wrap { height:144px; margin-top:-1px; }
+    .pro-art { height:100%; max-width:100%; filter:drop-shadow(0 15px 19px rgba(92,75,53,.12)); }
+    .pro-hero h2 { font-size:25px; letter-spacing:-.035em; }
+    .pro-hero p { max-width:240px; margin:0 auto; }
+    .pro-benefits { display:none; }
+    .pro-screen .paywall-tier-card { background:rgba(255,255,255,.7); border-radius:18px; box-shadow:0 10px 28px -12px rgba(85,118,98,.22); }
+    .pro-screen .paywall-tier-card p { font-size:9px; }
+    .pro-screen > div:last-child { padding-top:8px; }
+    .pro-screen > div:last-child button { min-height:52px; border-radius:999px; }
+    @media (max-height: 800px) {
+      .debrief-screen { padding-top:5px; padding-bottom:18px; }
+      .debrief-hero { min-height:232px; }
+      .debrief-art { height:198px; }
+      .debrief-copy { padding-top:143px; }
+      .debrief-copy h2 { font-size:24px; }
+      .pro-screen { padding-top:5px; padding-bottom:18px; }
+      .pro-art-wrap { height:145px; }
+      .pro-hero h2 { font-size:22px; }
+      .pro-screen .space-y-3\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: .55rem; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#0F1311] text-stone-100">
+
+  <!-- ========================================================================= -->
+  <!-- TOP SHOWCASE TOOLBAR                                                      -->
+  <!-- ========================================================================= -->
+  <header class="border-b border-stone-800/60 bg-[#141816] sticky top-0 z-40 px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center space-x-3">
+      <div class="w-8 h-8 rounded-xl bg-sage flex items-center justify-center text-white font-serif font-bold text-base shadow-xs">
+        TB
+      </div>
+      <div>
+        <h1 class="text-xs font-bold text-white tracking-tight flex items-center gap-1.5">
+          <span>HardSync Mobile</span>
+          <span class="text-[10px] font-semibold text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-2 py-0.2 rounded-full">Unboxed & Illustration-First</span>
+        </h1>
+        <p class="text-[11px] text-stone-400">Warm editorial type · Made for real conversations · Clear next steps</p>
+      </div>
+    </div>
+
+    <!-- View & Platform Switcher -->
+    <div class="flex items-center gap-2">
+      <div class="bg-stone-900/90 p-1 rounded-xl border border-stone-800 flex items-center gap-1">
+        <button onclick="setPlatform('ios')" id="btn-platform-ios" class="px-3.5 py-1 rounded-lg text-xs font-semibold bg-stone-800 text-white transition">
+          iOS
+        </button>
+        <button onclick="setPlatform('android')" id="btn-platform-android" class="px-3.5 py-1 rounded-lg text-xs font-medium text-stone-400 hover:text-white transition">
+          Android
+        </button>
+        <button onclick="setPlatform('grid')" id="btn-platform-grid" class="px-3.5 py-1 rounded-lg text-xs font-medium text-stone-400 hover:text-white transition">
+          All 7 Screens
+        </button>
+      </div>
+
+      <a href="web_mockups/../mockups/index.html" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-stone-800/80 hover:bg-stone-700 text-stone-300 border border-stone-700/50 transition">
+        Unboxed Prototype ↗
+      </a>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- SCREEN SELECTOR TABS                                                      -->
+  <!-- ========================================================================= -->
+  <nav class="border-b border-stone-800/40 bg-[#121614] px-6 py-2 overflow-x-auto no-scrollbar flex items-center gap-1.5" id="screen-tabs">
+    <button onclick="switchScreen('onboarding')" id="tab-onboarding" class="screen-tab px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-sage text-white shadow-xs">
+      1. Onboarding
+    </button>
+    <button onclick="switchScreen('home')" id="tab-home" class="screen-tab px-3.5 py-1.5 rounded-full text-xs font-medium text-stone-400 hover:text-white hover:bg-stone-800/60 transition">
+      2. Practice Hub
+    </button>
+    <button onclick="switchScreen('describe')" id="tab-describe" class="screen-tab px-3.5 py-1.5 rounded-full text-xs font-medium text-stone-400 hover:text-white hover:bg-stone-800/60 transition">
+      3. Describe Situation
+    </button>
+    <button onclick="switchScreen('prepare')" id="tab-prepare" class="screen-tab px-3.5 py-1.5 rounded-full text-xs font-medium text-stone-400 hover:text-white hover:bg-stone-800/60 transition">
+      4. Prepare Dossier
+    </button>
+    <button onclick="switchScreen('call')" id="tab-call" class="screen-tab px-3.5 py-1.5 rounded-full text-xs font-medium text-stone-400 hover:text-white hover:bg-stone-800/60 transition">
+      5. Live Video Call
+    </button>
+    <button onclick="switchScreen('debrief')" id="tab-debrief" class="screen-tab px-3.5 py-1.5 rounded-full text-xs font-medium text-stone-400 hover:text-white hover:bg-stone-800/60 transition">
+      6. Your debrief
+    </button>
+    <button onclick="switchScreen('paywall')" id="tab-paywall" class="screen-tab px-3.5 py-1.5 rounded-full text-xs font-medium text-stone-400 hover:text-white hover:bg-stone-800/60 transition">
+      7. Plans
+    </button>
+  </nav>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN WORKBENCH CANVAS                                                     -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 flex items-center justify-center p-6 md:p-10 relative overflow-y-auto" id="workbench-canvas">
+    
+    <div id="single-device-container" class="flex flex-col items-center">
+      
+      <!-- PHONE FRAME -->
+      <div id="phone-frame" class="iphone-frame text-charcoal select-none relative">
+        
+        <!-- HARDWARE DYNAMIC ISLAND -->
+        <div id="notch-element" class="dynamic-island"></div>
+
+        <!-- STATUS BAR -->
+        <div class="absolute top-0 inset-x-0 h-11 px-7 flex items-center justify-between text-xs font-semibold z-40 text-charcoal pointer-events-none">
+          <span class="tracking-tight font-mono text-[11px] font-semibold">9:41</span>
+          <div class="flex items-center space-x-1.5 text-stone-700">
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 15.5l-4.47-2.79C6.61 14.6 6 13.36 6 12c0-3.31 2.69-6 6-6s6 2.69 6 6c0 1.36-.61 2.6-1.53 3.71L12 18.5z"/></svg>
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4zm0 3c3.77 0 7.21 1.43 9.83 3.79L12 18.5 2.17 10.79A13.9 13.9 0 0 1 12 7z"/></svg>
+            <div class="w-5 h-2.5 border border-stone-700 rounded-sm p-0.5 flex items-center">
+              <div class="w-full h-full bg-stone-800 rounded-[1px]"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN VIEWPORT -->
+        <div id="screen-viewport" class="w-full h-full pt-11 overflow-hidden relative flex flex-col">
+          
+          <!-- ========================================================================= -->
+          <!-- SCREEN 1: ONBOARDING (Swiss Poster Art · Dribbble Ref 5 · Unboxed Hero)    -->
+          <!-- ========================================================================= -->
+          <section id="screen-onboarding" class="screen-view h-full flex flex-col justify-between p-7 pt-3 pb-8 bg-atmosphere-warm">
+            
+            <!-- Minimal Clean Header -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <span class="text-sage text-lg font-serif">✦</span>
+                <span class="text-sm font-serif font-bold tracking-tight text-charcoal">HardSync</span>
+              </div>
+              <button onclick="switchScreen('home')" class="text-xs font-semibold text-muted hover:text-charcoal transition">
+                Sign In
+              </button>
+            </div>
+
+            <!-- UNBOXED PROMINENT HERO STAGE (55% Height, Breathing Directly on Canvas) -->
+            <div class="my-auto flex flex-col items-center justify-center py-2 relative">
+              <div class="w-full max-w-[310px] h-[300px] flex items-center justify-center relative">
+                <!-- Atmospheric Radial Halo -->
+                <div class="absolute inset-4 rounded-full bg-gradient-to-tr from-sage-tint/80 to-terracotta-tint/50 filter blur-3xl -z-10"></div>
+                <!-- Large, Visible Illustration -->
+                <img src="assets/illustrations/Safe Rehearsal Room.png" alt="Safe conversation space" class="w-full h-full object-contain filter drop-shadow-xl">
+              </div>
+            </div>
+
+            <!-- Editorial Copy & Action Directly on Canvas -->
+            <div class="space-y-4">
+              <div class="space-y-2 text-center">
+                <!-- 4-Step Cadence Dots -->
+                <div class="flex items-center justify-center space-x-1.5 mb-2">
+                  <span class="w-7 h-1.5 rounded-full bg-sage"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-stone-300"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-stone-300"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-stone-300"></span>
+                </div>
+
+                <h2 class="text-3xl font-serif font-bold tracking-tight text-charcoal leading-[1.15]">
+                  Say the hard thing<br/><em class="italic font-normal text-terracotta">out loud first.</em>
+                </h2>
+                <p class="text-xs text-muted leading-relaxed max-w-[270px] mx-auto font-sans">
+                  Practice difficult conversations in private so you can walk in calm, clear, and ready.
+                </p>
+              </div>
+
+              <div class="pt-1">
+                <button onclick="switchScreen('home')" class="tactile-btn w-full py-4 rounded-2xl bg-sage hover:bg-sage-hover text-white font-sans font-bold text-sm shadow-warm flex items-center justify-center space-x-2">
+                  <span>Get Started</span>
+                  <span class="font-mono text-base leading-none">↗</span>
+                </button>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- ========================================================================= -->
+          <!-- SCREEN 2: PRACTICE HUB (Unboxed Hero Rehearsal Stage + Dribbble Ref 7 HUD) -->
+          <!-- ========================================================================= -->
+          <section id="screen-home" class="screen-view hidden h-full flex flex-col justify-between bg-atmosphere-warm overflow-hidden">
+            
+            <!-- Scrollable Content Area -->
+            <div class="flex-1 overflow-y-auto no-scrollbar p-6 pt-3 space-y-4">
+              
+              <!-- Clean Header: Greeting + Streak + Profile -->
+              <div class="flex items-center justify-between">
+                <div>
+                  <h2 class="text-2xl font-serif font-bold tracking-tight text-charcoal leading-tight">Good morning, Sarah</h2>
+                  <p class="text-xs text-muted font-sans mt-0.5">Engineering Director</p>
+                </div>
+                <div class="flex items-center space-x-2.5">
+                  <div class="bg-gold-tint border border-amber-200/60 text-gold px-2.5 py-1 rounded-full text-xs font-bold font-mono flex items-center space-x-1.5 shadow-2xs">
+                    <img src="assets/gamification/Practice Streak Flame.png" alt="Streak" class="w-3.5 h-3.5 object-contain">
+                    <span>4d streak</span>
+                  </div>
+                  <div class="w-10 h-10 rounded-full overflow-hidden shadow-xs ring-2 ring-white">
+                    <img src="assets/avatars/split/master_512_png/avatar_01.png" alt="Sarah" class="w-full h-full object-cover">
+                  </div>
+                </div>
+              </div>
+
+              <!-- 7-DAY CALENDAR HABIT STRIP (Dribbble Reference 4) -->
+              <div class="habit-strip bg-surface border border-borderSubtle rounded-2xl p-2.5 shadow-2xs">
+                <div class="grid grid-cols-7 gap-1 text-center">
+                  <!-- Mon: Complete -->
+                  <div class="flex flex-col items-center py-1.5 rounded-xl bg-sage-tint/40">
+                    <span class="text-[8px] font-mono text-muted uppercase">M</span>
+                    <span class="text-xs font-mono font-bold text-charcoal my-0.5">16</span>
+                    <span class="w-3.5 h-3.5 rounded-full bg-sage text-white text-[8px] flex items-center justify-center font-bold">✓</span>
+                  </div>
+                  <!-- Tue: Complete -->
+                  <div class="flex flex-col items-center py-1.5 rounded-xl bg-sage-tint/40">
+                    <span class="text-[8px] font-mono text-muted uppercase">T</span>
+                    <span class="text-xs font-mono font-bold text-charcoal my-0.5">17</span>
+                    <span class="w-3.5 h-3.5 rounded-full bg-sage text-white text-[8px] flex items-center justify-center font-bold">✓</span>
+                  </div>
+                  <!-- Wed: Complete -->
+                  <div class="flex flex-col items-center py-1.5 rounded-xl bg-sage-tint/40">
+                    <span class="text-[8px] font-mono text-muted uppercase">W</span>
+                    <span class="text-xs font-mono font-bold text-charcoal my-0.5">18</span>
+                    <span class="w-3.5 h-3.5 rounded-full bg-sage text-white text-[8px] flex items-center justify-center font-bold">✓</span>
+                  </div>
+                  <!-- Thu (Today): Active -->
+                  <div class="flex flex-col items-center py-1.5 rounded-xl bg-terracotta text-white shadow-float-terracotta">
+                    <span class="text-[8px] font-mono text-white/80 uppercase">Th</span>
+                    <span class="text-xs font-mono font-bold text-white my-0.5">19</span>
+                    <span class="w-3.5 h-3.5 rounded-full bg-white text-terracotta text-[8px] flex items-center justify-center font-bold">●</span>
+                  </div>
+                  <!-- Fri: Scheduled -->
+                  <div class="flex flex-col items-center py-1.5 rounded-xl bg-canvasWarm">
+                    <span class="text-[8px] font-mono text-muted uppercase">F</span>
+                    <span class="text-xs font-mono font-bold text-charcoal my-0.5">20</span>
+                    <span class="text-[8px] text-stone-300">○</span>
+                  </div>
+                  <!-- Sat -->
+                  <div class="flex flex-col items-center py-1.5 rounded-xl bg-canvas">
+                    <span class="text-[8px] font-mono text-muted/60 uppercase">S</span>
+                    <span class="text-xs font-mono font-medium text-stone-400 my-0.5">21</span>
+                    <span class="text-[8px] text-stone-300">—</span>
+                  </div>
+                  <!-- Sun -->
+                  <div class="flex flex-col items-center py-1.5 rounded-xl bg-canvas">
+                    <span class="text-[8px] font-mono text-muted/60 uppercase">Su</span>
+                    <span class="text-xs font-mono font-medium text-stone-400 my-0.5">22</span>
+                    <span class="text-[8px] text-stone-300">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- UNBOXED HERO REHEARSAL STAGE (Illustration is 230px tall! No tiny card box!) -->
+              <div class="relative py-2 flex flex-col items-center text-center">
+                
+                <!-- Atmospheric Radial Aura -->
+                <div class="absolute top-8 w-56 h-56 rounded-full bg-radial from-amber-200/40 via-sage-tint/40 to-transparent filter blur-2xl -z-10"></div>
+
+                <!-- Luminous Floating Glass Badges (Dribbble Ref 7 & 2) -->
+                <div class="w-full relative h-[230px] flex items-center justify-center">
+                  
+                  <!-- Left Floating Badge: Somatic Composure -->
+                  <div class="absolute left-1 top-4 glass-badge rounded-2xl px-3 py-1.5 text-left z-20 shadow-warm">
+                    <span class="text-[8px] font-mono text-muted uppercase block">Composure</span>
+                    <strong class="text-xs font-mono font-bold text-sage">Grounded</strong>
+                  </div>
+
+                  <!-- Central Hero Artwork: Alex Bennett standing tall & expressive -->
+                  <img src="assets/illustrations/New Hire Persona.png" alt="Alex Bennett" class="h-full object-contain filter drop-shadow-xl z-10 transition-transform duration-300 hover:scale-105">
+
+                  <!-- Right Floating Badge: Counterpart Pushback -->
+                  <div class="absolute right-1 bottom-6 glass-badge rounded-2xl px-3 py-1.5 text-left z-20 shadow-warm">
+                    <span class="text-[8px] font-mono text-muted uppercase block">Pushback</span>
+                    <strong class="text-xs font-mono font-bold text-terracotta">Defensive</strong>
+                  </div>
+                </div>
+
+                <!-- Editorial Headline directly on canvas -->
+                <div class="mt-2 space-y-1 max-w-[310px]">
+                  <span class="text-[9px] font-mono font-bold text-terracotta bg-terracotta-tint px-2.5 py-0.5 rounded-full inline-block uppercase tracking-wider">
+                    Featured Scenario
+                  </span>
+                  <h3 class="text-xl font-serif font-bold text-charcoal leading-tight">
+                    Managing Former Peer
+                  </h3>
+                  <p class="text-xs text-muted font-sans leading-relaxed">
+                    Alex is pushing back on the sprint deadline. Hold the line without damaging trust.
+                  </p>
+                </div>
+
+                <!-- Prominent Action Button -->
+                <div class="w-full pt-3">
+                  <button onclick="switchScreen('prepare')" class="tactile-btn w-full py-4 rounded-2xl bg-terracotta hover:bg-terracotta-hover text-white font-sans font-bold text-sm shadow-float-terracotta flex items-center justify-center space-x-2">
+                    <span>Start 10-minute practice</span>
+                    <span class="font-mono text-base leading-none">↗</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- UNBOXED SCENARIO CAROUSEL (Large 110px Character Illustrations) -->
+              <div class="space-y-2 pt-2">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-xs font-mono font-bold text-charcoal uppercase tracking-wider">More Rehearsals</h4>
+                  <span class="text-xs text-muted font-sans">Swipe to browse ↗</span>
+                </div>
+
+                <div class="flex space-x-3 overflow-x-auto -mr-6 pr-6 pb-2 no-scrollbar">
+                  <!-- Jordan Vance -->
+                  <div onclick="switchScreen('prepare')" class="tactile-btn w-44 bg-surface rounded-3xl p-3 shadow-card border border-borderSubtle flex-shrink-0 cursor-pointer">
+                    <div class="h-28 bg-[#F5EDE4] rounded-2xl flex items-center justify-center overflow-hidden mb-2">
+                      <img src="assets/illustrations/Demanding Executive Persona.png" alt="Jordan" class="h-full object-contain filter drop-shadow-sm">
+                    </div>
+                    <h5 class="text-xs font-serif font-bold text-charcoal leading-snug">The Boundary Fortress</h5>
+                    <p class="text-[10px] text-muted mt-0.5 font-sans">VP Jordan Vance</p>
+                    <div class="mt-2 pt-1.5 border-t border-borderSubtle flex justify-between items-center text-[10px] font-mono text-sage font-bold">
+                      <span>Executive</span>
+                      <span>Practice ↗</span>
+                    </div>
+                  </div>
+
+                  <!-- Marcus Cole -->
+                  <div onclick="switchScreen('prepare')" class="tactile-btn w-44 bg-surface rounded-3xl p-3 shadow-card border border-borderSubtle flex-shrink-0 cursor-pointer">
+                    <div class="h-28 bg-[#EBF2EE] rounded-2xl flex items-center justify-center overflow-hidden mb-2">
+                      <img src="assets/illustrations/Defensive Direct Report Persona.png" alt="Marcus" class="h-full object-contain filter drop-shadow-sm">
+                    </div>
+                    <h5 class="text-xs font-serif font-bold text-charcoal leading-snug">Radical Candor Loop</h5>
+                    <p class="text-[10px] text-muted mt-0.5 font-sans">Marcus Cole</p>
+                    <div class="mt-2 pt-1.5 border-t border-borderSubtle flex justify-between items-center text-[10px] font-mono text-sage font-bold">
+                      <span>Direct Report</span>
+                      <span>Practice ↗</span>
+                    </div>
+                  </div>
+
+                  <!-- Maya Patel -->
+                  <div onclick="switchScreen('prepare')" class="tactile-btn w-44 bg-surface rounded-3xl p-3 shadow-card border border-borderSubtle flex-shrink-0 cursor-pointer">
+                    <div class="h-28 bg-[#F1EFF8] rounded-2xl flex items-center justify-center overflow-hidden mb-2">
+                      <img src="assets/illustrations/Tough Feedback Moment.png" alt="Maya" class="h-full object-contain filter drop-shadow-sm">
+                    </div>
+                    <h5 class="text-xs font-serif font-bold text-charcoal leading-snug">Cross-Team Alignment</h5>
+                    <p class="text-[10px] text-muted mt-0.5 font-sans">Maya Patel</p>
+                    <div class="mt-2 pt-1.5 border-t border-borderSubtle flex justify-between items-center text-[10px] font-mono text-sage font-bold">
+                      <span>Peer Lead</span>
+                      <span>Practice ↗</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Elevated Floating Capsule Navigation Bar (HardSync icons) -->
+            <div class="bg-surface px-6 py-2 flex items-center justify-around z-30 shadow-[0_-8px_24px_rgba(28,36,32,0.05)] border-t border-borderSubtle">
+              <button onclick="switchScreen('home')" class="flex flex-col items-center space-y-1 text-sage">
+                <img src="assets/icons/split/master_512_webp/icon_potted_plant.webp" alt="Home" class="w-5 h-5 object-contain">
+                <span class="text-[9px] font-sans font-bold">Home</span>
+              </button>
+              <button onclick="switchScreen('home')" class="flex flex-col items-center space-y-1 text-muted hover:text-charcoal transition">
+                <img src="assets/icons/split/master_512_webp/icon_book_open.webp" alt="Library" class="w-5 h-5 object-contain opacity-60 hover:opacity-100 transition">
+                <span class="text-[9px] font-sans font-medium">Library</span>
+              </button>
+              
+              <!-- Center Raised Terracotta Action Button -->
+              <button onclick="switchScreen('describe')" class="tactile-btn -mt-6 w-11 h-11 rounded-full bg-terracotta hover:bg-terracotta-hover text-white flex items-center justify-center shadow-float-terracotta text-lg font-bold">
+                +
+              </button>
+
+              <button onclick="switchScreen('debrief')" class="flex flex-col items-center space-y-1 text-muted hover:text-charcoal transition">
+                <img src="assets/icons/split/master_512_webp/icon_trophy_cup.webp" alt="Debrief" class="w-5 h-5 object-contain opacity-60 hover:opacity-100 transition">
+                <span class="text-[9px] font-sans font-medium">Debrief</span>
+              </button>
+              <button onclick="switchScreen('paywall')" class="flex flex-col items-center space-y-1 text-muted hover:text-charcoal transition">
+                <img src="assets/icons/split/master_512_webp/icon_badge_ribbon_star.webp" alt="Plans" class="w-5 h-5 object-contain opacity-60 hover:opacity-100 transition">
+                <span class="text-[9px] font-sans font-medium">Plans</span>
+              </button>
+            </div>
+
+          </section>
+
+          <!-- ========================================================================= -->
+          <!-- SCREEN 3: CONFIGURE REHEARSAL (Large Persona Illustrations, Zero Nesting)  -->
+          <!-- ========================================================================= -->
+          <section id="screen-describe" class="screen-view hidden h-full flex flex-col justify-between p-6 pt-3 pb-7 bg-atmosphere-warm overflow-y-auto no-scrollbar">
+            
+            <div class="space-y-4">
+              <!-- Top Navigation Header -->
+              <div class="flex items-center justify-between">
+                <button onclick="switchScreen('home')" class="tactile-btn flex items-center space-x-1.5 text-xs font-bold text-muted hover:text-charcoal">
+                  <span class="font-mono text-base leading-none">←</span>
+                  <span>Back</span>
+                </button>
+                <span class="text-xs font-mono font-semibold text-muted">Setup</span>
+              </div>
+
+              <!-- Heading & Subtitle in Newsreader Serif -->
+              <div class="space-y-1 pt-1">
+                <h2 class="text-2xl font-serif font-bold tracking-tight text-charcoal leading-snug">Configure Rehearsal</h2>
+                <p class="text-xs text-muted leading-relaxed font-sans">
+                  Choose who you're meeting with and what's on the line.
+                </p>
+              </div>
+
+              <!-- 1. Who are you speaking with? (Large 84px Persona Illustrations!) -->
+              <div class="space-y-2">
+                <label class="text-[11px] font-mono font-bold text-charcoal uppercase tracking-wider block">
+                  1. Who are you meeting with?
+                </label>
+                <div class="grid grid-cols-3 gap-2.5" id="persona-selection-group">
+                  <!-- Direct Report: Marcus -->
+                  <div onclick="selectPersonaOption('direct-report', this)" class="persona-option-card tactile-btn bg-surface p-3 rounded-2xl shadow-card cursor-pointer border-2 border-transparent hover:border-sage/30 transition text-center flex flex-col items-center justify-between h-36">
+                    <div class="h-20 w-full flex items-center justify-center overflow-hidden">
+                      <img src="assets/illustrations/Defensive Direct Report Persona.png" alt="Marcus" class="h-full object-contain filter drop-shadow-sm">
+                    </div>
+                    <div>
+                      <span class="text-xs font-serif font-bold text-charcoal block leading-tight">Marcus</span>
+                      <span class="text-[9px] text-muted font-sans">Direct Report</span>
+                    </div>
+                  </div>
+
+                  <!-- Former Peer: Alex (Selected by default) -->
+                  <div onclick="selectPersonaOption('former-peer', this)" class="persona-option-card tactile-btn bg-sage-tint/50 p-3 rounded-2xl shadow-card cursor-pointer border-2 border-sage transition text-center flex flex-col items-center justify-between h-36 relative">
+                    <span class="absolute top-2 right-2 w-4 h-4 rounded-full bg-sage text-white text-[9px] font-bold flex items-center justify-center font-mono">✓</span>
+                    <div class="h-20 w-full flex items-center justify-center overflow-hidden">
+                      <img src="assets/illustrations/New Hire Persona.png" alt="Alex" class="h-full object-contain filter drop-shadow-sm">
+                    </div>
+                    <div>
+                      <span class="text-xs font-serif font-bold text-sage block leading-tight">Alex</span>
+                      <span class="text-[9px] text-sage/80 font-sans font-medium">Former Peer</span>
+                    </div>
+                  </div>
+
+                  <!-- Executive Stakeholder: Jordan -->
+                  <div onclick="selectPersonaOption('executive', this)" class="persona-option-card tactile-btn bg-surface p-3 rounded-2xl shadow-card cursor-pointer border-2 border-transparent hover:border-sage/30 transition text-center flex flex-col items-center justify-between h-36">
+                    <div class="h-20 w-full flex items-center justify-center overflow-hidden">
+                      <img src="assets/illustrations/Demanding Executive Persona.png" alt="Jordan" class="h-full object-contain filter drop-shadow-sm">
+                    </div>
+                    <div>
+                      <span class="text-xs font-serif font-bold text-charcoal block leading-tight">Jordan</span>
+                      <span class="text-[9px] text-muted font-sans">VP Exec</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. What is the challenge? (Clean Touch Selection Pills) -->
+              <div class="space-y-2">
+                <label class="text-[11px] font-mono font-bold text-charcoal uppercase tracking-wider block">
+                  2. What's the challenge?
+                </label>
+                <div class="flex flex-wrap gap-2" id="tension-chips-container">
+                  <button type="button" onclick="toggleTensionChip(this)" class="tactile-btn px-3.5 py-1.5 rounded-full text-xs font-semibold transition bg-sage text-white shadow-xs">
+                    Missed Deadlines
+                  </button>
+                  <button type="button" onclick="toggleTensionChip(this)" class="tactile-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-surface text-stone-700 shadow-card border border-borderSubtle transition">
+                    Scope Pushback
+                  </button>
+                  <button type="button" onclick="toggleTensionChip(this)" class="tactile-btn px-3.5 py-1.5 rounded-full text-xs font-semibold transition bg-sage text-white shadow-xs">
+                    Defensiveness
+                  </button>
+                  <button type="button" onclick="toggleTensionChip(this)" class="tactile-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-surface text-stone-700 shadow-card border border-borderSubtle transition">
+                    Compensation
+                  </button>
+                  <button type="button" onclick="toggleTensionChip(this)" class="tactile-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-surface text-stone-700 shadow-card border border-borderSubtle transition">
+                    Role Boundaries
+                  </button>
+                </div>
+              </div>
+
+              <!-- 3. Key Context Note (Clean Mobile Input) -->
+              <div class="space-y-1.5">
+                <label class="text-[11px] font-mono font-bold text-charcoal uppercase tracking-wider block">
+                  3. Specific detail (Optional)
+                </label>
+                <div class="bg-surface rounded-2xl p-3.5 shadow-card border border-borderSubtle">
+                  <input id="situation-input" type="text" value="Alex was my peer. He missed two deadlines and gets defensive in 1-on-1s." class="w-full text-xs text-charcoal placeholder-stone-400 focus:outline-none bg-transparent font-medium" placeholder="Add specific nuance or leave default...">
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Submit CTA Button with 45° momentum arrow -->
+            <div class="pt-4">
+              <button onclick="switchScreen('prepare')" class="tactile-btn w-full py-4 rounded-2xl bg-sage hover:bg-sage-hover text-white font-sans font-bold text-sm shadow-warm flex items-center justify-center space-x-2">
+                <span>Build Rehearsal</span>
+                <span class="font-mono text-base leading-none">↗</span>
+              </button>
+            </div>
+
+          </section>
+
+          <!-- ========================================================================= -->
+          <!-- SCREEN 4: PREPARE DOSSIER (Unboxed Stage + Large 180px Counterpart Art)    -->
+          <!-- ========================================================================= -->
+          <section id="screen-prepare" class="screen-view hidden h-full flex flex-col justify-between p-6 pt-3 pb-7 bg-atmosphere-warm overflow-y-auto no-scrollbar">
+            
+            <div class="space-y-3.5">
+              <!-- Back Header -->
+              <div class="flex items-center justify-between">
+                <button onclick="switchScreen('home')" class="tactile-btn w-8 h-8 rounded-full bg-surface shadow-card flex items-center justify-center text-muted hover:text-charcoal border border-borderSubtle">
+                  <span class="font-mono text-base leading-none">←</span>
+                </button>
+                <h3 class="text-sm font-serif font-bold text-charcoal">Pre-Meeting Brief</h3>
+                <div class="w-8"></div>
+              </div>
+
+              <!-- Native Mobile 3-Segment Progress Bar -->
+              <div class="space-y-1">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-mono font-bold text-charcoal tracking-tight">Step 1 of 3 · Counterpart Briefing</span>
+                  <span class="font-serif font-bold text-sage">Alex Bennett</span>
+                </div>
+                <div class="grid grid-cols-3 gap-1.5 h-1">
+                  <div class="bg-sage rounded-full h-full"></div>
+                  <div class="bg-stone-200/80 rounded-full h-full"></div>
+                  <div class="bg-stone-200/80 rounded-full h-full"></div>
+                </div>
+              </div>
+
+              <!-- UNBOXED COUNTERPART STAGE (Large 180px Character + 3 Floating Glass Badges) -->
+              <div class="relative py-2 flex flex-col items-center">
+                <!-- Atmospheric Radial Aura -->
+                <div class="absolute top-4 w-44 h-44 rounded-full bg-radial from-amber-200/40 via-sage-tint/40 to-transparent filter blur-2xl -z-10"></div>
+
+                <div class="relative h-[180px] w-full flex items-center justify-center">
+                  <!-- Large Character Artwork -->
+                  <img src="assets/illustrations/New Hire Persona.png" alt="Alex Bennett" class="h-full object-contain filter drop-shadow-xl z-10">
+                </div>
+
+                <!-- 3 Luminous Floating Glass Stat Pills (Humanized Perceptions!) -->
+                <div class="grid grid-cols-3 gap-2 w-full mt-2">
+                  <div class="glass-badge rounded-2xl p-2 text-center">
+                    <span class="text-[8px] font-mono uppercase text-red-800 font-semibold block">Pushback</span>
+                    <strong class="text-xs font-mono font-bold text-red-900 block mt-0.5">Defensive</strong>
+                  </div>
+                  <div class="glass-badge rounded-2xl p-2 text-center">
+                    <span class="text-[8px] font-mono uppercase text-amber-800 font-semibold block">Dynamic</span>
+                    <strong class="text-xs font-mono font-bold text-amber-900 block mt-0.5">Peer Past</strong>
+                  </div>
+                  <div class="glass-badge rounded-2xl p-2 text-center">
+                    <span class="text-[8px] font-mono uppercase text-blue-800 font-semibold block">Cadence</span>
+                    <strong class="text-xs font-mono font-bold text-blue-900 block mt-0.5">Fast-paced</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Strategy Blueprint & Goal Card (With Authentic Branching Illustration) -->
+              <div class="bg-surface p-4 rounded-3xl shadow-card border border-borderSubtle space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-mono font-bold text-sage uppercase tracking-wider bg-sage-tint px-2.5 py-0.5 rounded-full">
+                    Coach Game Plan
+                  </span>
+                  <span class="text-[10px] font-mono text-muted">Core Focus</span>
+                </div>
+
+                <div class="flex items-center space-x-3.5">
+                  <div class="w-18 h-18 rounded-2xl bg-canvasWarm p-1 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    <img src="assets/illustrations/Difficult Conversations Path.png" alt="Dialogue Branches" class="h-full object-contain">
+                  </div>
+                  <div class="space-y-0.5">
+                    <h4 class="text-xs font-serif font-bold text-charcoal">Hold Friday Commitment</h4>
+                    <p class="text-xs text-muted leading-snug font-sans">
+                      Hear out his sprint fatigue first. Then hold the Friday date with calm certainty.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Key Talking Points Checklist -->
+              <div class="bg-surface p-3.5 rounded-3xl shadow-card border border-borderSubtle space-y-2">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-xs font-serif font-bold text-charcoal">Key Talking Points</h4>
+                  <span class="text-xs font-mono text-sage font-semibold">3 of 3 Ready</span>
+                </div>
+
+                <div class="space-y-1.5 text-xs text-charcoal font-medium font-sans">
+                  <label class="flex items-center space-x-2.5 cursor-pointer">
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-sage focus:ring-sage">
+                    <span>Hold Friday as the shared milestone</span>
+                  </label>
+                  <label class="flex items-center space-x-2.5 cursor-pointer">
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-sage focus:ring-sage">
+                    <span>Validate friendship with genuine warmth</span>
+                  </label>
+                  <label class="flex items-center space-x-2.5 cursor-pointer">
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-sage focus:ring-sage">
+                    <span>Agree on concrete next deliverables</span>
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Start Practice CTA Button with 45° momentum arrow -->
+            <div class="pt-3">
+              <button onclick="switchScreen('call')" class="tactile-btn w-full py-4 rounded-2xl bg-sage hover:bg-sage-hover text-white font-sans font-bold text-sm shadow-warm flex items-center justify-center space-x-2">
+                <span>Begin Rehearsal</span>
+                <span class="font-mono text-base leading-none">↗</span>
+              </button>
+            </div>
+
+          </section>
+
+          <!-- ========================================================================= -->
+          <!-- SCREEN 5: LIVE VIDEO CALL (Massive 280px Character Presence Cockpit)      -->
+          <!-- ========================================================================= -->
+          <section id="screen-call" class="screen-view hidden h-full flex flex-col justify-between text-white relative overflow-hidden" style="background: radial-gradient(circle at 50% 35%, #1D3528 0%, #121A15 55%, #0A0D0B 100%);">
+            
+            <!-- Atmospheric Studio Lighting Rings -->
+            <div class="absolute top-24 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full bg-sage/25 blur-3xl pointer-events-none"></div>
+
+            <!-- Top Call Header: < Back | Managing Former Peer -->
+            <div class="relative z-10 px-5 pt-3 flex items-center justify-between">
+              <button onclick="switchScreen('prepare')" class="tactile-btn w-9 h-9 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white border border-white/10">
+                <span class="font-mono text-base leading-none">←</span>
+              </button>
+
+              <div class="text-center">
+                <h4 class="text-xs font-serif font-bold text-white drop-shadow-sm">Managing Former Peer (Alex)</h4>
+                <p class="text-[10px] font-mono text-stone-300">Live Practice Rehearsal</p>
+              </div>
+
+              <div class="px-2.5 py-1 rounded-full bg-sage/60 border border-sage/40 backdrop-blur-md text-[10px] font-mono font-semibold text-white">
+                Active
+              </div>
+            </div>
+
+            <!-- Floating Elapsed Time & Live Coach Whisper HUD -->
+            <div class="relative z-10 px-5 pt-1 space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-xs font-mono font-semibold text-white flex items-center space-x-1.5 border border-white/10">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>02:17</span>
+                </div>
+
+                <!-- Self Video Preview PIP using sovereign avatar (NO 404!) -->
+                <div class="w-16 h-20 rounded-2xl overflow-hidden ring-2 ring-white/40 shadow-2xl bg-stone-900 relative">
+                  <img src="assets/avatars/split/master_512_png/avatar_01.png" alt="Sarah" class="w-full h-full object-cover">
+                  <div class="absolute bottom-1 inset-x-1 bg-black/70 backdrop-blur-xs py-0.5 rounded text-center text-[8px] font-mono font-semibold text-white">
+                    You
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- MASSIVE CENTER COUNTERPART CANVAS (280px Tall Dominance) -->
+            <div class="relative z-10 my-auto flex flex-col items-center justify-center px-4">
+              <div class="w-full max-w-[280px] h-[280px] relative flex items-center justify-center">
+                <div class="absolute inset-0 rounded-full bg-sage/25 animate-pulse blur-2xl"></div>
+                <img src="assets/illustrations/New Hire Persona.png" alt="Alex Bennett" class="h-full object-contain filter drop-shadow-2xl">
+              </div>
+            </div>
+
+            <!-- Bottom Floating Live Subtitle & Action Controls -->
+            <div class="relative z-10 p-5 space-y-3 bg-gradient-to-t from-black via-black/85 to-transparent">
+              
+              <!-- Floating Live AI Whisper Coach HUD (Authentic Coach Assist Illustration) -->
+              <div class="bg-black/70 backdrop-blur-md p-2.5 rounded-2xl border border-white/15 flex items-center space-x-3 shadow-lg">
+                <div class="w-9 h-9 rounded-xl bg-sage/90 p-0.5 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                  <img src="assets/illustrations/AI Coach Whisper.png" alt="Coach Heather" class="h-full object-contain">
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between text-[10px]">
+                    <span class="font-serif font-bold text-emerald-300">Coach Whisper · Heather</span>
+                    <span class="font-mono text-stone-400">Pacing: Calm & Steady</span>
+                  </div>
+                  <p class="text-[11px] text-stone-200 leading-tight mt-0.5 font-sans">
+                    "Take a breath. Acknowledge him first, then hold the date."
+                  </p>
+                </div>
+              </div>
+
+              <!-- Real-time transcript bubble -->
+              <div class="bg-black/60 backdrop-blur-md p-3 rounded-2xl text-xs text-stone-200 leading-relaxed border border-white/10 shadow-lg font-sans">
+                <strong class="font-serif text-emerald-400 block mb-0.5">Alex Bennett:</strong>
+                "Look, Sarah, we've known each other for years. The team worked all weekend. Pushing for Friday isn't realistic."
+              </div>
+
+              <!-- Call Action Dock: Mute | Pause | End -->
+              <div class="pt-1 flex items-center justify-center space-x-6">
+                <!-- Mute -->
+                <button onclick="toggleCallMute(this)" class="tactile-btn flex flex-col items-center space-y-1">
+                  <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 text-white flex items-center justify-center text-base transition p-3">
+                    <span id="call-mic-icon">🎙️</span>
+                  </div>
+                  <span class="text-[10px] text-stone-300 font-mono">Mute</span>
+                </button>
+
+                <!-- Pause -->
+                <button onclick="alert('Session paused. Take a breath!')" class="tactile-btn flex flex-col items-center space-y-1">
+                  <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 text-white flex items-center justify-center text-base transition p-3">
+                    ⏸
+                  </div>
+                  <span class="text-[10px] text-stone-300 font-mono">Pause</span>
+                </button>
+
+                <!-- End Call -->
+                <button onclick="switchScreen('debrief')" class="tactile-btn flex flex-col items-center space-y-1">
+                  <div class="w-13 h-13 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center text-lg shadow-lg transition p-3">
+                    📞
+                  </div>
+                  <span class="text-[10px] text-stone-300 font-mono font-bold">End</span>
+                </button>
+              </div>
+
+            </div>
+
+          </section>
+
+          <!-- ========================================================================= -->
+          <!-- SCREEN 6: YOUR DEBRIEF (Unboxed Celebration · Dribbble Ref 6 & 8)   -->
+          <!-- ========================================================================= -->
+          <section id="screen-debrief" class="screen-view story-screen debrief-screen hidden h-full flex flex-col p-6 pt-3 pb-7 bg-atmosphere-warm overflow-y-auto no-scrollbar">
+            
+            <div class="space-y-4">
+              <!-- Top bar: Back | Share -->
+              <div class="flex items-center justify-between">
+                <button onclick="switchScreen('home')" class="tactile-btn flex items-center space-x-1.5 text-xs font-bold text-muted hover:text-charcoal">
+                  <span class="font-mono text-base leading-none">←</span>
+                  <span>Hub</span>
+                </button>
+                <div class="flex items-center space-x-1.5 cursor-pointer">
+                  <img src="assets/icons/split/master_512_webp/icon_share_external.webp" class="w-3.5 h-3.5 object-contain opacity-70" alt="Share">
+                  <span class="text-xs font-mono font-semibold text-muted">Share ↗</span>
+                </div>
+              </div>
+
+              <!-- Your conversation at a glance -->
+              <div class="debrief-hero relative pt-1">
+                <img class="debrief-art" src="assets/illustrations/Coach Debrief.png" alt="Your coach reflecting on the conversation">
+                <div class="debrief-score"><span>86</span><small>/100</small></div>
+                <div class="debrief-copy">
+                  <span class="debrief-kicker">Nice work, Sarah</span>
+                  <h2>You held your ground.</h2>
+                  <p>That pause helped Alex hear you.</p>
+                </div>
+              </div>
+
+              <!-- Conversation skills -->
+              <div class="space-y-2 pt-1">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-[11px] font-mono font-bold text-charcoal tracking-wider">Your conversation</h4>
+                  <span class="text-[10px] font-mono text-sage font-bold">4 skills</span>
+                </div>
+
+                <div class="grid grid-cols-4 gap-2">
+                  <!-- Connect -->
+                  <div class="bg-[#F6F4EE] p-2.5 rounded-2xl flex flex-col items-center justify-between text-center border border-stone-200/60 shadow-2xs">
+                    <img src="assets/icons/split/master_512_webp/icon_heart_care_hand.webp" class="w-5 h-5 object-contain mb-1" alt="Connect">
+                    <span class="text-xs font-mono font-bold text-sage">88%</span>
+                    <span class="text-[9px] font-sans font-bold text-charcoal mt-0.5">Connect</span>
+                  </div>
+
+                  <!-- Ask -->
+                  <div class="bg-[#F6F4EE] p-2.5 rounded-2xl flex flex-col items-center justify-between text-center border border-stone-200/60 shadow-2xs">
+                    <img src="assets/icons/split/master_512_webp/icon_chat_bubbles.webp" class="w-5 h-5 object-contain mb-1" alt="Ask">
+                    <span class="text-xs font-mono font-bold text-sage">76%</span>
+                    <span class="text-[9px] font-sans font-bold text-charcoal mt-0.5">Ask</span>
+                  </div>
+
+                  <!-- Recognize -->
+                  <div class="bg-[#FDF2EE] p-2.5 rounded-2xl flex flex-col items-center justify-between text-center border border-terracotta/20 shadow-2xs">
+                    <img src="assets/icons/split/master_512_webp/icon_badge_ribbon_star.webp" class="w-5 h-5 object-contain mb-1" alt="Recognize">
+                    <span class="text-xs font-mono font-bold text-terracotta">92%</span>
+                    <span class="text-[9px] font-sans font-bold text-charcoal mt-0.5">Recognize</span>
+                  </div>
+
+                  <!-- Empower -->
+                  <div class="bg-[#F6F4EE] p-2.5 rounded-2xl flex flex-col items-center justify-between text-center border border-stone-200/60 shadow-2xs">
+                    <img src="assets/icons/split/master_512_webp/icon_trophy_cup.webp" class="w-5 h-5 object-contain mb-1" alt="Empower">
+                    <span class="text-xs font-mono font-bold text-sage">84%</span>
+                    <span class="text-[9px] font-sans font-bold text-charcoal mt-0.5">Empower</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STANDOUT HUMAN MOMENT (Unboxed Editorial Quote Highlight) -->
+              <div class="debrief-quote">
+                <img src="assets/icons/split/master_512_webp/icon_quote_bubble.webp" alt="">
+                <div><span>02:14 · Your words</span><p>“I value our friendship, Alex. The deadline stays Friday.”</p></div>
+              </div>
+
+            </div>
+
+            <!-- Primary Action with 45° momentum arrow -->
+            <div class="pt-3 space-y-2">
+              <button onclick="switchScreen('home')" class="tactile-btn w-full py-4 rounded-2xl bg-sage hover:bg-sage-hover text-white font-sans font-bold text-sm shadow-warm flex items-center justify-center space-x-2">
+                <span>Back to practice</span>
+                <span class="font-mono text-base leading-none">↗</span>
+              </button>
+            </div>
+
+          </section>
+
+          <!-- ========================================================================= -->
+          <!-- SCREEN 7: PLANS -->
+          <!-- ========================================================================= -->
+          <section id="screen-paywall" class="screen-view story-screen pro-screen hidden h-full flex flex-col p-6 pt-3 pb-7 bg-atmosphere-warm overflow-y-auto no-scrollbar">
+            
+            <div class="space-y-3.5">
+              <!-- Top bar: brand and close -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <img class="pro-brand-icon" src="assets/icons/split/master_512_webp/icon_sun_day_brightness.webp" alt="">
+                  <span class="text-xs font-serif font-bold text-charcoal">HardSync</span>
+                </div>
+                <button onclick="switchScreen('home')" class="tactile-btn w-7 h-7 rounded-full bg-surface shadow-card flex items-center justify-center text-muted hover:text-charcoal border border-borderSubtle text-xs">
+                  ✕
+                </button>
+              </div>
+
+              <!-- Illustration and plan details -->
+              <div class="pro-hero relative flex flex-col items-center text-center py-1">
+                <!-- Atmospheric Radial Aura -->
+                <div class="absolute top-2 w-48 h-48 rounded-full bg-radial from-amber-200/50 via-sage-tint/40 to-transparent filter blur-2xl -z-10"></div>
+                
+                <div class="pro-art-wrap w-full flex items-center justify-center">
+                  <img src="assets/illustrations/Private Practice Space.png" alt="A calm space to practise a conversation" class="pro-art object-contain filter drop-shadow-xl">
+                </div>
+
+                <!-- Warm Editorial Headline -->
+                <div class="mt-2 space-y-1 max-w-[280px]">
+                  <h2 class="text-xl font-serif font-bold text-charcoal leading-tight">
+                    Feel ready for<br><em>the hard conversations.</em>
+                  </h2>
+                  <p class="text-xs text-muted leading-relaxed font-sans">
+                    Practice first. Feel steadier when it counts.
+                  </p>
+                </div>
+              </div>
+
+              <div class="pro-benefits space-y-2 pt-1">
+                <!-- Row 1: 100% Private Sandbox -->
+                <div class="bg-surface p-2.5 rounded-2xl border border-borderSubtle shadow-2xs flex items-center space-x-3">
+                  <div class="w-9 h-9 rounded-xl bg-sage-tint/50 p-1.5 flex items-center justify-center flex-shrink-0">
+                    <img src="assets/icons/split/master_512_webp/icon_shield_verified.webp" alt="Privacy" class="w-full h-full object-contain">
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-serif font-bold text-charcoal leading-tight">Private practice</h4>
+                  </div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="bg-surface p-2.5 rounded-2xl border border-borderSubtle shadow-2xs flex items-center space-x-3">
+                  <div class="w-9 h-9 rounded-xl bg-amber-50 p-1.5 flex items-center justify-center flex-shrink-0">
+                    <img src="assets/icons/split/master_512_webp/icon_stopwatch_speed.webp" alt="Pacing" class="w-full h-full object-contain">
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-serif font-bold text-charcoal leading-tight">Helpful cues as you speak</h4>
+                  </div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="bg-surface p-2.5 rounded-2xl border border-borderSubtle shadow-2xs flex items-center space-x-3">
+                  <div class="w-9 h-9 rounded-xl bg-terracotta-tint/50 p-1.5 flex items-center justify-center flex-shrink-0">
+                    <img src="assets/icons/split/master_512_webp/icon_heart_care_hand.webp" alt="CARE" class="w-full h-full object-contain">
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-serif font-bold text-charcoal leading-tight">Practice for real work moments</h4>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Choose a plan -->
+              <div class="grid grid-cols-2 gap-2.5 pt-1">
+                <!-- Annual (Selected) -->
+                <div onclick="selectPaywallTier('annual', this)" id="tier-card-annual" class="tactile-btn paywall-tier-card bg-surface p-3 rounded-2xl border-2 border-sage shadow-card cursor-pointer relative text-left">
+                  <span class="text-[8px] font-mono font-bold uppercase tracking-wider bg-sage text-white px-2 py-0.5 rounded-full inline-block mb-1">
+                    Yearly
+                  </span>
+                  <div class="flex items-baseline space-x-1">
+                    <span class="text-lg font-serif font-bold text-charcoal">$12</span>
+                    <span class="text-[10px] font-mono text-muted">/mo</span>
+                  </div>
+                  <p class="text-[9px] text-muted font-sans mt-0.5">$144 billed once a year</p>
+                  <span class="absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-sage text-white text-[9px] font-bold flex items-center justify-center font-mono">✓</span>
+                </div>
+
+                <!-- Monthly -->
+                <div onclick="selectPaywallTier('monthly', this)" id="tier-card-monthly" class="tactile-btn paywall-tier-card bg-surface p-3 rounded-2xl border-2 border-transparent hover:border-stone-300 shadow-card cursor-pointer relative text-left">
+                  <span class="text-[8px] font-mono font-bold uppercase tracking-wider text-muted inline-block mb-1">
+                    Month to month
+                  </span>
+                  <div class="flex items-baseline space-x-1">
+                    <span class="text-lg font-serif font-bold text-charcoal">$20</span>
+                    <span class="text-[10px] font-mono text-muted">/mo</span>
+                  </div>
+                  <p class="text-[9px] text-muted font-sans mt-0.5">Cancel any time</p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Primary CTA Button -->
+            <div class="pt-3 space-y-1.5">
+              <button class="tactile-btn w-full py-4 rounded-2xl bg-terracotta hover:bg-terracotta-hover text-white font-sans font-bold text-sm shadow-float-terracotta flex items-center justify-center space-x-2">
+                <span>Start your 7-day free trial</span>
+                <span class="font-mono text-base leading-none">↗</span>
+              </button>
+              <p class="text-center text-[10px] text-muted font-sans">
+                No charge today.
+              </p>
+            </div>
+
+          </section>
+
+        </div>
+
+        <!-- HOME INDICATOR -->
+        <div id="home-indicator" class="home-indicator"></div>
+
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- SHOWCASE GRID VIEW (All 7 screens side-by-side)                           -->
+    <!-- ========================================================================= -->
+    <div id="showcase-grid-container" class="hidden w-full max-w-7xl mx-auto py-6">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-serif font-bold text-white">HardSync</h2>
+        <p class="text-xs font-sans text-stone-400 mt-1">HardSync · A calmer way to get ready for hard conversations</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
+        <!-- 1. Onboarding -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-semibold text-stone-300 mb-2">1. Onboarding</span>
+          <div onclick="switchScreen('onboarding'); setPlatform('ios');" class="cursor-pointer hover:scale-102 transition shadow-xl rounded-[36px] overflow-hidden w-[240px] h-[520px] bg-atmosphere-warm p-4 text-charcoal text-[11px] flex flex-col justify-between border border-white/10">
+            <div class="w-36 h-36 mx-auto"><img src="assets/illustrations/Safe Rehearsal Room.png" class="w-full h-full object-contain"></div>
+            <div class="space-y-2">
+              <h4 class="font-serif font-bold text-sm leading-snug">Your safe space for <em class="italic text-terracotta">unrehearsed</em> conversations.</h4>
+              <p class="text-[9px] font-sans text-muted">Rehearse tough meetings out loud before they happen live.</p>
+              <div class="py-2 rounded-xl bg-sage text-white font-sans font-bold text-center text-[10px]">Begin Rehearsal ↗</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Practice Hub -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-semibold text-stone-300 mb-2">2. Practice Hub</span>
+          <div onclick="switchScreen('home'); setPlatform('ios');" class="cursor-pointer hover:scale-102 transition shadow-xl rounded-[36px] overflow-hidden w-[240px] h-[520px] bg-atmosphere-warm p-4 text-charcoal text-[11px] flex flex-col justify-between border border-white/10">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-serif font-bold text-xs">Good morning, Sarah</h4>
+                <span class="text-[9px] font-mono text-gold bg-gold-tint px-1.5 py-0.5 rounded-full font-bold">🔥 4d</span>
+              </div>
+              <div class="h-32 flex items-center justify-center my-2">
+                <img src="assets/illustrations/New Hire Persona.png" class="h-full object-contain filter drop-shadow-md">
+              </div>
+              <p class="font-serif font-bold text-xs text-center">Managing Former Peer</p>
+              <p class="text-[8px] font-mono text-center text-sage">Composure 86% · Defensiveness 85</p>
+            </div>
+            <div class="py-2 rounded-xl bg-terracotta text-white font-sans font-bold text-center text-[10px]">Start Drill ↗</div>
+          </div>
+        </div>
+
+        <!-- 3. Configure Scenario -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-semibold text-stone-300 mb-2">3. Configure Scenario</span>
+          <div onclick="switchScreen('describe'); setPlatform('ios');" class="cursor-pointer hover:scale-102 transition shadow-xl rounded-[36px] overflow-hidden w-[240px] h-[520px] bg-atmosphere-warm p-4 text-charcoal text-[11px] flex flex-col justify-between border border-white/10">
+            <div class="space-y-2">
+              <span class="text-[9px] font-mono font-semibold text-muted">Scenario Setup</span>
+              <h4 class="font-serif font-bold text-xs">Configure Rehearsal</h4>
+              <div class="h-28 flex items-center justify-center">
+                <img src="assets/illustrations/New Hire Persona.png" class="h-full object-contain">
+              </div>
+              <div class="bg-surface p-2 rounded-xl text-center shadow-2xs border border-borderSubtle">
+                <span class="text-[9px] font-serif font-bold text-sage">Alex · Former Peer</span>
+              </div>
+            </div>
+            <div class="py-2 rounded-xl bg-sage text-white font-sans font-bold text-center text-[10px]">Generate Rehearsal ↗</div>
+          </div>
+        </div>
+
+        <!-- 4. Prepare Dossier -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-semibold text-stone-300 mb-2">4. Prepare Dossier</span>
+          <div onclick="switchScreen('prepare'); setPlatform('ios');" class="cursor-pointer hover:scale-102 transition shadow-xl rounded-[36px] overflow-hidden w-[240px] h-[520px] bg-atmosphere-warm p-4 text-charcoal text-[11px] flex flex-col justify-between border border-white/10">
+            <div class="space-y-2">
+              <span class="text-[9px] font-mono text-sage font-bold">Step 1 of 3 · Pre-Flight</span>
+              <div class="h-28 flex items-center justify-center">
+                <img src="assets/illustrations/New Hire Persona.png" class="h-full object-contain filter drop-shadow-md">
+              </div>
+              <div class="grid grid-cols-3 gap-1 text-[8px] font-mono text-center">
+                <span class="bg-red-50 text-red-900 rounded p-1">85/100</span>
+                <span class="bg-amber-50 text-amber-900 rounded p-1">±35%</span>
+                <span class="bg-blue-50 text-blue-900 rounded p-1">12s</span>
+              </div>
+            </div>
+            <div class="py-2 rounded-xl bg-sage text-white font-sans font-bold text-center text-[10px]">Begin Rehearsal ↗</div>
+          </div>
+        </div>
+
+        <!-- 5. Live Call -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-semibold text-stone-300 mb-2">5. Live Video Call</span>
+          <div onclick="switchScreen('call'); setPlatform('ios');" class="cursor-pointer hover:scale-102 transition shadow-xl rounded-[36px] overflow-hidden w-[240px] h-[520px] bg-stone-950 text-white text-[11px] flex flex-col justify-between relative border border-white/10" style="background: radial-gradient(circle at 50% 35%, #1D3528 0%, #121A15 55%, #0A0D0B 100%);">
+            <div class="relative z-10 p-3 flex justify-between items-center">
+              <span class="bg-black/60 px-2 py-0.5 rounded-full text-[9px] font-mono">02:17</span>
+              <div class="flex items-center space-x-1 bg-black/60 px-2 py-0.5 rounded-full text-[8px] border border-white/10">
+                <img src="assets/illustrations/AI Coach Whisper.png" class="w-3.5 h-3.5 object-contain">
+                <span class="text-emerald-300 font-serif">Whisper</span>
+              </div>
+            </div>
+            <div class="relative z-10 my-auto flex items-center justify-center">
+              <img src="assets/illustrations/New Hire Persona.png" class="w-32 h-32 object-contain filter drop-shadow-lg">
+            </div>
+            <div class="relative z-10 p-3 bg-black/70 backdrop-blur-sm rounded-t-2xl border-t border-white/10">
+              <span class="text-[9px] font-serif text-emerald-400 block font-bold">Alex is speaking...</span>
+              <p class="text-[9px] text-stone-200 mt-0.5 font-sans">"Pushing for Friday isn't fair."</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Debrief -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-semibold text-stone-300 mb-2">6. Your debrief</span>
+          <div onclick="switchScreen('debrief'); setPlatform('ios');" class="cursor-pointer hover:scale-102 transition shadow-xl rounded-[36px] overflow-hidden w-[240px] h-[520px] bg-atmosphere-warm p-4 text-charcoal text-[11px] flex flex-col justify-between border border-white/10">
+            <div class="space-y-2">
+              <h4 class="font-serif font-bold text-xs">You held your ground.</h4>
+              <div class="h-28 flex items-center justify-center">
+                <img src="assets/illustrations/Coach Debrief.png" class="h-full object-contain filter drop-shadow-md">
+              </div>
+              <div class="text-center">
+                <span class="text-2xl font-serif font-bold text-charcoal">86</span><span class="text-[9px] font-mono text-muted">/100</span>
+                <p class="text-[9px] font-mono font-bold text-sage">That pause helped Alex hear you.</p>
+              </div>
+            </div>
+            <div class="py-2 rounded-xl bg-sage text-white font-sans font-bold text-center text-[10px]">See what worked ↗</div>
+          </div>
+        </div>
+
+        <!-- 7. Paywall / Plans -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-semibold text-stone-300 mb-2">7. Plans</span>
+          <div onclick="switchScreen('paywall'); setPlatform('ios');" class="cursor-pointer hover:scale-102 transition shadow-xl rounded-[36px] overflow-hidden w-[240px] h-[520px] bg-atmosphere-warm p-4 text-charcoal text-[11px] flex flex-col justify-between border border-white/10">
+            <div class="space-y-2">
+              <div class="h-28 flex items-center justify-center">
+                <img src="assets/illustrations/Private Practice Space.png" class="h-full object-contain">
+              </div>
+              <div class="text-center space-y-1">
+                <span class="text-[8px] font-mono font-bold text-sage uppercase">HardSync</span>
+                <p class="font-serif font-bold text-sm">$12<span class="text-[9px] font-mono font-normal">/mo</span></p>
+              </div>
+            </div>
+            <div class="py-2 rounded-xl bg-terracotta text-white font-sans font-bold text-center text-[10px]">Try it free ↗</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT LOGIC                                                          -->
+  <!-- ========================================================================= -->
+  <script>
+    let currentPlatform = 'ios';
+    let currentScreen = 'onboarding';
+    let isCallMuted = false;
+    let selectedPlanTier = 'pro';
+
+    function switchScreen(screenId) {
+      currentScreen = screenId;
+      document.querySelectorAll('.screen-view').forEach(s => s.classList.add('hidden'));
+
+      const target = document.getElementById(`screen-${screenId}`);
+      if (target) {
+        target.classList.remove('hidden');
+        document.getElementById('screen-viewport').scrollTop = 0;
+      }
+
+      // Update screen tabs
+      document.querySelectorAll('.screen-tab').forEach(t => {
+        t.classList.remove('bg-sage', 'text-white', 'shadow-xs');
+        t.classList.add('text-stone-400');
+      });
+      const activeTab = document.getElementById(`tab-${screenId}`);
+      if (activeTab) {
+        activeTab.classList.remove('text-stone-400');
+        activeTab.classList.add('bg-sage', 'text-white', 'shadow-xs');
+      }
+
+      if (currentPlatform === 'grid') {
+        setPlatform('ios');
+      }
+    }
+
+    function setPlatform(platform) {
+      currentPlatform = platform;
+      const phoneFrame = document.getElementById('phone-frame');
+      const singleContainer = document.getElementById('single-device-container');
+      const gridContainer = document.getElementById('showcase-grid-container');
+
+      document.querySelectorAll('header button').forEach(b => {
+        b.classList.remove('bg-stone-800', 'text-white');
+        b.classList.add('text-stone-400');
+      });
+
+      if (platform === 'grid') {
+        singleContainer.classList.add('hidden');
+        gridContainer.classList.remove('hidden');
+        document.getElementById('btn-platform-grid').classList.add('bg-stone-800', 'text-white');
+        return;
+      }
+
+      singleContainer.classList.remove('hidden');
+      gridContainer.classList.add('hidden');
+
+      if (platform === 'ios') {
+        phoneFrame.className = 'iphone-frame text-charcoal select-none relative';
+        document.getElementById('btn-platform-ios').classList.add('bg-stone-800', 'text-white');
+      } else if (platform === 'android') {
+        phoneFrame.className = 'android-frame text-charcoal select-none relative';
+        document.getElementById('btn-platform-android').classList.add('bg-stone-800', 'text-white');
+      }
+    }
+
+    function selectPersonaOption(personaKey, clickedCard) {
+      document.querySelectorAll('.persona-option-card').forEach(card => {
+        card.className = 'persona-option-card tactile-btn bg-surface p-3 rounded-2xl shadow-card cursor-pointer border-2 border-transparent hover:border-sage/30 transition text-center flex flex-col items-center justify-between h-36';
+        const badge = card.querySelector('.absolute');
+        if (badge) badge.remove();
+        const titleSpan = card.querySelector('span.text-xs');
+        if (titleSpan) {
+          titleSpan.className = 'text-xs font-serif font-bold text-charcoal block leading-tight';
+        }
+      });
+
+      clickedCard.className = 'persona-option-card tactile-btn bg-sage-tint/50 p-3 rounded-2xl shadow-card cursor-pointer border-2 border-sage transition text-center flex flex-col items-center justify-between h-36 relative';
+      const checkBadge = document.createElement('span');
+      checkBadge.className = 'absolute top-2 right-2 w-4 h-4 rounded-full bg-sage text-white text-[9px] font-bold flex items-center justify-center font-mono';
+      checkBadge.innerText = '✓';
+      clickedCard.appendChild(checkBadge);
+
+      const titleSpan = clickedCard.querySelector('span.text-xs');
+      if (titleSpan) {
+        titleSpan.className = 'text-xs font-serif font-bold text-sage block leading-tight';
+      }
+    }
+
+    function toggleTensionChip(btn) {
+      const isSelected = btn.classList.contains('bg-sage');
+      if (isSelected) {
+        btn.className = 'tactile-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-surface text-stone-700 shadow-card border border-borderSubtle transition';
+      } else {
+        btn.className = 'tactile-btn px-3.5 py-1.5 rounded-full text-xs font-semibold transition bg-sage text-white shadow-xs';
+      }
+    }
+
+    function toggleCallMute(btn) {
+      isCallMuted = !isCallMuted;
+      const icon = document.getElementById('call-mic-icon');
+      if (icon) {
+        icon.innerText = isCallMuted ? '🔇' : '🎙️';
+      }
+    }
+
+    function selectPlan(tier) {
+      selectedPlanTier = tier;
+      ['free', 'pro', 'ultra'].forEach(p => {
+        const btn = document.getElementById(`plan-btn-${p}`);
+        if (btn) {
+          if (p === tier) {
+            btn.className = 'tactile-btn py-2.5 rounded-xl text-center transition bg-sage text-white font-bold text-xs shadow-xs';
+          } else {
+            btn.className = 'tactile-btn py-2.5 rounded-xl text-center transition text-stone-600 font-semibold text-xs';
+          }
+        }
+      });
+    }
+
+    function selectPaywallTier(tier, card) {
+      document.querySelectorAll('.paywall-tier-card').forEach(c => {
+        c.className = 'tactile-btn paywall-tier-card bg-surface p-3 rounded-2xl border-2 border-transparent hover:border-stone-300 shadow-card cursor-pointer relative text-left';
+        const badge = c.querySelector('.absolute');
+        if (badge) badge.remove();
+      });
+
+      card.className = 'tactile-btn paywall-tier-card bg-surface p-3 rounded-2xl border-2 border-sage shadow-card cursor-pointer relative text-left';
+      const checkBadge = document.createElement('span');
+      checkBadge.className = 'absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-sage text-white text-[9px] font-bold flex items-center justify-center font-mono';
+      checkBadge.innerText = '✓';
+      card.appendChild(checkBadge);
+    }
+  </script>
+</body>
+</html>

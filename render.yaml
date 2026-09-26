@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: hardsync-api
+    runtime: python
+    buildCommand: pip install -r server/requirements.txt
+    startCommand: python server/app.py --host 0.0.0.0
+    healthCheckPath: /api/config
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: ALLOWED_HOSTS
+        fromService:
+          type: web
+          name: hardsync-api
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_LIVE_BRIDGE_URL
+        sync: false
+      - key: GEMINI_LIVE_SHARED_SECRET
+        sync: false
+      - key: REVENUECAT_SECRET_KEY
+        sync: false
+      - key: REVENUECAT_WEBHOOK_AUTHORIZATION
+        sync: false
+  - type: web
+    name: hardsync-live
+    runtime: python
+    buildCommand: pip install -r server/requirements-gemini-live.txt
+    startCommand: python -m uvicorn server.gemini_live_bridge:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: GEMINI_LIVE_SHARED_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_LIVE_API_PROVIDER
+        value: gemini

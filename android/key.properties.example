@@ -1,0 +1,6 @@
+# Copy this file to android/key.properties and fill in your private upload-key details.
+# Do not commit key.properties or the keystore file.
+storeFile=upload-keystore.jks
+storePassword=REPLACE_WITH_PRIVATE_STORE_PASSWORD
+keyAlias=hardsync-upload
+keyPassword=REPLACE_WITH_PRIVATE_KEY_PASSWORD

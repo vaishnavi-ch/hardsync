@@ -1,0 +1,992 @@
+[
+  {
+    "id": "avatar_01",
+    "index": 1,
+    "description": "Woman in knit beanie hat and purple sweater",
+    "files": {
+      "png_512": "master_512_png/avatar_01.png",
+      "webp_512": "master_512_webp/avatar_01.webp",
+      "flutter_256": "flutter_256/avatar_01.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_01.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_01.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_01.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_01.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_01.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_01.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_02",
+    "index": 2,
+    "description": "Young man with orange over-ear headphones and hoodie",
+    "files": {
+      "png_512": "master_512_png/avatar_02.png",
+      "webp_512": "master_512_webp/avatar_02.webp",
+      "flutter_256": "flutter_256/avatar_02.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_02.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_02.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_02.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_02.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_02.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_02.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_03",
+    "index": 3,
+    "description": "Woman with curly updo bun and gold hoop earrings",
+    "files": {
+      "png_512": "master_512_png/avatar_03.png",
+      "webp_512": "master_512_webp/avatar_03.webp",
+      "flutter_256": "flutter_256/avatar_03.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_03.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_03.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_03.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_03.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_03.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_03.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_04",
+    "index": 4,
+    "description": "Young man with wavy brown hair in white shirt",
+    "files": {
+      "png_512": "master_512_png/avatar_04.png",
+      "webp_512": "master_512_webp/avatar_04.webp",
+      "flutter_256": "flutter_256/avatar_04.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_04.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_04.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_04.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_04.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_04.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_04.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_05",
+    "index": 5,
+    "description": "Woman with long auburn hair and round glasses",
+    "files": {
+      "png_512": "master_512_png/avatar_05.png",
+      "webp_512": "master_512_webp/avatar_05.webp",
+      "flutter_256": "flutter_256/avatar_05.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_05.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_05.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_05.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_05.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_05.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_05.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_06",
+    "index": 6,
+    "description": "Man with dark hair in man bun, beard, and white hoodie",
+    "files": {
+      "png_512": "master_512_png/avatar_06.png",
+      "webp_512": "master_512_webp/avatar_06.webp",
+      "flutter_256": "flutter_256/avatar_06.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_06.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_06.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_06.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_06.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_06.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_06.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_07",
+    "index": 7,
+    "description": "Woman with wavy bob hair and gold hoop earrings",
+    "files": {
+      "png_512": "master_512_png/avatar_07.png",
+      "webp_512": "master_512_webp/avatar_07.webp",
+      "flutter_256": "flutter_256/avatar_07.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_07.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_07.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_07.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_07.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_07.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_07.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_08",
+    "index": 8,
+    "description": "Young person with short blonde hair and green sweater",
+    "files": {
+      "png_512": "master_512_png/avatar_08.png",
+      "webp_512": "master_512_webp/avatar_08.webp",
+      "flutter_256": "flutter_256/avatar_08.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_08.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_08.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_08.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_08.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_08.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_08.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_09",
+    "index": 9,
+    "description": "Woman wearing stylish wide-brim sunhat and orange top",
+    "files": {
+      "png_512": "master_512_png/avatar_09.png",
+      "webp_512": "master_512_webp/avatar_09.webp",
+      "flutter_256": "flutter_256/avatar_09.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_09.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_09.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_09.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_09.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_09.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_09.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_10",
+    "index": 10,
+    "description": "Young man with curly dark hair in purple hoodie",
+    "files": {
+      "png_512": "master_512_png/avatar_10.png",
+      "webp_512": "master_512_webp/avatar_10.webp",
+      "flutter_256": "flutter_256/avatar_10.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_10.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_10.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_10.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_10.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_10.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_10.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_11",
+    "index": 11,
+    "description": "Woman with messy top bun in olive jacket",
+    "files": {
+      "png_512": "master_512_png/avatar_11.png",
+      "webp_512": "master_512_webp/avatar_11.webp",
+      "flutter_256": "flutter_256/avatar_11.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_11.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_11.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_11.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_11.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_11.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_11.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_12",
+    "index": 12,
+    "description": "Young man with curly hair, round glasses, and collared shirt",
+    "files": {
+      "png_512": "master_512_png/avatar_12.png",
+      "webp_512": "master_512_webp/avatar_12.webp",
+      "flutter_256": "flutter_256/avatar_12.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_12.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_12.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_12.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_12.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_12.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_12.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_13",
+    "index": 13,
+    "description": "Woman with long dark wavy hair and pearl earring",
+    "files": {
+      "png_512": "master_512_png/avatar_13.png",
+      "webp_512": "master_512_webp/avatar_13.webp",
+      "flutter_256": "flutter_256/avatar_13.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_13.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_13.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_13.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_13.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_13.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_13.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_14",
+    "index": 14,
+    "description": "Young man in green baseball cap and dark hoodie",
+    "files": {
+      "png_512": "master_512_png/avatar_14.png",
+      "webp_512": "master_512_webp/avatar_14.webp",
+      "flutter_256": "flutter_256/avatar_14.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_14.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_14.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_14.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_14.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_14.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_14.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_15",
+    "index": 15,
+    "description": "Woman with long wavy hair in purple top and green circle",
+    "files": {
+      "png_512": "master_512_png/avatar_15.png",
+      "webp_512": "master_512_webp/avatar_15.webp",
+      "flutter_256": "flutter_256/avatar_15.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_15.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_15.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_15.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_15.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_15.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_15.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_16",
+    "index": 16,
+    "description": "Young man with dark styled hair in blazer and t-shirt",
+    "files": {
+      "png_512": "master_512_png/avatar_16.png",
+      "webp_512": "master_512_webp/avatar_16.webp",
+      "flutter_256": "flutter_256/avatar_16.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_16.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_16.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_16.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_16.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_16.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_16.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_17",
+    "index": 17,
+    "description": "Blonde woman with high braided bun and black turtleneck",
+    "files": {
+      "png_512": "master_512_png/avatar_17.png",
+      "webp_512": "master_512_webp/avatar_17.webp",
+      "flutter_256": "flutter_256/avatar_17.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_17.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_17.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_17.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_17.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_17.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_17.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_18",
+    "index": 18,
+    "description": "Man with curly dark hair, full beard, and round glasses",
+    "files": {
+      "png_512": "master_512_png/avatar_18.png",
+      "webp_512": "master_512_webp/avatar_18.webp",
+      "flutter_256": "flutter_256/avatar_18.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_18.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_18.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_18.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_18.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_18.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_18.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_19",
+    "index": 19,
+    "description": "Woman with sleek dark bob and orange top",
+    "files": {
+      "png_512": "master_512_png/avatar_19.png",
+      "webp_512": "master_512_webp/avatar_19.webp",
+      "flutter_256": "flutter_256/avatar_19.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_19.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_19.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_19.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_19.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_19.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_19.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_20",
+    "index": 20,
+    "description": "Man with graying beard and hair in man bun",
+    "files": {
+      "png_512": "master_512_png/avatar_20.png",
+      "webp_512": "master_512_webp/avatar_20.webp",
+      "flutter_256": "flutter_256/avatar_20.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_20.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_20.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_20.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_20.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_20.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_20.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_21",
+    "index": 21,
+    "description": "Woman with top messy bun, hoop earring, green jacket",
+    "files": {
+      "png_512": "master_512_png/avatar_21.png",
+      "webp_512": "master_512_webp/avatar_21.webp",
+      "flutter_256": "flutter_256/avatar_21.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_21.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_21.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_21.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_21.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_21.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_21.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_22",
+    "index": 22,
+    "description": "Young man with dark hair, glasses, purple sweater",
+    "files": {
+      "png_512": "master_512_png/avatar_22.png",
+      "webp_512": "master_512_webp/avatar_22.webp",
+      "flutter_256": "flutter_256/avatar_22.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_22.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_22.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_22.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_22.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_22.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_22.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_23",
+    "index": 23,
+    "description": "Woman with long dark wavy hair, gold earrings, orange circle",
+    "files": {
+      "png_512": "master_512_png/avatar_23.png",
+      "webp_512": "master_512_webp/avatar_23.webp",
+      "flutter_256": "flutter_256/avatar_23.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_23.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_23.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_23.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_23.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_23.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_23.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_24",
+    "index": 24,
+    "description": "Man with curly hair, trimmed full beard, purple hoodie",
+    "files": {
+      "png_512": "master_512_png/avatar_24.png",
+      "webp_512": "master_512_webp/avatar_24.webp",
+      "flutter_256": "flutter_256/avatar_24.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_24.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_24.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_24.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_24.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_24.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_24.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_25",
+    "index": 25,
+    "description": "Young man with dark tousled hair, green jacket",
+    "files": {
+      "png_512": "master_512_png/avatar_25.png",
+      "webp_512": "master_512_webp/avatar_25.webp",
+      "flutter_256": "flutter_256/avatar_25.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_25.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_25.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_25.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_25.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_25.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_25.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_26",
+    "index": 26,
+    "description": "Woman with yellow headband, curly hair, white shirt",
+    "files": {
+      "png_512": "master_512_png/avatar_26.png",
+      "webp_512": "master_512_webp/avatar_26.webp",
+      "flutter_256": "flutter_256/avatar_26.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_26.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_26.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_26.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_26.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_26.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_26.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_27",
+    "index": 27,
+    "description": "Young man with brown wavy hair, dark hoodie",
+    "files": {
+      "png_512": "master_512_png/avatar_27.png",
+      "webp_512": "master_512_webp/avatar_27.webp",
+      "flutter_256": "flutter_256/avatar_27.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_27.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_27.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_27.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_27.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_27.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_27.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_28",
+    "index": 28,
+    "description": "Woman with glasses, hair bun, orange shirt",
+    "files": {
+      "png_512": "master_512_png/avatar_28.png",
+      "webp_512": "master_512_webp/avatar_28.webp",
+      "flutter_256": "flutter_256/avatar_28.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_28.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_28.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_28.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_28.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_28.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_28.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_29",
+    "index": 29,
+    "description": "Senior distinguished man with gray hair and gray beard",
+    "files": {
+      "png_512": "master_512_png/avatar_29.png",
+      "webp_512": "master_512_webp/avatar_29.webp",
+      "flutter_256": "flutter_256/avatar_29.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_29.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_29.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_29.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_29.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_29.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_29.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_30",
+    "index": 30,
+    "description": "Woman wearing dark hijab / headscarf",
+    "files": {
+      "png_512": "master_512_png/avatar_30.png",
+      "webp_512": "master_512_webp/avatar_30.webp",
+      "flutter_256": "flutter_256/avatar_30.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_30.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_30.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_30.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_30.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_30.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_30.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_31",
+    "index": 31,
+    "description": "Young man with green cap, white hoodie",
+    "files": {
+      "png_512": "master_512_png/avatar_31.png",
+      "webp_512": "master_512_webp/avatar_31.webp",
+      "flutter_256": "flutter_256/avatar_31.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_31.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_31.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_31.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_31.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_31.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_31.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_32",
+    "index": 32,
+    "description": "Woman with curly auburn bob, white turtleneck",
+    "files": {
+      "png_512": "master_512_png/avatar_32.png",
+      "webp_512": "master_512_webp/avatar_32.webp",
+      "flutter_256": "flutter_256/avatar_32.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_32.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_32.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_32.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_32.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_32.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_32.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_33",
+    "index": 33,
+    "description": "Young man with styled side-part dark hair, black jacket",
+    "files": {
+      "png_512": "master_512_png/avatar_33.png",
+      "webp_512": "master_512_webp/avatar_33.webp",
+      "flutter_256": "flutter_256/avatar_33.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_33.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_33.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_33.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_33.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_33.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_33.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_34",
+    "index": 34,
+    "description": "Blonde woman with low side bun, dark top, gold earrings",
+    "files": {
+      "png_512": "master_512_png/avatar_34.png",
+      "webp_512": "master_512_webp/avatar_34.webp",
+      "flutter_256": "flutter_256/avatar_34.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_34.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_34.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_34.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_34.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_34.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_34.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_35",
+    "index": 35,
+    "description": "Young man with curly hair, round glasses, green sweater",
+    "files": {
+      "png_512": "master_512_png/avatar_35.png",
+      "webp_512": "master_512_webp/avatar_35.webp",
+      "flutter_256": "flutter_256/avatar_35.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_35.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_35.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_35.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_35.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_35.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_35.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_36",
+    "index": 36,
+    "description": "Woman with sunhat, wavy hair, and gold hoop earrings",
+    "files": {
+      "png_512": "master_512_png/avatar_36.png",
+      "webp_512": "master_512_webp/avatar_36.webp",
+      "flutter_256": "flutter_256/avatar_36.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_36.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_36.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_36.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_36.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_36.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_36.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_37",
+    "index": 37,
+    "description": "Young man with wavy styled hair, green jacket over white tee",
+    "files": {
+      "png_512": "master_512_png/avatar_37.png",
+      "webp_512": "master_512_webp/avatar_37.webp",
+      "flutter_256": "flutter_256/avatar_37.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_37.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_37.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_37.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_37.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_37.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_37.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_38",
+    "index": 38,
+    "description": "Woman with dark blunt bob, black jacket",
+    "files": {
+      "png_512": "master_512_png/avatar_38.png",
+      "webp_512": "master_512_webp/avatar_38.webp",
+      "flutter_256": "flutter_256/avatar_38.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_38.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_38.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_38.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_38.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_38.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_38.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_39",
+    "index": 39,
+    "description": "Man with reddish beard and wavy hair, collared green sweater",
+    "files": {
+      "png_512": "master_512_png/avatar_39.png",
+      "webp_512": "master_512_webp/avatar_39.webp",
+      "flutter_256": "flutter_256/avatar_39.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_39.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_39.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_39.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_39.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_39.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_39.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_40",
+    "index": 40,
+    "description": "Woman wearing green hijab / headscarf",
+    "files": {
+      "png_512": "master_512_png/avatar_40.png",
+      "webp_512": "master_512_webp/avatar_40.webp",
+      "flutter_256": "flutter_256/avatar_40.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_40.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_40.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_40.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_40.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_40.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_40.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_41",
+    "index": 41,
+    "description": "Young man with curly hair, glasses, purple hoodie",
+    "files": {
+      "png_512": "master_512_png/avatar_41.png",
+      "webp_512": "master_512_webp/avatar_41.webp",
+      "flutter_256": "flutter_256/avatar_41.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_41.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_41.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_41.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_41.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_41.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_41.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_42",
+    "index": 42,
+    "description": "Woman with curly hair in high bun, purple top",
+    "files": {
+      "png_512": "master_512_png/avatar_42.png",
+      "webp_512": "master_512_webp/avatar_42.webp",
+      "flutter_256": "flutter_256/avatar_42.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_42.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_42.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_42.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_42.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_42.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_42.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_43",
+    "index": 43,
+    "description": "Young man wearing backward baseball cap and orange hoodie",
+    "files": {
+      "png_512": "master_512_png/avatar_43.png",
+      "webp_512": "master_512_webp/avatar_43.webp",
+      "flutter_256": "flutter_256/avatar_43.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_43.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_43.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_43.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_43.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_43.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_43.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_44",
+    "index": 44,
+    "description": "Woman with voluminous long dark wavy hair, white top",
+    "files": {
+      "png_512": "master_512_png/avatar_44.png",
+      "webp_512": "master_512_webp/avatar_44.webp",
+      "flutter_256": "flutter_256/avatar_44.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_44.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_44.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_44.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_44.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_44.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_44.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_45",
+    "index": 45,
+    "description": "Man with hair bun, round glasses, and goatee beard",
+    "files": {
+      "png_512": "master_512_png/avatar_45.png",
+      "webp_512": "master_512_webp/avatar_45.webp",
+      "flutter_256": "flutter_256/avatar_45.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_45.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_45.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_45.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_45.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_45.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_45.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_46",
+    "index": 46,
+    "description": "Woman with wavy auburn hair, purple sweater",
+    "files": {
+      "png_512": "master_512_png/avatar_46.png",
+      "webp_512": "master_512_webp/avatar_46.webp",
+      "flutter_256": "flutter_256/avatar_46.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_46.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_46.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_46.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_46.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_46.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_46.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_47",
+    "index": 47,
+    "description": "Distinguished older man with gray hair, gray beard, and v-neck sweater",
+    "files": {
+      "png_512": "master_512_png/avatar_47.png",
+      "webp_512": "master_512_webp/avatar_47.webp",
+      "flutter_256": "flutter_256/avatar_47.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_47.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_47.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_47.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_47.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_47.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_47.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_48",
+    "index": 48,
+    "description": "Woman with long dark hair, green shirt, orange background",
+    "files": {
+      "png_512": "master_512_png/avatar_48.png",
+      "webp_512": "master_512_webp/avatar_48.webp",
+      "flutter_256": "flutter_256/avatar_48.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_48.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_48.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_48.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_48.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_48.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_48.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_49",
+    "index": 49,
+    "description": "Young man with curly dark hair, white turtleneck",
+    "files": {
+      "png_512": "master_512_png/avatar_49.png",
+      "webp_512": "master_512_webp/avatar_49.webp",
+      "flutter_256": "flutter_256/avatar_49.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_49.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_49.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_49.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_49.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_49.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_49.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_50",
+    "index": 50,
+    "description": "Blonde woman with wavy hair, dark blazer",
+    "files": {
+      "png_512": "master_512_png/avatar_50.png",
+      "webp_512": "master_512_webp/avatar_50.webp",
+      "flutter_256": "flutter_256/avatar_50.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_50.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_50.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_50.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_50.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_50.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_50.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_51",
+    "index": 51,
+    "description": "Young man with wind-swept dark hair, green hoodie",
+    "files": {
+      "png_512": "master_512_png/avatar_51.png",
+      "webp_512": "master_512_webp/avatar_51.webp",
+      "flutter_256": "flutter_256/avatar_51.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_51.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_51.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_51.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_51.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_51.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_51.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_52",
+    "index": 52,
+    "description": "Woman with long voluminous curly hair, gold earrings",
+    "files": {
+      "png_512": "master_512_png/avatar_52.png",
+      "webp_512": "master_512_webp/avatar_52.webp",
+      "flutter_256": "flutter_256/avatar_52.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_52.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_52.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_52.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_52.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_52.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_52.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_53",
+    "index": 53,
+    "description": "Young man with wavy brown hair and round glasses",
+    "files": {
+      "png_512": "master_512_png/avatar_53.png",
+      "webp_512": "master_512_webp/avatar_53.webp",
+      "flutter_256": "flutter_256/avatar_53.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_53.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_53.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_53.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_53.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_53.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_53.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_54",
+    "index": 54,
+    "description": "Woman with dark hair wearing large white over-ear headphones",
+    "files": {
+      "png_512": "master_512_png/avatar_54.png",
+      "webp_512": "master_512_webp/avatar_54.webp",
+      "flutter_256": "flutter_256/avatar_54.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_54.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_54.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_54.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_54.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_54.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_54.png"
+      }
+    }
+  },
+  {
+    "id": "avatar_55",
+    "index": 55,
+    "description": "Man with dark hair, full beard, white collared shirt",
+    "files": {
+      "png_512": "master_512_png/avatar_55.png",
+      "webp_512": "master_512_webp/avatar_55.webp",
+      "flutter_256": "flutter_256/avatar_55.png",
+      "ios_imageset": "ios/Avatars.xcassets/avatar_55.imageset",
+      "android_drawables": {
+        "drawable-mdpi": "android/res/drawable-mdpi/avatar_55.png",
+        "drawable-hdpi": "android/res/drawable-hdpi/avatar_55.png",
+        "drawable-xhdpi": "android/res/drawable-xhdpi/avatar_55.png",
+        "drawable-xxhdpi": "android/res/drawable-xxhdpi/avatar_55.png",
+        "drawable-xxxhdpi": "android/res/drawable-xxxhdpi/avatar_55.png"
+      }
+    }
+  }
+]

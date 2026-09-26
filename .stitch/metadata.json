@@ -1,0 +1,262 @@
+{
+    "name":  "projects/7694332069323488725",
+    "projectId":  "7694332069323488725",
+    "title":  "UI Screen Replicator",
+    "visibility":  "PRIVATE",
+    "createTime":  "2026-09-22T13:41:20.415521Z",
+    "updateTime":  "2026-09-22T16:16:57.001970Z",
+    "projectType":  "TEXT_TO_UI_PRO",
+    "origin":  "STITCH",
+    "deviceType":  "MOBILE",
+    "designTheme":  {
+
+                    },
+    "screens":  {
+                    "6a60a67e676b48adb2aee43cbb5869a7":  {
+                                                             "id":  "6a60a67e676b48adb2aee43cbb5869a7",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/6a60a67e676b48adb2aee43cbb5869a7",
+                                                             "x":  -137,
+                                                             "y":  1213,
+                                                             "width":  390,
+                                                             "height":  884,
+                                                             "type":  null
+                                                         },
+                    "a1ba4a30-ace6-47d2-b694-ff3e17eccbe0":  {
+                                                                 "id":  "a1ba4a30-ace6-47d2-b694-ff3e17eccbe0",
+                                                                 "sourceScreen":  "projects/7694332069323488725/screens/15476544056571039343",
+                                                                 "x":  3238,
+                                                                 "y":  8,
+                                                                 "width":  512,
+                                                                 "height":  1114,
+                                                                 "type":  "SCREEN_INSTANCE"
+                                                             },
+                    "f2391e48cf374a289cbef8c22b654e82":  {
+                                                             "id":  "f2391e48cf374a289cbef8c22b654e82",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/f2391e48cf374a289cbef8c22b654e82",
+                                                             "x":  -590,
+                                                             "y":  1213,
+                                                             "width":  390,
+                                                             "height":  884,
+                                                             "type":  null
+                                                         },
+                    "282209c3983c4d018bae80eca6815977":  {
+                                                             "id":  "282209c3983c4d018bae80eca6815977",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/282209c3983c4d018bae80eca6815977",
+                                                             "x":  7932,
+                                                             "y":  1206,
+                                                             "width":  390,
+                                                             "height":  852,
+                                                             "type":  null
+                                                         },
+                    "1d85058b25394dfcb3d9d9b2f9e016e1":  {
+                                                             "id":  "1d85058b25394dfcb3d9d9b2f9e016e1",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/1d85058b25394dfcb3d9d9b2f9e016e1",
+                                                             "x":  2125,
+                                                             "y":  1188,
+                                                             "width":  390,
+                                                             "height":  993,
+                                                             "type":  null
+                                                         },
+                    "a5196c303076453ba373eab029aed064":  {
+                                                             "id":  "a5196c303076453ba373eab029aed064",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/a5196c303076453ba373eab029aed064",
+                                                             "x":  9193,
+                                                             "y":  983,
+                                                             "width":  390,
+                                                             "height":  884,
+                                                             "type":  null
+                                                         },
+                    "dbec1e00a26345088d7d75757ca5eb36":  {
+                                                             "id":  "dbec1e00a26345088d7d75757ca5eb36",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/dbec1e00a26345088d7d75757ca5eb36",
+                                                             "x":  5065,
+                                                             "y":  1183,
+                                                             "width":  390,
+                                                             "height":  1213,
+                                                             "type":  null
+                                                         },
+                    "03f74c89-8b18-4ca5-9715-08914a29357c":  {
+                                                                 "id":  "03f74c89-8b18-4ca5-9715-08914a29357c",
+                                                                 "sourceScreen":  "projects/7694332069323488725/screens/15476544056571039465",
+                                                                 "x":  5612,
+                                                                 "y":  194,
+                                                                 "width":  512,
+                                                                 "height":  910,
+                                                                 "type":  "SCREEN_INSTANCE"
+                                                             },
+                    "8323c5612d734ee595d9bc03485ec0c8":  {
+                                                             "id":  "8323c5612d734ee595d9bc03485ec0c8",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/8323c5612d734ee595d9bc03485ec0c8",
+                                                             "x":  1451,
+                                                             "y":  1222,
+                                                             "width":  390,
+                                                             "height":  1109,
+                                                             "type":  null
+                                                         },
+                    "43fc3f87dc0844208356dbf5ffa1d7c5":  {
+                                                             "id":  "43fc3f87dc0844208356dbf5ffa1d7c5",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/43fc3f87dc0844208356dbf5ffa1d7c5",
+                                                             "x":  7872,
+                                                             "y":  -130,
+                                                             "width":  390,
+                                                             "height":  971,
+                                                             "type":  null
+                                                         },
+                    "0447f58b0c2b4f79b1810db42b1a2459":  {
+                                                             "id":  "0447f58b0c2b4f79b1810db42b1a2459",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/0447f58b0c2b4f79b1810db42b1a2459",
+                                                             "x":  3727,
+                                                             "y":  1193,
+                                                             "width":  512,
+                                                             "height":  917,
+                                                             "type":  null
+                                                         },
+                    "724f1cf2-2b17-4a78-8756-18da41c8a626":  {
+                                                                 "id":  "724f1cf2-2b17-4a78-8756-18da41c8a626",
+                                                                 "sourceScreen":  "projects/7694332069323488725/screens/15476544056571036531",
+                                                                 "x":  1432,
+                                                                 "y":  22,
+                                                                 "width":  512,
+                                                                 "height":  1114,
+                                                                 "type":  "SCREEN_INSTANCE"
+                                                             },
+                    "32a2998850c549c28103e86ddf0c984a":  {
+                                                             "id":  "32a2998850c549c28103e86ddf0c984a",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/32a2998850c549c28103e86ddf0c984a",
+                                                             "x":  6410,
+                                                             "y":  1196,
+                                                             "width":  390,
+                                                             "height":  920,
+                                                             "type":  null
+                                                         },
+                    "f2b3ae4e-9168-46a7-aabe-23810ca604f1":  {
+                                                                 "id":  "f2b3ae4e-9168-46a7-aabe-23810ca604f1",
+                                                                 "sourceScreen":  "projects/7694332069323488725/screens/15476544056571036653",
+                                                                 "x":  5005,
+                                                                 "y":  -4,
+                                                                 "width":  512,
+                                                                 "height":  1114,
+                                                                 "type":  "SCREEN_INSTANCE"
+                                                             },
+                    "f756a156897e4d6e97dc9e8ada00bc3c":  {
+                                                             "id":  "f756a156897e4d6e97dc9e8ada00bc3c",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/f756a156897e4d6e97dc9e8ada00bc3c",
+                                                             "x":  5612,
+                                                             "y":  1229,
+                                                             "width":  390,
+                                                             "height":  1379,
+                                                             "type":  null
+                                                         },
+                    "5a01193093d24fc1b763753fe575ffe1":  {
+                                                             "id":  "5a01193093d24fc1b763753fe575ffe1",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/5a01193093d24fc1b763753fe575ffe1",
+                                                             "x":  8739,
+                                                             "y":  983,
+                                                             "width":  390,
+                                                             "height":  864,
+                                                             "type":  null
+                                                         },
+                    "427647b7996247b0b87d03f66569d82a":  {
+                                                             "id":  "427647b7996247b0b87d03f66569d82a",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/427647b7996247b0b87d03f66569d82a",
+                                                             "x":  3273,
+                                                             "y":  1193,
+                                                             "width":  390,
+                                                             "height":  884,
+                                                             "type":  null
+                                                         },
+                    "4e83a763e55a4c4db359d54e5ffcb9c1":  {
+                                                             "id":  "4e83a763e55a4c4db359d54e5ffcb9c1",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/4e83a763e55a4c4db359d54e5ffcb9c1",
+                                                             "x":  8326,
+                                                             "y":  -130,
+                                                             "width":  512,
+                                                             "height":  512,
+                                                             "type":  null
+                                                         },
+                    "3a5563e2f3a84f2e8f1379498b8a4e16":  {
+                                                             "id":  "3a5563e2f3a84f2e8f1379498b8a4e16",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/3a5563e2f3a84f2e8f1379498b8a4e16",
+                                                             "x":  2632,
+                                                             "y":  1188,
+                                                             "width":  512,
+                                                             "height":  512,
+                                                             "type":  null
+                                                         },
+                    "fa68cf3e258a4bc2ad076356ad5864d8":  {
+                                                             "id":  "fa68cf3e258a4bc2ad076356ad5864d8",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/fa68cf3e258a4bc2ad076356ad5864d8",
+                                                             "x":  7358,
+                                                             "y":  1192,
+                                                             "width":  390,
+                                                             "height":  844,
+                                                             "type":  null
+                                                         },
+                    "fcb7eeb3-8526-42c6-a556-19824aa48c38":  {
+                                                                 "id":  "fcb7eeb3-8526-42c6-a556-19824aa48c38",
+                                                                 "sourceScreen":  "projects/7694332069323488725/screens/15476544056571038181",
+                                                                 "x":  780,
+                                                                 "y":  4,
+                                                                 "width":  512,
+                                                                 "height":  1114,
+                                                                 "type":  "SCREEN_INSTANCE"
+                                                             },
+                    "8925857d-e5b8-4f00-a3f8-3b97fdbb6e56":  {
+                                                                 "id":  "8925857d-e5b8-4f00-a3f8-3b97fdbb6e56",
+                                                                 "sourceScreen":  "projects/7694332069323488725/screens/15476544056571037937",
+                                                                 "x":  2095,
+                                                                 "y":  5,
+                                                                 "width":  512,
+                                                                 "height":  1114,
+                                                                 "type":  "SCREEN_INSTANCE"
+                                                             },
+                    "34431bc4b6ca4af983bb16d79d3bce9c":  {
+                                                             "id":  "34431bc4b6ca4af983bb16d79d3bce9c",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/34431bc4b6ca4af983bb16d79d3bce9c",
+                                                             "x":  313,
+                                                             "y":  1218,
+                                                             "width":  390,
+                                                             "height":  884,
+                                                             "type":  null
+                                                         },
+                    "8710c84a-09b0-4c9a-86ee-512d1ee2fa89":  {
+                                                                 "id":  "8710c84a-09b0-4c9a-86ee-512d1ee2fa89",
+                                                                 "sourceScreen":  "projects/7694332069323488725/screens/15476544056571038059",
+                                                                 "x":  6388,
+                                                                 "y":  -130,
+                                                                 "width":  512,
+                                                                 "height":  1114,
+                                                                 "type":  "SCREEN_INSTANCE"
+                                                             },
+                    "b23f1122-2648-41f4-af7c-5748bfcfbda0":  {
+                                                                 "id":  "b23f1122-2648-41f4-af7c-5748bfcfbda0",
+                                                                 "sourceScreen":  "projects/7694332069323488725/screens/15476544056571036775",
+                                                                 "x":  -590,
+                                                                 "y":  null,
+                                                                 "width":  512,
+                                                                 "height":  1114,
+                                                                 "type":  "SCREEN_INSTANCE"
+                                                             },
+                    "18ddc7814e274feeb8e1e45b07b5fa91":  {
+                                                             "id":  "18ddc7814e274feeb8e1e45b07b5fa91",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/18ddc7814e274feeb8e1e45b07b5fa91",
+                                                             "x":  4303,
+                                                             "y":  1193,
+                                                             "width":  512,
+                                                             "height":  512,
+                                                             "type":  null
+                                                         },
+                    "d1649a041c604a81834a2a5051bf9cde":  {
+                                                             "id":  "d1649a041c604a81834a2a5051bf9cde",
+                                                             "sourceScreen":  "projects/7694332069323488725/screens/d1649a041c604a81834a2a5051bf9cde",
+                                                             "x":  814,
+                                                             "y":  1192,
+                                                             "width":  390,
+                                                             "height":  1085,
+                                                             "type":  null
+                                                         }
+                },
+    "metadata":  {
+                     "userRole":  "OWNER"
+                 }
+}

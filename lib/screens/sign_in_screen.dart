@@ -1,0 +1,1193 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../services/supabase_service.dart';
+import '../services/revenuecat_service.dart';
+import '../theme/hardsync_assets.dart';
+import '../theme/hardsync_theme.dart';
+import 'settings_modal.dart';
+import 'legal_document_screen.dart';
+import 'subscription_paywall_screen.dart';
+
+const _navy = HardSyncColors.ink;
+const _paper = HardSyncColors.cream;
+const _line = HardSyncColors.lilacBorder;
+const _red = Color(0xFFFF3F46);
+
+TextStyle _title(double size) => GoogleFonts.newsreader(
+  fontSize: size,
+  height: .98,
+  fontWeight: FontWeight.w700,
+  color: _navy,
+);
+TextStyle _body({
+  double size = 14,
+  FontWeight weight = FontWeight.w500,
+  Color color = _navy,
+}) => GoogleFonts.plusJakartaSans(
+  fontSize: size,
+  height: 1.4,
+  fontWeight: weight,
+  color: color,
+);
+Route<T> _route<T>(Widget page) => MaterialPageRoute<T>(builder: (_) => page);
+
+class SignInScreen extends StatefulWidget {
+  final bool initialIsSignUp;
+  const SignInScreen({super.key, this.initialIsSignUp = false});
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  @override
+  void initState() {
+    super.initState();
+    SupabaseService.instance.addListener(_refresh);
+  }
+
+  @override
+  void dispose() {
+    SupabaseService.instance.removeListener(_refresh);
+    super.dispose();
+  }
+
+  void _refresh() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (SupabaseService.instance.isAuthenticated) return const AccountScreen();
+    return widget.initialIsSignUp
+        ? const AuthFormScreen(signUp: true)
+        : const AuthWelcomeScreen();
+  }
+}
+
+class _AuthPage extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets padding;
+  final double maxWidth;
+  const _AuthPage({
+    required this.child,
+    this.padding = const EdgeInsets.fromLTRB(24, 12, 24, 20),
+    this.maxWidth = 440,
+  });
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: _paper,
+    body: SafeArea(
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxWidth),
+          child: Padding(padding: padding, child: child),
+        ),
+      ),
+    ),
+  );
+}
+
+class AuthWelcomeScreen extends StatelessWidget {
+  const AuthWelcomeScreen({super.key});
+  @override
+  Widget build(BuildContext context) => _AuthPage(
+    maxWidth: 920,
+    padding: EdgeInsets.zero,
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final wide = constraints.maxWidth >= 700;
+        final visual = Expanded(
+          flex: 5,
+          child: Container(
+            width: double.infinity,
+            color: const Color(0xFFF0E9FF),
+            child: const AppIllustration(
+              HardSyncAssets.illusSafeRehearsalRoom,
+              fit: BoxFit.cover,
+              alignment: Alignment.bottomCenter,
+            ),
+          ),
+        );
+        final actions = Expanded(
+          flex: 7,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              wide ? 42 : 24,
+              wide ? 42 : 12,
+              wide ? 42 : 24,
+              wide ? 34 : 16,
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'HardSync',
+                  textAlign: TextAlign.center,
+                  style: _title(38),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Practice today.\nLead with confidence tomorrow.',
+                  textAlign: TextAlign.center,
+                  style: _body(size: 15),
+                ),
+                const Spacer(),
+                _SocialButton(
+                  icon: const _GoogleMark(),
+                  label: 'Continue with Google',
+                  onPressed: () => _oauth(context, OAuthProvider.google),
+                ),
+                const SizedBox(height: 9),
+                _SocialButton(
+                  icon: const Icon(Icons.apple, color: Colors.black, size: 22),
+                  label: 'Continue with Apple',
+                  onPressed: () => _oauth(context, OAuthProvider.apple),
+                ),
+                const SizedBox(height: 9),
+                _SocialButton(
+                  icon: const Icon(Icons.mail_outline, color: _navy, size: 20),
+                  label: 'Continue with Email',
+                  onPressed: () =>
+                      Navigator.push(context, _route(const AuthFormScreen())),
+                ),
+                const SizedBox(height: 9),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: HardSyncColors.violetDark,
+                      side: const BorderSide(color: HardSyncColors.lilacBorder),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: const StadiumBorder(),
+                    ),
+                    onPressed: () => Navigator.push(
+                      context,
+                      _route(const AuthFormScreen(signUp: true)),
+                    ),
+                    child: Text(
+                      'Create an account',
+                      style: _body(size: 14, weight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  'By continuing, you agree to our',
+                  style: _body(size: 11.5, color: const Color(0xFF60627A)),
+                ),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        _route(
+                          const LegalDocumentScreen(
+                            document: LegalDocument.terms,
+                          ),
+                        ),
+                      ),
+                      child: const Text('Terms of Service'),
+                    ),
+                    Text(
+                      'and',
+                      style: _body(size: 11.5, color: const Color(0xFF60627A)),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        _route(
+                          const LegalDocumentScreen(
+                            document: LegalDocument.privacy,
+                          ),
+                        ),
+                      ),
+                      child: const Text('Privacy Policy'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+        return Flex(
+          direction: wide ? Axis.horizontal : Axis.vertical,
+          children: [visual, actions],
+        );
+      },
+    ),
+  );
+  Future<void> _oauth(BuildContext context, OAuthProvider provider) async {
+    try {
+      await SupabaseService.instance.signInWithOAuth(provider);
+    } catch (e) {
+      if (context.mounted) _showError(context, e);
+    }
+  }
+}
+
+class AuthFormScreen extends StatefulWidget {
+  final bool signUp;
+  const AuthFormScreen({super.key, this.signUp = false});
+  @override
+  State<AuthFormScreen> createState() => _AuthFormScreenState();
+}
+
+class _AuthFormScreenState extends State<AuthFormScreen> {
+  final _name = TextEditingController(),
+      _email = TextEditingController(),
+      _password = TextEditingController();
+  bool _hidden = true, _remember = true, _loading = false;
+  @override
+  void dispose() {
+    _name.dispose();
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => _AuthPage(
+    child: SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _BackButton(onTap: () => Navigator.maybePop(context)),
+          const SizedBox(height: 14),
+          Text(
+            widget.signUp ? 'Create your account' : 'Welcome back!',
+            style: _title(29),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            widget.signUp
+                ? 'Start building your communication superpowers.'
+                : 'Good conversations start here.',
+            style: _body(size: 13, color: const Color(0xFF555A91)),
+          ),
+          if (!widget.signUp) ...[
+            const SizedBox(height: 8),
+            const SizedBox(
+              height: 190,
+              width: double.infinity,
+              child: AppIllustration(HardSyncAssets.illusManager11),
+            ),
+          ] else
+            const SizedBox(height: 30),
+          if (widget.signUp) ...[
+            _Field(
+              controller: _name,
+              hint: 'Full name',
+              icon: Icons.person_outline,
+            ),
+            const SizedBox(height: 11),
+          ],
+          _Field(
+            controller: _email,
+            hint: 'Email address',
+            icon: Icons.mail_outline,
+            keyboardType: TextInputType.emailAddress,
+          ),
+          const SizedBox(height: 11),
+          _Field(
+            controller: _password,
+            hint: 'Password',
+            icon: Icons.lock_outline,
+            obscure: _hidden,
+            suffix: IconButton(
+              onPressed: () => setState(() => _hidden = !_hidden),
+              icon: Icon(
+                _hidden
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                size: 19,
+                color: const Color(0xFF565C89),
+              ),
+            ),
+          ),
+          if (!widget.signUp)
+            Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                  child: Checkbox(
+                    value: _remember,
+                    activeColor: HardSyncColors.violet,
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    onChanged: (v) => setState(() => _remember = v ?? true),
+                  ),
+                ),
+                Text(
+                  'Remember me',
+                  style: _body(size: 11, color: const Color(0xFF666A87)),
+                ),
+                const Spacer(),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  onPressed: () => Navigator.push(
+                    context,
+                    _route(const ResetPasswordScreen()),
+                  ),
+                  child: Text(
+                    'Forgot password?',
+                    style: _body(
+                      size: 11,
+                      color: HardSyncColors.violetDark,
+                    ).copyWith(decoration: TextDecoration.underline),
+                  ),
+                ),
+              ],
+            )
+          else
+            const SizedBox(height: 12),
+          _PrimaryButton(
+            label: widget.signUp ? 'Create account' : 'Log in',
+            loading: _loading,
+            onPressed: _submit,
+          ),
+          const SizedBox(height: 14),
+          _OrDivider(label: widget.signUp ? 'or sign up with' : 'or'),
+          const SizedBox(height: 14),
+          _SocialButton(
+            icon: const _GoogleMark(),
+            label: widget.signUp ? 'Sign up with Google' : 'Continue with Google',
+            onPressed: () => _oauth(OAuthProvider.google),
+          ),
+          const SizedBox(height: 9),
+          _SocialButton(
+            icon: const Icon(Icons.apple, color: Colors.black, size: 21),
+            label: widget.signUp ? 'Sign up with Apple' : 'Continue with Apple',
+            onPressed: () => _oauth(OAuthProvider.apple),
+          ),
+          const SizedBox(height: 16),
+          Center(
+            child: TextButton(
+              onPressed: () => Navigator.pushReplacement(
+                context,
+                _route(AuthFormScreen(signUp: !widget.signUp)),
+              ),
+              child: Text.rich(
+                TextSpan(
+                  text: widget.signUp
+                      ? 'Already have an account? '
+                      : "Don't have an account? ",
+                  children: [
+                    TextSpan(
+                      text: widget.signUp ? 'Log in' : 'Sign up',
+                      style: const TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: HardSyncColors.violetDark,
+                      ),
+                    ),
+                  ],
+                ),
+                style: _body(size: 11.5, color: const Color(0xFF60627A)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+
+  Future<void> _submit() async {
+    if (_email.text.trim().isEmpty ||
+        _password.text.isEmpty ||
+        (widget.signUp && _name.text.trim().isEmpty)) {
+      _showError(context, 'Please complete every field.');
+      return;
+    }
+    setState(() => _loading = true);
+    try {
+      if (widget.signUp) {
+        await SupabaseService.instance.signUpWithEmail(
+          _email.text.trim(),
+          _password.text,
+          fullName: _name.text.trim(),
+        );
+        if (SupabaseService.instance.isAuthenticated) {
+          if (mounted) Navigator.popUntil(context, (route) => route.isFirst);
+        } else if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Account created. Check your email to confirm it, then sign in.',
+              ),
+            ),
+          );
+        }
+      } else {
+        await SupabaseService.instance.signInWithEmail(
+          _email.text.trim(),
+          _password.text,
+        );
+        if (mounted) Navigator.popUntil(context, (route) => route.isFirst);
+      }
+    } catch (e) {
+      if (mounted) _showError(context, e);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _oauth(OAuthProvider provider) async {
+    try {
+      await SupabaseService.instance.signInWithOAuth(provider);
+    } catch (e) {
+      if (mounted) _showError(context, e);
+    }
+  }
+}
+
+class ResetPasswordScreen extends StatefulWidget {
+  const ResetPasswordScreen({super.key});
+  @override
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+}
+
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  final _email = TextEditingController();
+  bool _loading = false;
+  @override
+  void dispose() {
+    _email.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => _AuthPage(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _BackButton(onTap: () => Navigator.pop(context)),
+        const SizedBox(height: 24),
+        Text('Reset your password', style: _title(27)),
+        const SizedBox(height: 7),
+        Text(
+          "Enter your email and we'll send you\nreset instructions.",
+          style: _body(size: 13, color: const Color(0xFF555A91)),
+        ),
+        const SizedBox(height: 22),
+        const Expanded(
+          child: AppIllustration(HardSyncAssets.illusScriptBuilder),
+        ),
+        _Field(
+          controller: _email,
+          hint: 'Email address',
+          icon: Icons.mail_outline,
+          keyboardType: TextInputType.emailAddress,
+        ),
+        const SizedBox(height: 16),
+        _PrimaryButton(
+          label: 'Send reset link',
+          loading: _loading,
+          onPressed: _send,
+        ),
+        const Spacer(),
+        Center(
+          child: TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Back to log in'),
+          ),
+        ),
+      ],
+    ),
+  );
+  Future<void> _send() async {
+    if (_email.text.trim().isEmpty) {
+      _showError(context, 'Enter your email address.');
+      return;
+    }
+    setState(() => _loading = true);
+    try {
+      await SupabaseService.instance.sendPasswordReset(_email.text.trim());
+      if (mounted) {
+        Navigator.push(
+          context,
+          _route(EmailSentScreen(email: _email.text.trim())),
+        );
+      }
+    } catch (e) {
+      if (mounted) _showError(context, e);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+}
+
+class EmailSentScreen extends StatelessWidget {
+  final String email;
+  const EmailSentScreen({super.key, required this.email});
+  @override
+  Widget build(BuildContext context) => _AuthPage(
+    child: Column(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: _BackButton(onTap: () => Navigator.pop(context)),
+        ),
+        const SizedBox(height: 24),
+        const Expanded(
+          child: AppIllustration(HardSyncAssets.aiWhisperCoachAssist),
+        ),
+        Text('Check your email', style: _title(28)),
+        const SizedBox(height: 8),
+        Text(
+          "We've sent a password reset link to\n$email",
+          textAlign: TextAlign.center,
+          style: _body(size: 13, color: const Color(0xFF555A91)),
+        ),
+        const SizedBox(height: 22),
+        Container(
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: HardSyncColors.lilacMist,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              const CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.mail_outline, color: HardSyncColors.violet),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  "Didn't receive the email?\nCheck your spam folder or try again.",
+                  style: _body(size: 11.5),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 18),
+        SizedBox(
+          width: double.infinity,
+          height: 49,
+          child: OutlinedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Resend email'),
+          ),
+        ),
+        const Spacer(),
+        TextButton(
+          onPressed: () => Navigator.popUntil(context, (r) => r.isFirst),
+          child: const Text('Back to log in'),
+        ),
+      ],
+    ),
+  );
+}
+
+class AccountScreen extends StatelessWidget {
+  final bool embedded;
+  const AccountScreen({super.key, this.embedded = false});
+  @override
+  Widget build(BuildContext context) {
+    final service = SupabaseService.instance,
+        name = SupabaseService.instance.currentUserName;
+    return _AuthPage(
+      child: Column(
+        children: [
+          if (!embedded) ...[
+            Align(
+              alignment: Alignment.centerLeft,
+              child: IconButton(
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(Icons.close, color: _navy),
+              ),
+            ),
+            const SizedBox(height: 18),
+          ] else ...[
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Your Profile', style: _title(31)),
+            ),
+            const SizedBox(height: 18),
+          ],
+          Row(
+            children: [
+              const AppAvatar(HardSyncAssets.avatarCurrentUser, size: 58),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name, style: _body(size: 17, weight: FontWeight.w700)),
+                    Text(
+                      service.currentUserEmail,
+                      overflow: TextOverflow.ellipsis,
+                      style: _body(size: 11.5, color: const Color(0xFF676B8C)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          _MenuTile(
+            icon: Icons.person_outline,
+            label: 'Profile',
+            onTap: () =>
+                _notice(context, 'Your profile is synced with HardSync.'),
+          ),
+          _MenuTile(
+            icon: Icons.settings_outlined,
+            label: 'Settings',
+            onTap: () => showModalBottomSheet(
+              context: context,
+              showDragHandle: true,
+              builder: (_) => const SettingsModal(),
+            ),
+          ),
+          _MenuTile(
+            icon: Icons.mail_outline,
+            label: 'Subscription',
+            onTap: () => Navigator.push(
+              context,
+              _route(const SubscriptionPaywallScreen()),
+            ),
+          ),
+          if (!kIsWeb && RevenueCatService.instance.isConfigured)
+            _MenuTile(
+              icon: Icons.manage_accounts_outlined,
+              label: 'Manage subscription',
+              onTap: () async {
+                try {
+                  await RevenueCatUI.presentCustomerCenter();
+                } catch (_) {
+                  if (context.mounted) {
+                    _notice(
+                      context,
+                      'Subscription management is temporarily unavailable.',
+                    );
+                  }
+                }
+              },
+            ),
+          _MenuTile(
+            icon: Icons.help_outline,
+            label: 'Help & support',
+            onTap: () => _notice(context, 'Support is ready to help.'),
+          ),
+          const SizedBox(height: 12),
+          _MenuTile(
+            icon: Icons.logout,
+            label: 'Log out',
+            danger: true,
+            onTap: () => showDialog(
+              context: context,
+              builder: (_) => LogoutDialog(showSignedOut: !embedded),
+            ),
+          ),
+          _MenuTile(
+            icon: Icons.delete_outline,
+            label: 'Delete account',
+            danger: true,
+            onTap: () =>
+                Navigator.push(context, _route(const DeleteAccountScreen())),
+          ),
+          const Spacer(),
+          Text(
+            'Version 1.0.0',
+            style: _body(size: 10.5, color: const Color(0xFF878AA0)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LogoutDialog extends StatefulWidget {
+  final bool showSignedOut;
+  const LogoutDialog({super.key, this.showSignedOut = true});
+  @override
+  State<LogoutDialog> createState() => _LogoutDialogState();
+}
+
+class _LogoutDialogState extends State<LogoutDialog> {
+  bool loading = false;
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    backgroundColor: Colors.white,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+    contentPadding: const EdgeInsets.fromLTRB(22, 22, 22, 18),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const CircleAvatar(
+          radius: 31,
+          backgroundColor: Color(0xFFFFECEC),
+          child: Icon(Icons.logout, color: _red, size: 29),
+        ),
+        const SizedBox(height: 16),
+        Text('Log out?', style: _title(23)),
+        const SizedBox(height: 7),
+        Text(
+          "You'll need to sign in again\nto access your progress.",
+          textAlign: TextAlign.center,
+          style: _body(size: 13, color: const Color(0xFF555A91)),
+        ),
+        const SizedBox(height: 18),
+        _DangerButton(label: 'Log out', loading: loading, onPressed: _logout),
+        const SizedBox(height: 9),
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: const Color(0xFFF5F3F6),
+            ),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: _navy)),
+          ),
+        ),
+      ],
+    ),
+  );
+  Future<void> _logout() async {
+    setState(() => loading = true);
+    await SupabaseService.instance.signOut();
+    if (!mounted) return;
+    Navigator.pop(context);
+    if (widget.showSignedOut && context.mounted) {
+      Navigator.push(context, _route(const SignedOutScreen()));
+    }
+  }
+}
+
+class SignedOutScreen extends StatelessWidget {
+  const SignedOutScreen({super.key});
+  @override
+  Widget build(BuildContext context) => _AuthPage(
+    child: Column(
+      children: [
+        const Spacer(),
+        const Expanded(
+          flex: 4,
+          child: AppIllustration(HardSyncAssets.illusPracticeReflectImprove),
+        ),
+        Text("You're signed out", style: _title(27)),
+        const SizedBox(height: 8),
+        Text(
+          'Thanks for being part of HardSync.\nSee you soon!',
+          textAlign: TextAlign.center,
+          style: _body(size: 13, color: const Color(0xFF555A91)),
+        ),
+        const Spacer(),
+        _PrimaryButton(
+          label: 'Sign in again',
+          onPressed: () => Navigator.pushReplacement(
+            context,
+            _route(const AuthWelcomeScreen()),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class DeleteAccountScreen extends StatefulWidget {
+  const DeleteAccountScreen({super.key});
+  @override
+  State<DeleteAccountScreen> createState() => _DeleteAccountScreenState();
+}
+
+class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
+  bool loading = false;
+  @override
+  Widget build(BuildContext context) => _AuthPage(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _BackButton(onTap: () => Navigator.pop(context)),
+        const SizedBox(height: 22),
+        Text('Delete your account', style: _title(27)),
+        const SizedBox(height: 6),
+        Text(
+          "We're sorry to see you go. This action\ncannot be undone.",
+          style: _body(size: 12.5, color: const Color(0xFF555A91)),
+        ),
+        const SizedBox(height: 18),
+        Container(
+          padding: const EdgeInsets.all(17),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF6F3F7),
+            borderRadius: BorderRadius.circular(17),
+          ),
+          child: const Column(
+            children: [
+              _DeleteFact(
+                icon: Icons.inventory_2_outlined,
+                title: 'Your progress and data',
+                detail: 'will be permanently deleted',
+              ),
+              _DeleteFact(
+                icon: Icons.history,
+                title: "You'll lose access to your",
+                detail: 'practice history',
+              ),
+              _DeleteFact(
+                icon: Icons.verified_user_outlined,
+                title: 'Store subscription (if any)',
+                detail: 'must be canceled separately before deletion',
+              ),
+            ],
+          ),
+        ),
+        const Spacer(),
+        if (!kIsWeb && RevenueCatService.instance.isConfigured) ...[
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: OutlinedButton.icon(
+              onPressed: loading
+                  ? null
+                  : () => RevenueCatUI.presentCustomerCenter(),
+              icon: const Icon(Icons.manage_accounts_outlined),
+              label: const Text('Manage store subscription'),
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
+        _DangerButton(
+          label: 'Delete account',
+          loading: loading,
+          onPressed: _delete,
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: OutlinedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ),
+      ],
+    ),
+  );
+  Future<void> _delete() async {
+    setState(() => loading = true);
+    try {
+      await SupabaseService.instance.deleteAccount();
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          _route(const AccountDeletedScreen()),
+          (_) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) _showError(context, e);
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
+  }
+}
+
+class AccountDeletedScreen extends StatelessWidget {
+  const AccountDeletedScreen({super.key});
+  @override
+  Widget build(BuildContext context) => _AuthPage(
+    child: Column(
+      children: [
+        const Spacer(),
+        const Expanded(
+          flex: 4,
+          child: AppIllustration(HardSyncAssets.illusExecutiveChallenge),
+        ),
+        Text('Account deleted', style: _title(28)),
+        const SizedBox(height: 8),
+        Text(
+          'Your account has been permanently\ndeleted.\nThanks for giving HardSync a try.',
+          textAlign: TextAlign.center,
+          style: _body(size: 13, color: const Color(0xFF555A91)),
+        ),
+        const Spacer(),
+        _PrimaryButton(
+          label: 'Back to home',
+          onPressed: () => Navigator.pushReplacement(
+            context,
+            _route(const AuthWelcomeScreen()),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _Field extends StatelessWidget {
+  final TextEditingController controller;
+  final String hint;
+  final IconData icon;
+  final bool obscure;
+  final Widget? suffix;
+  final TextInputType? keyboardType;
+  const _Field({
+    required this.controller,
+    required this.hint,
+    required this.icon,
+    this.obscure = false,
+    this.suffix,
+    this.keyboardType,
+  });
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: 51,
+    child: TextField(
+      controller: controller,
+      obscureText: obscure,
+      keyboardType: keyboardType,
+      style: _body(size: 13),
+      decoration: InputDecoration(
+        hintText: hint,
+        prefixIcon: Icon(icon, size: 20, color: const Color(0xFF565C89)),
+        suffixIcon: suffix,
+        filled: true,
+        fillColor: Colors.white.withValues(alpha: .72),
+        contentPadding: const EdgeInsets.symmetric(vertical: 14),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: _line),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(
+            color: HardSyncColors.violet,
+            width: 1.4,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _PrimaryButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final bool loading;
+  const _PrimaryButton({
+    required this.label,
+    this.onPressed,
+    this.loading = false,
+  });
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: double.infinity,
+    height: 51,
+    child: FilledButton(
+      style: FilledButton.styleFrom(
+        backgroundColor: HardSyncColors.violet,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+      onPressed: loading ? null : onPressed,
+      child: loading
+          ? const SizedBox.square(
+              dimension: 19,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
+          : Text(label),
+    ),
+  );
+}
+
+class _DangerButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final bool loading;
+  const _DangerButton({
+    required this.label,
+    this.onPressed,
+    this.loading = false,
+  });
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: double.infinity,
+    height: 50,
+    child: FilledButton(
+      style: FilledButton.styleFrom(
+        backgroundColor: _red,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+      onPressed: loading ? null : onPressed,
+      child: loading
+          ? const SizedBox.square(
+              dimension: 19,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
+          : Text(label),
+    ),
+  );
+}
+
+class _SocialButton extends StatelessWidget {
+  final Widget icon;
+  final String label;
+  final VoidCallback onPressed;
+  const _SocialButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: double.infinity,
+    height: 48,
+    child: OutlinedButton.icon(
+      style: OutlinedButton.styleFrom(
+        backgroundColor: Colors.white.withValues(alpha: .78),
+        side: const BorderSide(color: _line),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+      onPressed: onPressed,
+      icon: icon,
+      label: Text(label, style: _body(size: 13, weight: FontWeight.w600)),
+    ),
+  );
+}
+
+class _GoogleMark extends StatelessWidget {
+  const _GoogleMark();
+  @override
+  Widget build(BuildContext context) => Text(
+    'G',
+    style: GoogleFonts.plusJakartaSans(
+      fontSize: 20,
+      fontWeight: FontWeight.w800,
+      color: const Color(0xFF4285F4),
+    ),
+  );
+}
+
+class _BackButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _BackButton({required this.onTap});
+  @override
+  Widget build(BuildContext context) => IconButton(
+    onPressed: onTap,
+    padding: EdgeInsets.zero,
+    alignment: Alignment.centerLeft,
+    icon: const Icon(Icons.arrow_back_ios_new, size: 19, color: _navy),
+  );
+}
+
+class _OrDivider extends StatelessWidget {
+  final String label;
+  const _OrDivider({this.label = 'OR'});
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      const Expanded(child: Divider(color: _line)),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        child: Text(
+          label.toUpperCase(),
+          style: _body(size: 10, color: const Color(0xFF696C82)),
+        ),
+      ),
+      const Expanded(child: Divider(color: _line)),
+    ],
+  );
+}
+
+class _MenuTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool danger;
+  const _MenuTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.danger = false,
+  });
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 7),
+    child: Material(
+      color: danger ? const Color(0xFFFFECE9) : Colors.transparent,
+      borderRadius: BorderRadius.circular(14),
+      child: ListTile(
+        dense: true,
+        onTap: onTap,
+        leading: Icon(icon, size: 20, color: danger ? _red : _navy),
+        title: Text(
+          label,
+          style: _body(size: 13, color: danger ? _red : _navy),
+        ),
+        trailing: Icon(
+          Icons.chevron_right,
+          size: 20,
+          color: danger ? _red : _navy,
+        ),
+      ),
+    ),
+  );
+}
+
+class _DeleteFact extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String detail;
+  const _DeleteFact({
+    required this.icon,
+    required this.title,
+    required this.detail,
+  });
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 9),
+    child: Row(
+      children: [
+        CircleAvatar(
+          radius: 19,
+          backgroundColor: Colors.white,
+          child: Icon(icon, color: _navy, size: 19),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text.rich(
+            TextSpan(
+              text: '$title\n',
+              style: _body(size: 12, weight: FontWeight.w700),
+              children: [
+                TextSpan(
+                  text: detail,
+                  style: _body(size: 11.5, color: const Color(0xFF666A87)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+void _showError(BuildContext context, Object error) =>
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error.toString().replaceFirst('Exception: ', '')),
+        backgroundColor: _red,
+      ),
+    );
+void _notice(BuildContext context, String message) => ScaffoldMessenger.of(
+  context,
+).showSnackBar(SnackBar(content: Text(message)));

@@ -1,0 +1,291 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Prepare for Your Session</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Newsreader for editorial serif headlines, Plus Jakarta Sans for UI text -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Newsreader', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            pageBg: '#FAF8F5',
+            brandGreen: '#5A7863',
+            brandGreenHover: '#4e6956',
+            stepActive: '#476352',
+            textDark: '#1E2522',
+            textMuted: '#56615C',
+            cardBorder: '#EBE6DE',
+            softPillBg: '#E9F1F7',
+            softPillText: '#3B687C',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-elements">
+    body {
+      background-color: #FAF8F5;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-serif-title {
+      font-family: 'Newsreader', Georgia, serif;
+    }
+    /* Hide scrollbars for slick mobile appearance */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    * {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-[#1E2522] flex flex-col justify-between items-center selection:bg-[#5A7863] selection:text-white">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="w-full max-w-[425px] min-h-screen bg-[#FAF8F5] relative flex flex-col justify-between pb-2" data-purpose="mobile-container">
+<!-- BEGIN: iOSStatusBar -->
+<header class="w-full pt-3 px-7 flex justify-between items-center text-xs font-semibold select-none text-[#1E2522]" data-purpose="ios-status-bar">
+<!-- Time -->
+<span class="tracking-tight text-sm font-semibold pl-1">9:41</span>
+<!-- Cellular, Wifi, Battery icons -->
+<div class="flex items-center space-x-1.5 pr-0.5">
+<!-- Cellular Signal -->
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 17 11">
+<rect height="3" rx="0.75" width="2.5" x="0" y="8"></rect>
+<rect height="5.5" rx="0.75" width="2.5" x="4.5" y="5.5"></rect>
+<rect height="8" rx="0.75" width="2.5" x="9" y="3"></rect>
+<rect height="10.5" rx="0.75" width="2.5" x="13.5" y="0.5"></rect>
+</svg>
+<!-- Wifi Icon -->
+<svg class="w-4 h-3.5 fill-current" viewBox="0 0 16 12">
+<path d="M8 9.8a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2Zm-4.2-3.1a6.3 6.3 0 0 1 8.4 0 .8.8 0 0 0 1.1-1.1 7.9 7.9 0 0 0-10.6 0 .8.8 0 1 0 1.1 1.1Zm-2.7-2.6a10.2 10.2 0 0 1 13.8 0 .8.8 0 1 0 1.1-1.1 11.8 11.8 0 0 0-16 0 .8.8 0 1 0 1.1 1.1Z"></path>
+</svg>
+<!-- Battery Icon -->
+<div class="flex items-center">
+<div class="w-5 h-[11px] border border-current rounded-[3px] p-[1px] flex items-center">
+<div class="w-full h-full bg-current rounded-[1.5px]"></div>
+</div>
+<div class="w-[1.5px] h-1 bg-current rounded-r-sm ml-[0.5px]"></div>
+</div>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: NavigationHeader -->
+<nav class="w-full px-5 pt-3 pb-1 relative flex items-center justify-center" data-purpose="top-navigation">
+<!-- Back Button -->
+<button aria-label="Go back" class="absolute left-5 p-1 text-[#1E2522] hover:opacity-75 transition-opacity focus:outline-none">
+<svg class="w-5 h-5 stroke-current stroke-[2.2] fill-none" viewBox="0 0 24 24">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Center Title -->
+<h1 class="font-serif-title text-[21.5px] text-[#1E2522] tracking-tight font-normal text-center">
+        Prepare for Your Session
+      </h1>
+</nav>
+<!-- END: NavigationHeader -->
+<!-- BEGIN: ProgressStepIndicator -->
+<div class="w-full px-12 py-3" data-purpose="step-stepper">
+<div class="flex items-center justify-between relative">
+<!-- Connecting Line Behind Badges -->
+<div class="absolute left-4 right-4 top-[10px] h-[1px] bg-[#E2DDCF] -z-0"></div>
+<!-- Step 1 (Active) -->
+<div class="flex flex-col items-center z-10">
+<div class="w-[21px] h-[21px] rounded-full bg-[#3D5647] text-white text-[11px] font-medium flex items-center justify-center shadow-xs">
+            1
+          </div>
+<span class="text-[11px] font-medium text-[#1E2522] mt-1.5 tracking-tight">Prepare</span>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center z-10">
+<div class="w-[21px] h-[21px] rounded-full border border-[#D5CEC2] bg-[#FAF8F5] text-[#938C80] text-[11px] font-normal flex items-center justify-center">
+            2
+          </div>
+<span class="text-[11px] font-normal text-[#8A8E89] mt-1.5 tracking-tight">Practice</span>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center z-10">
+<div class="w-[21px] h-[21px] rounded-full border border-[#D5CEC2] bg-[#FAF8F5] text-[#938C80] text-[11px] font-normal flex items-center justify-center">
+            3
+          </div>
+<span class="text-[11px] font-normal text-[#8A8E89] mt-1.5 tracking-tight">Debrief</span>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col items-center z-10">
+<div class="w-[21px] h-[21px] rounded-full border border-[#D5CEC2] bg-[#FAF8F5] text-[#938C80] text-[11px] font-normal flex items-center justify-center">
+            4
+          </div>
+<span class="text-[11px] font-normal text-[#8A8E89] mt-1.5 tracking-tight">Grow</span>
+</div>
+</div>
+</div>
+<!-- END: ProgressStepIndicator -->
+<!-- BEGIN: MainContentScrollableArea -->
+<main class="w-full px-4 space-y-3.5 flex-1 mt-1" data-purpose="main-content">
+<!-- Scenario Profile Card -->
+<section class="bg-white rounded-2xl p-4 border border-[#ECE7DE] shadow-[0_1px_3px_rgba(0,0,0,0.02)]" data-purpose="scenario-card">
+<div class="flex items-start gap-4">
+<!-- Alex Avatar Image with specific crop to match portrait -->
+<div class="w-[100px] h-[100px] flex-shrink-0 rounded-xl overflow-hidden bg-[#E2DDCF]">
+<img alt="Alex - Managing Former Peer" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa17T9l_S6TI_RBJ-36a5tXJ0EnbYQ8wHHP6Jq-Vbm6dQ_Ru1lvPhah1sKnpgMZAE5Oen9c4Mg9qV3ALr6pxfE-B3gwwgPSjWSDEEqj0cakN0fnGriNaLVaZ9ZG1i09bEaYJphe4HYe1G8nskpBpO3tlIAm0gfxb3-SfbJ65WTb1hdkafhC6vftJAtcpIYRQgmJUkpjxO63e8nm-_2-uTTRtG1U9V1fPM79U0mipx_MmN79S_2Wvwj">
+</div>
+<!-- Scenario Details -->
+<div class="flex-1 min-w-0 pt-0.5">
+<span class="inline-block bg-[#EBF1F5] text-[#335C6D] text-[11px] font-medium px-2.5 py-0.5 rounded-full mb-1.5">
+              Intermediate
+            </span>
+<h2 class="font-serif-title text-[20px] text-[#1E2522] leading-[1.2] font-semibold mb-1">
+              Managing Former Peer (Alex)
+            </h2>
+<p class="text-[12.5px] leading-[1.38] text-[#5C6661] font-normal">
+              Alex uses casual familiarity to resist deadlines and challenge your authority.
+            </p>
+</div>
+</div>
+</section>
+<!-- Your Goal Box -->
+<section class="bg-[#EFF2ED] rounded-2xl p-3.5 px-4 flex items-center gap-3.5 border border-[#E3E8E1]" data-purpose="goal-box">
+<!-- Target Goal Icon inside circle -->
+<div class="w-9 h-9 rounded-full bg-[#DEE5DC] flex-shrink-0 flex items-center justify-center text-[#4B6454]">
+<svg class="w-5 h-5 stroke-current stroke-[1.8] fill-none" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="9"></circle>
+<circle cx="12" cy="12" r="5"></circle>
+<path d="M12 7v2m0 6v2m-5-5h2m6 0h2" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div class="min-w-0">
+<h3 class="text-[14.5px] font-serif-title font-semibold text-[#1E2522] leading-none mb-1">Your Goal</h3>
+<p class="text-[12px] text-[#5C6661] leading-[1.35]">
+            Have a clear, direct conversation, set a firm deadline, and maintain a positive working relationship.
+          </p>
+</div>
+</section>
+<!-- Key Talking Points Checklist Card -->
+<section class="bg-white rounded-2xl p-4 border border-[#ECE7DE] shadow-[0_1px_3px_rgba(0,0,0,0.02)]" data-purpose="talking-points-card">
+<!-- Section Header -->
+<div class="flex items-center justify-between mb-3.5">
+<h3 class="font-serif-title text-[17px] font-semibold text-[#1E2522]">Key Talking Points</h3>
+<span class="text-xs text-[#808984] font-medium">3 of 4</span>
+</div>
+<!-- Checklist Items -->
+<div class="space-y-3">
+<!-- Item 1 (Checked) -->
+<label class="flex items-center gap-3 cursor-pointer select-none">
+<div class="w-[18px] h-[18px] rounded-[4px] bg-[#496653] flex items-center justify-center flex-shrink-0">
+<svg class="w-3 h-3 text-white stroke-current stroke-[2.8] fill-none" viewBox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</div>
+<span class="text-[13px] text-[#1E2522] font-normal leading-tight">Define project deadline for Friday</span>
+</label>
+<!-- Item 2 (Checked) -->
+<label class="flex items-center gap-3 cursor-pointer select-none">
+<div class="w-[18px] h-[18px] rounded-[4px] bg-[#496653] flex items-center justify-center flex-shrink-0">
+<svg class="w-3 h-3 text-white stroke-current stroke-[2.8] fill-none" viewBox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</div>
+<span class="text-[13px] text-[#1E2522] font-normal leading-tight">Acknowledge past friendship, but state clear boundaries</span>
+</label>
+<!-- Item 3 (Unchecked) -->
+<label class="flex items-center gap-3 cursor-pointer select-none">
+<div class="w-[18px] h-[18px] rounded-[4px] border border-[#CCC6B9] bg-white flex items-center justify-center flex-shrink-0"></div>
+<span class="text-[13px] text-[#5C6661] font-normal leading-tight">Be specific about next steps and expectations</span>
+</label>
+<!-- Item 4 (Unchecked) -->
+<label class="flex items-center gap-3 cursor-pointer select-none">
+<div class="w-[18px] h-[18px] rounded-[4px] border border-[#CCC6B9] bg-white flex items-center justify-center flex-shrink-0"></div>
+<span class="text-[13px] text-[#5C6661] font-normal leading-tight">Keep a calm, confident, and respectful tone</span>
+</label>
+</div>
+</section>
+<!-- Heather's Tip Card -->
+<section class="bg-[#F8F3EA] rounded-2xl p-4 border border-[#EBE3D3] relative overflow-hidden flex items-start gap-3.5" data-purpose="mentor-tip-card">
+<!-- Lightbulb badge -->
+<div class="w-9 h-9 rounded-full bg-[#EFE7D8] flex items-center justify-center flex-shrink-0 mt-0.5 text-[#C48439]">
+<svg class="w-[19px] h-[19px] stroke-current stroke-[1.8] fill-none" viewBox="0 0 24 24">
+<path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<!-- Tip Text -->
+<div class="flex-1 pr-14 z-10">
+<h4 class="font-serif-title font-semibold text-[14.5px] text-[#1E2522] leading-tight mb-1">Heather’s Tip</h4>
+<p class="text-[12px] text-[#616B66] leading-[1.38]">
+            “Acknowledge the history, but don’t let it override the standard. Be warm, clear, and confident.”
+          </p>
+</div>
+<!-- Decorative Botanical Leaf Watermark -->
+<div class="absolute -right-2 -bottom-4 w-28 h-28 pointer-events-none opacity-25 text-[#4D6054]">
+<svg fill="currentColor" viewBox="0 0 120 120">
+<!-- Stem and leaves -->
+<path d="M70,115 C65,85 70,55 95,20 C85,38 72,52 64,68 C61,50 67,35 78,22 C67,31 58,45 57,60 C53,48 57,32 64,18 C52,29 45,45 48,63 C44,53 45,42 49,32 C41,41 38,53 42,67 C36,60 35,51 38,42 C30,52 30,65 37,76 C31,71 31,63 33,56 C26,67 29,81 37,89 C32,86 31,79 33,74 C29,84 34,97 45,103 C47,97 46,90 49,85 C51,96 60,105 70,115 Z"></path>
+</svg>
+</div>
+</section>
+<!-- Common Challenges To Expect -->
+<section class="bg-white/50 rounded-2xl p-3 border border-[#ECE7DE]/60" data-purpose="challenges-section">
+<h4 class="text-[13px] font-serif-title font-semibold text-[#1E2522] mb-2 px-0.5">Common Challenges to Expect</h4>
+<div class="flex items-center gap-2 overflow-x-auto select-none pt-0.5 pb-1">
+<!-- Tag 1: Pushback -->
+<div class="flex items-center gap-1.5 bg-[#FAF4ED] text-[#4E443B] text-[11.5px] font-medium px-3 py-1.5 rounded-full border border-[#EFE5D7] flex-shrink-0">
+<svg class="w-3.5 h-3.5 stroke-[#9E7348] fill-none stroke-[1.8]" viewBox="0 0 24 24">
+<path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">Pushback</span>
+</div>
+<!-- Tag 2: Casual familiarity -->
+<div class="flex items-center gap-1.5 bg-[#F6F4EE] text-[#4A4F4A] text-[11.5px] font-medium px-3 py-1.5 rounded-full border border-[#E9E4D9] flex-shrink-0">
+<svg class="w-3.5 h-3.5 stroke-[#827D72] fill-none stroke-[1.8]" viewBox="0 0 24 24">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">Casual familiarity</span>
+</div>
+<!-- Tag 3: Emotional defensiveness -->
+<div class="flex items-center gap-1.5 bg-[#FAF2EF] text-[#844335] text-[11.5px] font-medium px-3 py-1.5 rounded-full border border-[#F4E1DB] flex-shrink-0">
+<svg class="w-3.5 h-3.5 stroke-[#C35F47] fill-none stroke-[1.8]" viewBox="0 0 24 24">
+<path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">Emotional defensiveness</span>
+</div>
+</div>
+</section>
+</main>
+<!-- END: MainContentScrollableArea -->
+<!-- BEGIN: BottomCTAAndIndicator -->
+<footer class="w-full px-5 pt-3 pb-2 flex flex-col items-center bg-[#FAF8F5]" data-purpose="bottom-controls">
+<!-- Main Action Button -->
+<button aria-label="Begin Rehearsal" class="w-full h-12 bg-[#52725D] hover:bg-[#476451] active:bg-[#3D5647] text-white rounded-xl flex items-center justify-center gap-2.5 font-medium text-[14.5px] shadow-[0_2px_8px_rgba(82,114,93,0.25)] transition-colors focus:outline-none">
+<!-- Microphone Icon -->
+<svg class="w-4 h-4 fill-none stroke-currentColor stroke-[2]" viewBox="0 0 24 24">
+<path d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">Begin Rehearsal</span>
+<!-- Right Arrow Icon -->
+<svg class="w-4 h-4 stroke-current stroke-[2.2] fill-none ml-0.5" viewBox="0 0 24 24">
+<line x1="5" x2="19" y1="12" y2="12"></line>
+<polyline points="12 5 19 12 12 19"></polyline>
+</svg>
+</button>
+<!-- View Scenario Details Link -->
+<a class="mt-2.5 text-xs text-[#5C6661] underline underline-offset-2 hover:text-[#1E2522] transition-colors py-1" href="#details">
+        View Scenario Details
+      </a>
+<!-- iOS Home Indicator Pill -->
+<div class="w-32 h-1 bg-[#1E2522] rounded-full mt-3 mb-0.5 opacity-90" data-purpose="home-indicator"></div>
+</footer>
+<!-- END: BottomCTAAndIndicator -->
+</div>
+<!-- END: MobileDeviceFrame -->
+
+
+</body></html>

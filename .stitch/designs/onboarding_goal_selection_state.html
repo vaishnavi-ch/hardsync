@@ -1,0 +1,248 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>hardsync - Leadership Focus Selection</title>
+<!-- Tailwind CSS v3 with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Newsreader for editorial serif headlines, Plus Jakarta Sans for clean modern UI -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#F4F7F4',
+              100: '#E6ECE6',
+              200: '#C7D7C8',
+              300: '#9DBBA0',
+              500: '#53755F',
+              600: '#476552',
+              700: '#3D5A46',
+              800: '#2F4536',
+              900: '#1F2E24'
+            },
+            linen: '#FBF9F5',
+            sand: '#F4EFEB',
+            sandstone: '#EAE3DA'
+          },
+          fontFamily: {
+            serif: ['Newsreader', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif']
+          },
+          boxShadow: {
+            'card-selected': '0 4px 18px -2px rgba(61, 90, 70, 0.12), 0 2px 6px -1px rgba(61, 90, 70, 0.08)',
+            'card-idle': '0 2px 8px -2px rgba(28, 25, 23, 0.04)',
+            'floating-cta': '0 -8px 24px -4px rgba(28, 25, 23, 0.06)'
+          }
+        }
+      }
+    };
+  </script>
+<style data-purpose="custom-scroll-and-smoothness">
+    /* Hide scrollbar for a polished mobile app feel */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Touch optimization */
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-stone-900 min-h-screen flex items-center justify-center p-0 md:p-6 font-sans antialiased text-stone-800">
+<!-- BEGIN: MobileDeviceContainer -->
+<!-- Constrained frame representing native iOS iPhone canvas -->
+<div class="relative w-full max-w-[400px] h-[844px] bg-[#FBF9F5] shadow-2xl flex flex-col justify-between overflow-hidden md:rounded-[44px] md:border-[8px] md:border-stone-800/80" data-purpose="mobile-viewport">
+<!-- BEGIN: iOSStatusBar -->
+<header class="w-full pt-3 px-7 flex justify-between items-center z-30 select-none" data-purpose="ios-status-bar">
+<span class="text-[14px] font-semibold tracking-tight text-stone-800">9:41</span>
+<div class="flex items-center space-x-1.5 text-stone-800">
+<!-- Signal strength icon -->
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+<path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.25 19.5h15.5l-.72-1.89C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm-6 9c0-3.31 2.69-6 6-6s6 2.69 6 6c0 1.25-.38 2.4-1.03 3.37l-.54.81-8.86-.01-.54-.8C4.38 14.4 4 13.25 4 12z"></path>
+</svg>
+<!-- Wifi icon -->
+<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.78 0 7.21 1.5 9.72 3.96L12 19.14 2.28 11.46C4.79 9 8.22 7.5 12 7.5z"></path>
+</svg>
+<!-- Battery icon -->
+<div class="w-6 h-3 border border-stone-700/80 rounded-sm p-0.5 flex items-center">
+<div class="h-full w-4/5 bg-stone-800 rounded-2xs"></div>
+</div>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: NavigationHeader -->
+<nav class="w-full px-5 pt-3 pb-2 flex items-center justify-between z-20" data-purpose="survey-navigation">
+<!-- Back button -->
+<button aria-label="Go back" class="w-9 h-9 rounded-full bg-sandstone/40 hover:bg-sandstone/70 flex items-center justify-center text-stone-700 transition-colors" type="button">
+<svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M15.75 19.5L8.25 12l7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Step Indicator Badge -->
+<div class="flex items-center space-x-1.5 bg-[#F2EDE6] border border-[#E5DDD2] px-3.5 py-1 rounded-full shadow-2xs">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-700"></span>
+<span class="text-[11px] font-semibold tracking-wider uppercase text-stone-600">Step 1 of 3</span>
+</div>
+<!-- Skip Link -->
+<button class="text-xs font-medium text-stone-500 hover:text-stone-800 px-2 py-1 transition-colors" type="button">
+        Skip
+      </button>
+</nav>
+<!-- END: NavigationHeader -->
+<!-- BEGIN: MainScrollableContent -->
+<main class="flex-1 overflow-y-auto no-scrollbar px-6 pt-2 pb-28" data-purpose="question-and-options">
+<!-- Screen Heading & Instructions -->
+<header class="mb-5 mt-1">
+<div class="inline-flex items-center space-x-1.5 text-xs font-semibold uppercase tracking-wider text-brand-700 mb-1.5">
+<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" fill-rule="evenodd"></path>
+</svg>
+<span>Personalize Your Rehearsals</span>
+</div>
+<h1 class="font-serif text-[27px] leading-[1.22] font-semibold text-stone-900 tracking-tight">
+          What leadership conversations give you the most friction?
+        </h1>
+<p class="mt-2 text-[13.5px] leading-relaxed text-stone-600 font-normal">
+          We’ll tailor your first practice scenarios to your day-to-day challenges. Select all that apply.
+        </p>
+</header>
+<!-- Selection List -->
+<div class="space-x-0 space-y-2.5" data-purpose="options-list">
+<!-- OPTION 1: Managing Former Peers (SELECTED) -->
+<div class="relative group cursor-pointer border-2 border-brand-700 bg-white rounded-2xl p-3.5 shadow-card-selected transition-all duration-150" data-purpose="option-card">
+<div class="flex items-start justify-between">
+<div class="flex items-start space-x-3 pr-2">
+<!-- Category Icon -->
+<div class="w-9 h-9 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center shrink-0 mt-0.5 border border-brand-200/60">
+<svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h2 class="text-[14.5px] font-semibold text-stone-900 leading-snug">Managing Former Peers</h2>
+<p class="mt-0.5 text-[12px] leading-normal text-stone-600">Navigating authority and setting boundaries with prior friends or teammates.</p>
+</div>
+</div>
+<!-- Checked Indicator -->
+<div class="w-5 h-5 rounded-full bg-brand-700 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+<svg class="w-3 h-3 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- OPTION 2: Delivering Critical Feedback (UNSELECTED) -->
+<div class="relative group cursor-pointer border border-[#E9E2D8] bg-[#FAF7F2] hover:bg-white hover:border-stone-300 rounded-2xl p-3.5 shadow-card-idle transition-all duration-150" data-purpose="option-card">
+<div class="flex items-start justify-between">
+<div class="flex items-start space-x-3 pr-2">
+<!-- Category Icon -->
+<div class="w-9 h-9 rounded-xl bg-sandstone/50 text-stone-700 flex items-center justify-center shrink-0 mt-0.5">
+<svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h2 class="text-[14.5px] font-semibold text-stone-800 leading-snug">Delivering Critical Feedback</h2>
+<p class="mt-0.5 text-[12px] leading-normal text-stone-500">Clear, compassionate performance conversations without sugarcoating.</p>
+</div>
+</div>
+<!-- Unchecked Circle -->
+<div class="w-5 h-5 rounded-full border border-stone-300 bg-white/80 shrink-0 mt-0.5"></div>
+</div>
+</div>
+<!-- OPTION 3: Pushing Back on Leadership (SELECTED) -->
+<div class="relative group cursor-pointer border-2 border-brand-700 bg-white rounded-2xl p-3.5 shadow-card-selected transition-all duration-150" data-purpose="option-card">
+<div class="flex items-start justify-between">
+<div class="flex items-start space-x-3 pr-2">
+<!-- Category Icon -->
+<div class="w-9 h-9 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center shrink-0 mt-0.5 border border-brand-200/60">
+<svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h2 class="text-[14.5px] font-semibold text-stone-900 leading-snug">Pushing Back on Leadership</h2>
+<p class="mt-0.5 text-[12px] leading-normal text-stone-600">Saying no to unrealistic deadlines and high-stakes executive demands.</p>
+</div>
+</div>
+<!-- Checked Indicator -->
+<div class="w-5 h-5 rounded-full bg-brand-700 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+<svg class="w-3 h-3 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- OPTION 4: Resolving Team Friction (UNSELECTED) -->
+<div class="relative group cursor-pointer border border-[#E9E2D8] bg-[#FAF7F2] hover:bg-white hover:border-stone-300 rounded-2xl p-3.5 shadow-card-idle transition-all duration-150" data-purpose="option-card">
+<div class="flex items-start justify-between">
+<div class="flex items-start space-x-3 pr-2">
+<!-- Category Icon -->
+<div class="w-9 h-9 rounded-xl bg-sandstone/50 text-stone-700 flex items-center justify-center shrink-0 mt-0.5">
+<svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.56 1.25a6.002 6.002 0 01-5.06 0c-.454-.222-.682-.751-.56-1.25L18.75 4.97zm-13.5 0A48.667 48.667 0 002.25 5.49m3-.52L2.63 15.696c-.122.499.106 1.028.56 1.25a6.002 6.002 0 005.06 0c.454-.222.682-.751.56-1.25L5.25 4.97z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h2 class="text-[14.5px] font-semibold text-stone-800 leading-snug">Resolving Team Friction</h2>
+<p class="mt-0.5 text-[12px] leading-normal text-stone-500">De-escalating defensive reactions and cross-functional disagreements.</p>
+</div>
+</div>
+<!-- Unchecked Circle -->
+<div class="w-5 h-5 rounded-full border border-stone-300 bg-white/80 shrink-0 mt-0.5"></div>
+</div>
+</div>
+<!-- OPTION 5: Negotiating Scope & Salary (UNSELECTED) -->
+<div class="relative group cursor-pointer border border-[#E9E2D8] bg-[#FAF7F2] hover:bg-white hover:border-stone-300 rounded-2xl p-3.5 shadow-card-idle transition-all duration-150" data-purpose="option-card">
+<div class="flex items-start justify-between">
+<div class="flex items-start space-x-3 pr-2">
+<!-- Category Icon -->
+<div class="w-9 h-9 rounded-xl bg-sandstone/50 text-stone-700 flex items-center justify-center shrink-0 mt-0.5">
+<svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h2 class="text-[14.5px] font-semibold text-stone-800 leading-snug">Negotiating Scope &amp; Salary</h2>
+<p class="mt-0.5 text-[12px] leading-normal text-stone-500">Advocating for personal compensation, title updates, and team headcount.</p>
+</div>
+</div>
+<!-- Unchecked Circle -->
+<div class="w-5 h-5 rounded-full border border-stone-300 bg-white/80 shrink-0 mt-0.5"></div>
+</div>
+</div>
+</div>
+</main>
+<!-- END: MainScrollableContent -->
+<!-- BEGIN: FloatingStickyBottomAction -->
+<footer class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-[#FBF9F5] via-[#FBF9F5]/95 to-transparent pt-6 pb-2 px-6 z-20" data-purpose="sticky-bottom-action">
+<!-- Primary Action CTA Button -->
+<button class="w-full py-4 px-6 bg-brand-700 hover:bg-brand-800 active:scale-[0.99] text-white font-medium text-[15px] rounded-2xl shadow-lg shadow-brand-900/15 flex items-center justify-center space-x-2 transition-transform duration-100" type="button">
+<span>Continue (2 selected)</span>
+<svg class="w-4 h-4 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Privacy assurance footnote matching Welcome aesthetic -->
+<div class="flex items-center justify-center space-x-1.5 mt-2.5 mb-1 text-[11px] text-stone-500 font-medium">
+<svg class="w-3.5 h-3.5 fill-stone-400" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" fill-rule="evenodd"></path>
+</svg>
+<span>Your responses are 100% private to your device.</span>
+</div>
+<!-- iOS Home Indicator bar -->
+<div class="w-32 h-1 bg-stone-900/80 rounded-full mx-auto mt-2" data-purpose="ios-home-bar"></div>
+</footer>
+<!-- END: FloatingStickyBottomAction -->
+</div>
+<!-- END: MobileDeviceContainer -->
+</body></html>

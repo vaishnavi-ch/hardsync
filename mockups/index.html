@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="HardSync practice screens for hard conversations.">
+  <title>HardSync — Product direction</title>
+  
+  <!-- Curated Typography Trio: Newsreader + Plus Jakarta Sans + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="page-header">
+    <a class="wordmark" href="#top" aria-label="HardSync home">
+      <span class="wordmark-mark">TB</span>
+      <span>HardSync</span>
+    </a>
+    <div class="header-copy">
+      <p class="eyebrow">Product Direction · 01</p>
+      <h1>Practice hard conversations.<br><em>Show up ready.</em></h1>
+    </div>
+    <p class="header-note">A calmer way to get ready for hard conversations.</p>
+  </header>
+
+  <main id="top">
+    <nav class="view-switcher" aria-label="Choose a mockup">
+      <button class="switch active" data-screen="welcome">01 · Welcome</button>
+      <button class="switch" data-screen="plans">02 · Plans</button>
+      <button class="switch" data-screen="discover">03 · Discover</button>
+      <button class="switch" data-screen="practice">04 · Practice</button>
+      <button class="switch" data-screen="grow">05 · Debrief</button>
+    </nav>
+
+    <section class="mockup-stage pair-view" aria-live="polite">
+
+      <article class="phone active" data-panel="welcome" aria-label="HardSync welcome and plans introduction">
+        <div class="phone-bar"><span>9:41</span><span class="bar-status">● ● ▰</span></div>
+        <div class="screen welcome-screen">
+          <button class="round-button welcome-close" data-go="plans" aria-label="Explore plans">×</button>
+          <section class="welcome-art-stage" aria-label="A leader getting ready for a conversation">
+            <span class="welcome-orbit orbit-one"></span><span class="welcome-orbit orbit-two"></span>
+            <img class="welcome-art" src="../assets/illustrations/Leadership Toolkit.png" alt="A leader building communication skills">
+            <div class="welcome-float welcome-float-one"><img src="../assets/icons/split/master_512_webp/icon_chat_bubbles.webp" alt=""><span>Find your words</span></div>
+            <div class="welcome-float welcome-float-two"><img src="../assets/icons/split/master_512_webp/icon_seedling_growth.webp" alt=""><span>Grow at your pace</span></div>
+          </section>
+          <section class="welcome-copy">
+            <p class="eyebrow">HardSync</p>
+            <h2>Unlock your<br>next level.</h2>
+            <p>Practice hard talks. Grow into the leader you want to be.</p>
+            <div class="welcome-values" aria-label="What you can do">
+              <div><img src="../assets/icons/split/master_512_webp/icon_chat_bubbles.webp" alt=""><span>Practise</span></div>
+              <div><img src="../assets/icons/split/master_512_webp/icon_target_bullseye.webp" alt=""><span>Get clear</span></div>
+              <div><img src="../assets/icons/split/master_512_webp/icon_seedling_growth.webp" alt=""><span>Keep growing</span></div>
+            </div>
+            <button class="welcome-cta tactile-btn" data-go="plans"><span>Explore plans</span><span aria-hidden="true">→</span></button>
+          </section>
+        </div>
+      </article>
+
+      <article class="phone" data-panel="plans" aria-label="HardSync subscription plans">
+        <div class="phone-bar"><span>9:41</span><span class="bar-status">● ● ▰</span></div>
+        <div class="screen plans-screen">
+          <header class="plans-top">
+            <button class="round-button tactile-btn" data-go="welcome" aria-label="Back">←</button>
+            <img src="../assets/icons/split/master_512_webp/icon_seedling_growth.webp" alt="HardSync">
+          </header>
+          <section class="plans-intro">
+            <div class="plans-art-wrap"><img src="../assets/illustrations/Practice Reflect Improve.png" alt="Practise, reflect, and improve"></div>
+            <h2>Choose your plan.</h2>
+            <p>Small steps. Stronger conversations.</p>
+          </section>
+          <div class="billing-switch" role="group" aria-label="Billing period">
+            <button class="billing-option active" data-tier="monthly">Monthly</button>
+            <button class="billing-option" data-tier="yearly">Yearly <span>Save 40%</span></button>
+          </div>
+          <section class="plan-list" aria-label="Available plans">
+            <button class="plan-card selected" data-plan="pro">
+              <span class="plan-card-top"><strong>Pro</strong><span class="plan-tag">Most popular</span></span>
+              <span class="plan-price"><strong data-price="$20">$20</strong><small>/ month</small></span>
+              <span class="plan-feature"><img src="../assets/icons/split/master_512_webp/icon_checklist_clipboard.webp" alt="">Unlimited conversation practice</span>
+              <span class="plan-feature"><img src="../assets/icons/split/master_512_webp/icon_checklist_clipboard.webp" alt="">Personal coaching cues</span>
+              <span class="plan-feature"><img src="../assets/icons/split/master_512_webp/icon_checklist_clipboard.webp" alt="">Your progress, all in one place</span>
+              <img class="plan-art" src="../assets/illustrations/Leadership Compass.png" alt="">
+            </button>
+            <button class="plan-card free-plan" data-plan="free">
+              <span class="plan-card-top"><strong>Free</strong></span>
+              <span class="plan-price"><strong>$0</strong><small> / always</small></span>
+              <span class="plan-feature"><img src="../assets/icons/split/master_512_webp/icon_checklist_clipboard.webp" alt="">Try a guided practice</span>
+              <span class="plan-feature"><img src="../assets/icons/split/master_512_webp/icon_checklist_clipboard.webp" alt="">Keep your takeaways</span>
+              <img class="plan-art free-plan-art" src="../assets/illustrations/Difficult Conversations Path.png" alt="">
+            </button>
+          </section>
+          <button class="plans-cta tactile-btn" data-go="discover"><span>Continue</span><span aria-hidden="true">→</span></button>
+          <p class="plans-footnote">Cancel any time.</p>
+        </div>
+      </article>
+      
+      <!-- ========================================================================= -->
+      <!-- 01 · DISCOVER (PRACTICE HUB): UNBOXED, ILLUSTRATION-DOMINANT HERO STAGE   -->
+      <!-- ========================================================================= -->
+      <article class="phone" data-panel="discover" aria-label="Discover practice mockup">
+        <div class="phone-bar"><span>9:41</span><span class="bar-status">● ● ▰</span></div>
+        <div class="screen discover-screen">
+          
+          <!-- Top Greeting & Sovereign Avatar -->
+          <header class="mobile-top">
+            <div>
+              <h2>Good morning,<br>Sarah.</h2>
+            </div>
+            <button class="avatar-button" aria-label="Open profile">
+              <img src="../assets/avatars/split/master_512_png/avatar_01.png" alt="Sarah">
+            </button>
+          </header>
+
+          <!-- 7-DAY CALENDAR HABIT STRIP (Dribbble Ref 4) -->
+          <div class="habit-strip">
+            <div class="habit-day">
+              <span class="day-label">M</span>
+              <span class="day-num">16</span>
+              <span class="check-dot">✓</span>
+            </div>
+            <div class="habit-day">
+              <span class="day-label">T</span>
+              <span class="day-num">17</span>
+              <span class="check-dot">✓</span>
+            </div>
+            <div class="habit-day">
+              <span class="day-label">W</span>
+              <span class="day-num">18</span>
+              <span class="check-dot">✓</span>
+            </div>
+            <div class="habit-day active">
+              <span class="day-label">Th</span>
+              <span class="day-num">19</span>
+              <span class="check-dot">●</span>
+            </div>
+            <div class="habit-day">
+              <span class="day-label">F</span>
+              <span class="day-num">20</span>
+              <span class="day-num" style="font-size: 8px; color: #bbb;">○</span>
+            </div>
+            <div class="habit-day">
+              <span class="day-label">S</span>
+              <span class="day-num">21</span>
+              <span class="day-num" style="font-size: 8px; color: #ccc;">—</span>
+            </div>
+            <div class="habit-day">
+              <span class="day-label">Su</span>
+              <span class="day-num">22</span>
+              <span class="day-num" style="font-size: 8px; color: #ccc;">—</span>
+            </div>
+          </div>
+
+          <!-- THE UNBOXED HERO STAGE (Big 270px Illustration, Floating Glass HUD) -->
+          <section class="hero-stage">
+            <div class="hero-art-container">
+              <div class="hero-art-halo"></div>
+              
+              <!-- Floating Glass Badge Left: Somatic Composure (Dribbble Ref 7) -->
+              <div class="glass-badge-left">
+                <span>Composure</span>
+                <strong>Grounded</strong>
+              </div>
+
+              <!-- Main Hero Artwork: Large, Breathing, Not Boxed or Clipped! -->
+              <img class="hero-art-img" src="../assets/illustrations/Private Practice Space.png" alt="Private rehearsal space">
+
+              <!-- Floating Glass Badge Right: Counterpart (Dribbble Ref 7) -->
+              <div class="glass-badge-right">
+                <span>Counterpart</span>
+                <strong>Alex · Senior Eng</strong>
+              </div>
+            </div>
+
+            <!-- Editorial Copy Directly on Canvas -->
+            <div class="hero-stage-copy">
+              <span class="pill-rehearsal">For today</span>
+              <h3>Hold the line<br>without losing trust.</h3>
+              <p>Alex is pushing back on the sprint deadline. Hold the line with empathy.</p>
+              
+              <!-- Primary Rehearsal Action Button -->
+              <button class="primary-action tactile-btn" data-go="practice">
+                <span>Start 10-minute practice</span>
+                <span class="arrow">↗</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- UNBOXED SCENARIO RIVER (Large 96px Character Art) -->
+          <div class="river-header">
+            <h4>More to practise</h4>
+            <a href="#more">Swipe to browse ↗</a>
+          </div>
+
+          <div class="scenario-river">
+            <!-- Card 1: Jordan Vance -->
+            <div class="river-card tactile-btn" data-go="practice">
+              <div class="river-card-art">
+                <img src="../assets/illustrations/Demanding Executive Persona.png" alt="Jordan">
+              </div>
+              <h5>Push back on a deadline</h5>
+              <p>Pushing back on VP Jordan's surprise Friday demand.</p>
+              <div class="river-card-footer">
+                <span>VP Exec</span>
+                <span>Practice ↗</span>
+              </div>
+            </div>
+
+            <!-- Card 2: Marcus Cole -->
+            <div class="river-card tactile-btn" data-go="practice">
+              <div class="river-card-art" style="background: #EBF2EE;">
+                <img src="../assets/illustrations/Defensive Direct Report Persona.png" alt="Marcus">
+              </div>
+              <h5>Give clear feedback</h5>
+              <p>Delivering code review feedback to a defensive junior.</p>
+              <div class="river-card-footer">
+                <span>Direct Report</span>
+                <span>Practice ↗</span>
+              </div>
+            </div>
+
+            <!-- Card 3: Maya Patel -->
+            <div class="river-card tactile-btn" data-go="practice">
+              <div class="river-card-art" style="background: #F1EFF8;">
+                <img src="../assets/illustrations/Tough Feedback Moment.png" alt="Maya">
+              </div>
+              <h5>Align on priorities</h5>
+              <p>Aligning shared roadmap priorities across teams.</p>
+              <div class="river-card-footer">
+                <span>Peer Lead</span>
+                <span>Practice ↗</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Floating Capsule Bottom Nav -->
+        <nav class="bottom-nav" aria-label="Mobile navigation">
+          <button class="active"><img src="../assets/icons/split/master_512_webp/icon_potted_plant.webp" alt=""><span>Home</span></button>
+          <button><img src="../assets/icons/split/master_512_webp/icon_book_open.webp" alt=""><span>Library</span></button>
+          <button class="nav-main tactile-btn" data-go="practice"><span>+</span></button>
+          <button data-go="grow"><img src="../assets/icons/split/master_512_webp/icon_trophy_cup.webp" alt=""><span>Debrief</span></button>
+          <button><img src="../assets/icons/split/master_512_webp/icon_user_profile.webp" alt=""><span>Profile</span></button>
+        </nav>
+      </article>
+
+      <!-- ========================================================================= -->
+      <!-- 02 · PRACTICE: CINEMATIC REHEARSAL COCKPIT WITH 60% COUNTERPART ART       -->
+      <!-- ========================================================================= -->
+      <article class="phone" data-panel="practice" aria-label="Live practice mockup">
+        <div class="phone-bar dark"><span>9:41</span><span class="bar-status">● ● ▰</span></div>
+        <div class="screen practice-screen">
+          
+          <header class="call-top">
+            <button class="round-button tactile-btn" data-go="discover" aria-label="Go back">←</button>
+            <div class="call-title-group">
+              <small>Live Rehearsal Cockpit</small>
+              <b>Managing Former Peer (Alex)</b>
+            </div>
+            <button class="round-button tactile-btn" aria-label="More options">•••</button>
+          </header>
+
+          <!-- Grand Center Counterpart Stage (Massive 270px Illustration) -->
+          <section class="counterpart-stage">
+            <div class="counterpart-aura"></div>
+            
+            <!-- Floating Timer HUD -->
+            <div class="hud-timer-badge">
+              <span class="pulse-dot"></span>
+              <span>08:42</span>
+            </div>
+
+            <!-- Floating Self Video PIP -->
+            <div class="hud-pip-badge">
+              <img src="../assets/avatars/split/master_512_png/avatar_01.png" alt="Sarah">
+            </div>
+
+            <!-- Big, Visible Character Artwork -->
+            <img class="counterpart-art" src="../assets/illustrations/New Hire Persona.png" alt="Alex Bennett">
+          </section>
+
+          <!-- Floating Multimodal Telemetry Pill -->
+          <div class="speaking-telemetry-pill">
+            <span>Alex is speaking...</span>
+            <img src="../assets/illustrations/Speaking Pace.png" alt="Wave">
+          </div>
+
+          <!-- Floating Coach Whisper Card -->
+          <section class="coach-whisper-card">
+            <div class="coach-whisper-icon">
+              <img src="../assets/illustrations/AI Coach Whisper.png" alt="Coach Heather">
+            </div>
+            <div class="coach-whisper-content">
+              <span>Coach Whisper · Heather</span>
+              <p>"Take a breath. Acknowledge him first, then hold the date."</p>
+            </div>
+          </section>
+
+          <!-- Call Controls Dock -->
+          <div class="call-controls">
+            <button class="call-ctrl-btn tactile-btn">
+              <div class="call-ctrl-circle">🎙️</div>
+              <span>Mute</span>
+            </button>
+            <button class="call-ctrl-btn tactile-btn">
+              <div class="call-ctrl-circle">⏸</div>
+              <span>Pause</span>
+            </button>
+            <button class="call-ctrl-btn end tactile-btn" data-go="grow">
+              <div class="call-ctrl-circle">📞</div>
+              <span style="color: #F87171; font-weight: 700;">End</span>
+            </button>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ========================================================================= -->
+      <!-- 03 · GROW: UNBOXED FORENSIC DEBRIEF & C.A.R.E. STEPPING STONES            -->
+      <!-- ========================================================================= -->
+      <article class="phone" data-panel="grow" aria-label="Post-session growth mockup">
+        <div class="phone-bar"><span>9:41</span><span class="bar-status">● ● ▰</span></div>
+        <div class="screen grow-screen">
+          
+          <header class="review-top">
+            <button class="round-button tactile-btn" data-go="discover" aria-label="Close review" style="background: white; color: var(--charcoal); border-color: var(--border);">←</button>
+            <div style="text-align: center;">
+              <span>Your debrief</span>
+              <b>Managing Former Peer</b>
+            </div>
+            <button class="round-button tactile-btn" aria-label="Share review" style="background: white; border-color: var(--border);">
+              <img src="../assets/icons/split/master_512_webp/icon_share_external.webp" alt="Share" style="width: 18px;">
+            </button>
+          </header>
+
+          <!-- Master Score Stage with Prominent Celebration Artwork -->
+          <section class="score-stage">
+            <div class="score-details">
+              <span class="score-badge" style="background: var(--sage-tint); color: var(--sage);">● Grounded & Composed</span>
+              <div class="score-big">86<span>/100</span></div>
+              <h4>Strong Boundary Hold</h4>
+              <p>You held the milestone without early apologies. That's real composure.</p>
+            </div>
+            <!-- Big Celebration Artwork (130px tall) -->
+            <img class="score-celebration-art" src="../assets/gamification/Coach Celebration.png" alt="Celebration">
+          </section>
+
+          <!-- 4 C.A.R.E. Stepping Stones (Dribbble Ref 8 & 6) -->
+          <section class="care-stones-stage">
+            <div class="care-stones-header">
+              <h4>Your conversation skills</h4>
+              <span>4 of 4 Rehearsed</span>
+            </div>
+            <div class="care-grid">
+              <div class="care-stone">
+                <img src="../assets/icons/split/master_512_webp/icon_heart_care_hand.webp" alt="Connect">
+                <span class="pct">88%</span>
+                <span class="lbl">Connect</span>
+              </div>
+              <div class="care-stone">
+                <img src="../assets/icons/split/master_512_webp/icon_chat_bubbles.webp" alt="Ask">
+                <span class="pct">76%</span>
+                <span class="lbl">Ask</span>
+              </div>
+              <div class="care-stone high">
+                <img src="../assets/icons/split/master_512_webp/icon_badge_ribbon_star.webp" alt="Recognize">
+                <span class="pct">92%</span>
+                <span class="lbl">Recognize</span>
+              </div>
+              <div class="care-stone">
+                <img src="../assets/icons/split/master_512_webp/icon_trophy_cup.webp" alt="Empower">
+                <span class="pct">84%</span>
+                <span class="lbl">Empower</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Standout Moment Card -->
+          <section class="takeaway-stage">
+            <div class="takeaway-icon" style="background: var(--amber-tint, #FFF7ED);">
+              <img src="../assets/icons/split/master_512_webp/icon_quote_bubble.webp" alt="Quote">
+            </div>
+            <div class="takeaway-body">
+              <span>Standout Moment [02:14]</span>
+              <h3>“I value our friendship, Alex. The deadline remains Friday.”</h3>
+              <p>Taking a 2-second pause defused his defensiveness immediately.</p>
+            </div>
+          </section>
+
+          <!-- Return to Hub CTA Button -->
+          <button class="primary-action tactile-btn" data-go="discover" style="background: var(--sage); margin-top: 6px;">
+            <span>Back to practice</span>
+            <span class="arrow">↗</span>
+          </button>
+
+        </div>
+      </article>
+
+      <!-- Sidebar HardSync Guide -->
+      <aside class="design-notes">
+        <p class="eyebrow">HardSync</p>
+        <h2 id="note-title">A little practice goes a long way.</h2>
+        <p id="note-copy">Pick a moment that?s on your mind. We?ll help you find the words.</p>
+        <div class="principle-list">
+          <div><span>01</span><p><b>Start small</b>Choose one conversation to practise.</p></div>
+          <div><span>02</span><p><b>Find your words</b>Try a few ways to say it.</p></div>
+          <div><span>03</span><p><b>Go in feeling ready</b>Take what works into the real conversation.</p></div>
+        </div>
+        <p class="asset-note">Made with HardSync artwork and icons. <code>assets/illustrations</code> and <code>assets/avatars</code>.</p>
+      </aside>
+
+    </section>
+  </main>
+
+  <script src="mockups.js"></script>
+</body>
+</html>

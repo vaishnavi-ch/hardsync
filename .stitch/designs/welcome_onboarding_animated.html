@@ -1,0 +1,335 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>hardsync - Safe Space for Hard Conversations</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Newsreader / Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              sage: '#5e8268',
+              'sage-dark': '#507159',
+              dark: '#142921',
+              cream: '#fbf9f5',
+              subtle: '#6d7570',
+              border: '#eae6de'
+            }
+          },
+          fontFamily: {
+            serif: ['"Newsreader"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="base-typography">
+    body {
+      background-color: #fbf9f5;
+      color: #172a22;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-editorial {
+      font-family: 'Newsreader', Georgia, serif;
+    }
+  </style>
+<style data-purpose="custom-elements">
+    /* Precise illustration container with subtle fade into lower section */
+    .hero-img-mask {
+      mask-image: linear-gradient(to bottom, black 82%, transparent 98%);
+      -webkit-mask-image: linear-gradient(to bottom, black 82%, transparent 98%);
+    }
+    
+    /* Curved bottom notch indicator style */
+    .home-indicator {
+      width: 134px;
+      height: 5px;
+      background-color: #1c1c1e;
+      border-radius: 9999px;
+    }
+
+    /* Motion & Keyframes */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes heroScaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    @keyframes softPulseGlow {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(207, 199, 186, 0.35);
+      }
+      50% {
+        box-shadow: 0 0 12px 2px rgba(94, 130, 104, 0.15);
+      }
+    }
+
+    @keyframes shimmerSweep {
+      0% {
+        transform: translateX(-150%) skewX(-20deg);
+      }
+      35%, 100% {
+        transform: translateX(250%) skewX(-20deg);
+      }
+    }
+
+    /* Animation utility classes */
+    .anim-fade-in-down {
+      opacity: 0;
+      animation: fadeInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.1s;
+    }
+
+    .anim-hero-entrance {
+      opacity: 0;
+      animation: heroScaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.2s;
+    }
+
+    .anim-float-ambient {
+      animation: gentleFloat 6s ease-in-out infinite;
+    }
+
+    .anim-pill-glow {
+      animation: softPulseGlow 4s ease-in-out infinite;
+    }
+
+    .anim-headline {
+      opacity: 0;
+      animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.35s;
+    }
+
+    .anim-prop-1 {
+      opacity: 0;
+      animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.5s;
+    }
+
+    .anim-prop-2 {
+      opacity: 0;
+      animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.6s;
+    }
+
+    .anim-prop-3 {
+      opacity: 0;
+      animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.7s;
+    }
+
+    .anim-bottom {
+      opacity: 0;
+      animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.8s;
+    }
+
+    .shimmer-effect::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 45%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+      animation: shimmerSweep 4.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* Accessibility: Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex justify-center items-center bg-stone-100 p-0 sm:p-4 selection:bg-[#60836c]/20">
+<!-- BEGIN: MobileDeviceFrame -->
+<main class="w-full max-w-[430px] bg-[#faf8f4] min-h-screen shadow-2xl relative overflow-hidden flex flex-col justify-between" style="border-radius: clamp(0px, 3.5vw, 44px);">
+<!-- BEGIN: TopStatusBar -->
+<header class="pt-3.5 px-7 pb-2 flex items-center justify-between text-black select-none z-30 font-semibold text-[15px] tracking-tight">
+<time class="font-medium text-[15px]">9:41</time>
+<div aria-hidden="true" class="flex items-center space-x-1.5">
+<!-- Cellular Signal -->
+<svg class="w-4 h-3 fill-current" viewBox="0 0 17 11">
+<rect height="3" rx="0.5" width="3" x="0.5" y="8"></rect>
+<rect height="5.5" rx="0.5" width="3" x="4.5" y="5.5"></rect>
+<rect height="8" rx="0.5" width="3" x="9" y="3"></rect>
+<rect height="10.5" rx="0.5" width="3" x="13.5" y="0.5"></rect>
+</svg>
+<!-- Wifi Icon -->
+<svg class="w-4 h-3 fill-current" viewBox="0 0 16 12">
+<path d="M8 2.8C10.5 2.8 12.8 3.8 14.5 5.4L15.9 3.9C13.8 2 11 0.8 8 0.8C5 0.8 2.2 2 0.1 3.9L1.5 5.4C3.2 3.8 5.5 2.8 8 2.8ZM8 6.5C9.6 6.5 11.1 7.2 12.2 8.3L13.6 6.8C12.2 5.4 10.2 4.5 8 4.5C5.8 4.5 3.8 5.4 2.4 6.8L3.8 8.3C4.9 7.2 6.4 6.5 8 6.5ZM9.6 10.6C9.6 9.7 8.9 9 8 9C7.1 9 6.4 9.7 6.4 10.6C6.4 11.5 7.1 12.2 8 12.2C8.9 12.2 9.6 11.5 9.6 10.6Z"></path>
+</svg>
+<!-- Battery Icon -->
+<div class="w-[23px] h-[11.5px] border-[1.2px] border-black rounded-[3.5px] p-[1.5px] flex items-center ml-0.5">
+<div class="bg-black h-full w-full rounded-[1.5px]"></div>
+</div>
+</div>
+</header>
+<!-- END: TopStatusBar -->
+<!-- BEGIN: BrandHeaderArea -->
+<div class="px-6 pt-2 pb-1 flex items-start justify-between relative z-20 anim-fade-in-down">
+<!-- hardsync Logo Brandmark & Title -->
+<div class="flex items-center space-x-2.5 transition-transform duration-300 hover:scale-[1.02] cursor-default">
+<!-- Botanical Leaf Icon -->
+<svg class="w-8 h-9 text-[#52745e] flex-shrink-0 transition-transform duration-500 hover:rotate-6" fill="currentColor" viewBox="0 0 32 36">
+<path d="M15.8 4C14.2 11.5 10 17 4 19.5c0 0 6.5 1.5 10.5-3.5 1.2 5.5 4.5 9 10 11-1-4-1-8.5 1-13-1-3-4-8-9.7-10z" opacity="0.9"></path>
+<path d="M14.5 19.5c-2 6-6.5 10.5-12.5 12.5 5.5-1 9-4.5 11-10 1.5 4 4.5 7 9.5 8.5-2.5-3.5-3-7-2-11h-6z" opacity="0.85"></path>
+</svg>
+<div class="flex flex-col">
+<span class="text-[27px] font-semibold tracking-tight text-[#152721] font-editorial leading-none">hardsync</span>
+<span class="text-[8.5px] font-semibold tracking-[0.24em] text-[#69746c] uppercase mt-1">PRACTICE BRAVELY</span>
+</div>
+</div>
+<!-- Calmer you badge on top right -->
+<div class="pt-0.5 flex flex-col items-center">
+<div class="bg-[#f0ece3]/70 backdrop-blur-sm px-4 py-2 rounded-full text-center anim-pill-glow transition-transform duration-300 hover:scale-105 cursor-default">
+<p class="font-editorial italic text-[12px] leading-tight text-[#5a675e] tracking-tight">A calmer you.<br>A stronger leader.</p>
+<div class="w-7 h-[1px] bg-[#cfc7ba] mx-auto mt-1.5"></div>
+</div>
+</div>
+</div>
+<!-- END: BrandHeaderArea -->
+<!-- BEGIN: HeroIllustrationVisual -->
+<section aria-label="Illustration of safe conversation practice" class="relative w-full overflow-hidden mt-[-10px] hero-img-mask anim-hero-entrance">
+<!-- Ambient breathing float container -->
+<div class="anim-float-ambient w-full">
+<div class="w-full relative h-[300px] sm:h-[330px] overflow-hidden">
+<img alt="Two people practicing authentic conversations in a warm comfortable room" class="w-full h-[580px] object-cover object-[50%_28%] absolute -top-16 left-0 pointer-events-none select-none transition-transform duration-700 ease-out hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrT61toSWnZ_0CZpYqWUHVFPOCNVZm4fn5C6COlVpkjkk6cV5sFb6oqT5TTN55laUknBXhWlPw_EjVLiBuUUKU2s10xk2JwXv1jdsRkvdx3FPj2IPaR1rNu3MGpm6AwRnrKAiyUISUUL4VpDyMLfT4t1F7vAfkjWhNijuuXXhxY67DMC9bPX56i-vGg-G58wZxkAWVg2AYOwnvtkXw981YzNuHRiW4Pmo4lYwRVxeJpFRm_KFN9s_AoBRP_41u0jfPXw">
+</div>
+</div>
+</section>
+<!-- END: HeroIllustrationVisual -->
+<!-- BEGIN: ContentAndFeatures -->
+<div class="px-6 flex flex-col items-center text-center -mt-6 z-10">
+<!-- Main Title & Subtitle Container -->
+<div class="anim-headline flex flex-col items-center">
+<h1 class="font-editorial text-[35px] sm:text-[38px] leading-[1.08] font-normal text-[#162a22] tracking-normal max-w-[340px]">
+        Your safe space for hard conversations
+      </h1>
+<!-- Subtitle -->
+<p class="text-[#55645c] text-[15px] sm:text-[15.5px] leading-snug mt-2.5 font-normal max-w-[300px]">
+        Rehearse tough team meetings out loud before they happen.
+      </p>
+</div>
+<!-- Three Pillars / Value Proposition Badges -->
+<div class="grid grid-cols-3 w-full max-w-[360px] mt-6 pt-1 gap-2 border-t border-[#ece7de]/60">
+<!-- Feature 1: Build confidence -->
+<div class="group flex flex-col items-center px-1 py-1.5 rounded-xl cursor-default transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:bg-white/40 anim-prop-1">
+<div class="w-11 h-11 rounded-full bg-[#dbe8de] flex items-center justify-center text-[#4c6e58] mb-2 shadow-sm transition-transform duration-300 group-hover:scale-110">
+<!-- Bar chart / levels icon -->
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+<path d="M18 20V10"></path>
+<path d="M12 20V4"></path>
+<path d="M6 20v-6"></path>
+</svg>
+</div>
+<span class="text-[12.5px] font-medium leading-[1.25] text-[#2c3d34]">Build<br>confidence</span>
+</div>
+<!-- Feature 2: Practice real scenarios -->
+<div class="group flex flex-col items-center px-1 py-1.5 rounded-xl border-x border-[#ece8df] cursor-default transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:bg-white/40 anim-prop-2">
+<div class="w-11 h-11 rounded-full bg-[#fde9dc] flex items-center justify-center text-[#c27852] mb-2 shadow-sm transition-transform duration-300 group-hover:scale-110">
+<!-- Speech bubble with three dots icon -->
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.1" viewBox="0 0 24 24">
+<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+</svg>
+</div>
+<span class="text-[12.5px] font-medium leading-[1.25] text-[#2c3d34]">Practice<br>real scenarios</span>
+</div>
+<!-- Feature 3: Grow into a stronger leader -->
+<div class="group flex flex-col items-center px-1 py-1.5 rounded-xl cursor-default transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:bg-white/40 anim-prop-3">
+<div class="w-11 h-11 rounded-full bg-[#dbe8de] flex items-center justify-center text-[#4c6e58] mb-2 shadow-sm transition-transform duration-300 group-hover:scale-110">
+<!-- Sprout / Leaf icon -->
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+<path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+</svg>
+</div>
+<span class="text-[12.5px] font-medium leading-[1.25] text-[#2c3d34]">Grow into<br>a stronger leader</span>
+</div>
+</div>
+</div>
+<!-- END: ContentAndFeatures -->
+<!-- BEGIN: BottomActionSection -->
+<footer class="px-6 pt-6 pb-2.5 flex flex-col items-center w-full anim-bottom">
+<!-- Primary CTA Button -->
+<a class="group relative overflow-hidden w-full py-4 px-6 bg-[#597e66] hover:bg-[#4d6f59] active:scale-95 transition-all duration-200 text-white font-medium text-[17px] rounded-2xl flex items-center justify-center space-x-2.5 shadow-md shadow-[#597e66]/20 shimmer-effect" href="#get-started" role="button">
+<span>Get Started</span>
+<svg class="w-4 h-4 text-white translate-x-0.5 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" viewBox="0 0 24 24">
+<line x1="5" x2="19" y1="12" y2="12"></line>
+<polyline points="12 5 19 12 12 19"></polyline>
+</svg>
+</a>
+<!-- Secondary Sign In Action -->
+<a class="mt-3.5 text-[#3a5846] font-medium text-[15px] underline underline-offset-4 decoration-[#3a5846]/40 hover:decoration-[#3a5846] hover:text-[#253a2e] transition-colors duration-200 active:scale-95" href="#sign-in">
+        Sign In
+      </a>
+<!-- Privacy & Trust Guarantee Note -->
+<div class="flex items-center space-x-1.5 mt-5 text-[#7f8880] text-[12.5px] transition-opacity duration-300 hover:text-[#55645c]">
+<!-- Shield Lock Icon -->
+<svg class="w-3.5 h-3.5 text-[#9ba49d]" fill="currentColor" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" fill-rule="evenodd"></path>
+</svg>
+<span>A private and judgement-free space</span>
+</div>
+<!-- iOS Home Indicator -->
+<div class="mt-4 mb-1">
+<div class="home-indicator"></div>
+</div>
+</footer>
+<!-- END: BottomActionSection -->
+</main>
+<!-- END: MobileDeviceFrame -->
+</body></html>

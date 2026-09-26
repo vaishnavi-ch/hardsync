@@ -1,0 +1,256 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>hardsync - Connection Error</title>
+<!-- Tailwind CSS v3 with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#FBF9F5',
+              dark: '#1C2621',
+              sage: '#4A6B56',
+              sageHover: '#3D5847',
+              sageLight: '#E3EBE6',
+              sageSubtle: '#F0F4F2',
+              sand: '#F3EFEA',
+              muted: '#687771',
+              terracotta: '#B85D43',
+              terracottaBg: '#FDF2EE',
+              terracottaBorder: '#F6D9CE',
+            }
+          },
+          fontFamily: {
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- Google Fonts: Newsreader for brand editorial typography -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;display=swap" rel="stylesheet">
+<style data-purpose="custom-typography">
+    .font-serif-title {
+      font-family: 'Newsreader', Georgia, serif;
+      letter-spacing: -0.02em;
+    }
+    .letter-spacing-wide {
+      letter-spacing: 0.16em;
+    }
+  </style>
+<style data-purpose="mobile-shell">
+    /* Subtle pulse animation for connection badge */
+    @keyframes gentlePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .animate-gentle-pulse {
+      animation: gentlePulse 2.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-[#ECE8E1] text-brand-dark antialiased min-h-screen flex items-center justify-center p-0 sm:p-6 font-sans">
+<!-- BEGIN: MobileDeviceFrame -->
+<main class="w-full max-w-[400px] h-[864px] max-h-screen bg-brand-cream relative flex flex-col justify-between overflow-hidden shadow-2xl sm:rounded-[48px] border-0 sm:border-[8px] sm:border-[#1E2320]">
+<!-- BEGIN: iOSStatusBar -->
+<header class="w-full pt-3 px-7 pb-1 flex justify-between items-center text-xs font-semibold z-30 select-none text-brand-dark" data-purpose="ios-status-bar">
+<span>9:41</span>
+<div class="flex items-center space-x-2">
+<!-- Cellular Signal with slash / offline indicator -->
+<svg class="w-3.5 h-3.5 text-brand-dark opacity-40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+<path d="M2 20h.01"></path>
+<path d="M7 20v-4"></path>
+<line x1="2" x2="22" y1="2" y2="22"></line>
+</svg>
+<!-- Wifi Off -->
+<svg class="w-3.5 h-3.5 text-brand-dark opacity-40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+<line x1="1" x2="23" y1="1" y2="23"></line>
+<path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+<path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+<path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+<path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+<path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+<line x1="12" x2="12.01" y1="20" y2="20"></line>
+</svg>
+<!-- iOS Battery Icon -->
+<div class="w-5 h-2.5 border border-brand-dark rounded-sm p-[1px] flex items-center">
+<div class="h-full w-3.5 bg-brand-dark rounded-2xs"></div>
+</div>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: BrandHeader -->
+<div class="px-7 pt-2 pb-2 flex items-center justify-between" data-purpose="hardsync-header">
+<!-- hardsync Logo Brand & Subtitle -->
+<div class="flex items-center space-x-2.5">
+<!-- Stylized Leaf Icon matching brand identity -->
+<div class="w-7 h-7 text-brand-sage flex-shrink-0">
+<svg class="w-full h-full" fill="currentColor" viewBox="0 0 32 32">
+<path d="M6 24C6 24 8 13 18 8C20 7 24 6 26 6C26 8 25 12 24 14C19 24 8 26 6 24Z" opacity="0.9"></path>
+<path d="M12 20C15 17 21 11 26 6" stroke="#FBF9F5" stroke-linecap="round" stroke-width="1.8"></path>
+<path d="M8 25C7.2 27 5 28 5 28C5 28 6.5 25.5 7 24" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path>
+</svg>
+</div>
+<div>
+<h1 class="text-[21px] font-serif-title font-semibold tracking-tight leading-none text-[#18231C]">
+            hardsync
+          </h1>
+<p class="text-[8px] uppercase font-bold letter-spacing-wide text-brand-muted mt-1 tracking-widest leading-none">
+            PRACTICE BRAVELY
+          </p>
+</div>
+</div>
+<!-- Editorial Badge -->
+<div class="px-3.5 py-1.5 rounded-full bg-brand-sand border border-[#E9E4DB] text-right">
+<span class="block text-[11px] font-serif italic leading-none text-brand-muted">A calmer you.</span>
+<span class="block text-[10px] font-serif italic leading-tight text-brand-dark/70">A stronger leader.</span>
+</div>
+</div>
+<!-- END: BrandHeader -->
+<!-- BEGIN: OfflineNoticePillBanner -->
+<div class="px-6 pt-1.5" data-purpose="offline-alert-banner">
+<div class="w-full bg-brand-terracottaBg border border-brand-terracottaBorder rounded-full py-1.5 px-3.5 flex items-center justify-between shadow-xs">
+<div class="flex items-center space-x-2">
+<!-- Blinking signal alert dot -->
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-terracotta opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-brand-terracotta"></span>
+</span>
+<!-- Wi-Fi off icon -->
+<svg class="w-3.5 h-3.5 text-brand-terracotta" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+<line x1="1" x2="23" y1="1" y2="23"></line>
+<path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+<path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+<path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+<path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+<path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+<line x1="12" x2="12.01" y1="20" y2="20"></line>
+</svg>
+<span class="text-[12px] font-medium text-[#7D341E]">No Internet Connection — Offline Mode</span>
+</div>
+<span class="text-[10px] font-semibold uppercase tracking-wider text-brand-terracotta/80 bg-white/70 px-1.5 py-0.5 rounded">Retry</span>
+</div>
+</div>
+<!-- END: OfflineNoticePillBanner -->
+<!-- BEGIN: MainErrorContent -->
+<div class="px-7 flex-1 flex flex-col justify-center items-center text-center mt-2" data-purpose="empty-state-container">
+<!-- Serene Editorial Illustration / Offline Icon Badge -->
+<div class="relative mb-5 flex items-center justify-center">
+<!-- Outer concentric rings denoting connection loss -->
+<div class="w-28 h-28 rounded-full bg-brand-sand/60 flex items-center justify-center border border-[#ECE5DC] animate-gentle-pulse">
+<div class="w-20 h-20 rounded-full bg-brand-sageSubtle/80 flex items-center justify-center border border-brand-sageLight">
+<!-- Offline Wave & Leaf Icon Element -->
+<div class="relative w-10 h-10 flex items-center justify-center text-brand-sage">
+<svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24">
+<!-- Disconnected Cloud with subtle break -->
+<path d="M22.61 16.95A5 5 0 0 0 18 10h-1.26a8 8 0 0 0-7.05-6M5 5a8 8 0 0 0-4 7h1a5 5 0 0 0 9 3"></path>
+<line stroke="#B85D43" stroke-width="2" x1="1" x2="23" y1="1" y2="23"></line>
+</svg>
+<!-- Small grounded organic leaf badge in corner -->
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-brand-sage text-white rounded-full flex items-center justify-center shadow-sm">
+<svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24">
+<path d="M17 8C8 10 5 19 5 19C5 19 14 22 19 15C20.5 12.8 20 8 20 8L17 8Z"></path>
+</svg>
+</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Heading -->
+<h2 class="text-[28px] leading-[1.18] font-serif-title font-medium text-[#1A2520] max-w-[310px] tracking-tight mb-2.5">
+        Unable to reach your practice space
+      </h2>
+<!-- Subtitle Description -->
+<p class="text-[14px] leading-relaxed text-brand-muted font-normal max-w-[315px] mb-5">
+        hardsync requires an active internet connection to stream conversational AI roleplay personas and generate real-time feedback.
+      </p>
+<!-- Troubleshooting Hints Card -->
+<div class="w-full bg-[#F5F2EC]/80 border border-[#E7E2D8] rounded-2xl p-3.5 text-left mb-2 shadow-2xs">
+<span class="text-[10px] uppercase font-bold tracking-wider text-brand-muted/80 block mb-2 px-1">
+          Quick Troubleshooting
+        </span>
+<div class="space-y-2">
+<!-- Hint 1 -->
+<div class="flex items-center space-x-2.5">
+<div class="w-5 h-5 rounded-full bg-white flex items-center justify-center flex-shrink-0 text-brand-sage border border-[#E3DDD1]">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</div>
+<p class="text-[12.5px] text-brand-dark/90 font-medium leading-tight">
+              Check your Wi-Fi or cellular data settings
+            </p>
+</div>
+<!-- Hint 2 -->
+<div class="flex items-center space-x-2.5">
+<div class="w-5 h-5 rounded-full bg-white flex items-center justify-center flex-shrink-0 text-brand-sage border border-[#E3DDD1]">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</div>
+<p class="text-[12.5px] text-brand-dark/90 font-medium leading-tight">
+              Reconnect to calibrate voice models &amp; audio
+            </p>
+</div>
+</div>
+</div>
+</div>
+<!-- END: MainErrorContent -->
+<!-- BEGIN: BottomActionSection -->
+<div class="px-7 pb-4 pt-1 flex flex-col items-center space-y-2.5" data-purpose="actions-footer">
+<!-- Primary Action: Try Again Button with Retry Spinner -->
+<button class="w-full bg-brand-sage hover:bg-brand-sageHover active:scale-[0.99] transition-all text-white font-medium py-3.5 px-6 rounded-2xl flex items-center justify-center space-x-2.5 shadow-sm" id="btn-retry-connection" type="button">
+<!-- Retry Spinner Icon -->
+<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+<path d="M21.5 2v6h-6"></path>
+<path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+</svg>
+<span class="text-[16px] tracking-tight">Try Again</span>
+</button>
+<!-- Secondary Subtle Action: Offline Demo / Saved Transcripts -->
+<button class="text-[14px] text-brand-dark/80 hover:text-brand-dark font-medium underline underline-offset-4 decoration-[#C9C3B8] transition-colors py-1" id="btn-offline-mode" type="button">
+        Browse Saved Transcripts
+      </button>
+<!-- Security Guarantee -->
+<div class="flex items-center justify-center space-x-1.5 text-brand-muted/75 text-[11.5px] pt-0.5">
+<svg class="w-3 h-3 text-brand-muted/70" fill="currentColor" viewBox="0 0 24 24">
+<path clip-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" fill-rule="evenodd"></path>
+</svg>
+<span>hardsync data is securely encrypted</span>
+</div>
+<!-- iOS Native Home Indicator -->
+<div class="w-32 h-1 bg-black/80 rounded-full mx-auto mt-2" data-purpose="ios-home-indicator"></div>
+</div>
+<!-- END: BottomActionSection -->
+</main>
+<!-- END: MobileDeviceFrame -->
+<!-- BEGIN: InteractiveScripts -->
+<script data-purpose="button-feedback">
+    const retryBtn = document.getElementById('btn-retry-connection');
+    if (retryBtn) {
+      retryBtn.addEventListener('click', function() {
+        const originalContent = retryBtn.innerHTML;
+        retryBtn.innerHTML = `
+          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="text-[16px] tracking-tight">Checking Connection...</span>
+        `;
+        retryBtn.classList.add('opacity-90', 'cursor-not-allowed');
+        
+        setTimeout(() => {
+          retryBtn.innerHTML = originalContent;
+          retryBtn.classList.remove('opacity-90', 'cursor-not-allowed');
+        }, 1800);
+      });
+    }
+  </script>
+<!-- END: InteractiveScripts -->
+</body></html>
