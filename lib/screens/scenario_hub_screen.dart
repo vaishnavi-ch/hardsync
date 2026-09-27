@@ -34,7 +34,7 @@ class _ScenarioHubScreenState extends State<ScenarioHubScreen> {
         .where((item) => _matchesCategory(item, _selectedCategory))
         .toList();
     return Scaffold(
-      backgroundColor: HardSyncColors.cream,
+      backgroundColor: const Color(0xFFF8F6FC),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {

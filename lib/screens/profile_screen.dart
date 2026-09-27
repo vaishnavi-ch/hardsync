@@ -140,11 +140,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final userId = SupabaseService.instance.currentUserId ?? '';
 
     return Scaffold(
-      backgroundColor: HardSyncColors.cream,
+      backgroundColor: const Color(0xFFF8F6FC),
       appBar: widget.embedded
           ? null
           : AppBar(
-              backgroundColor: HardSyncColors.cream,
+              backgroundColor: const Color(0xFFF8F6FC),
               elevation: 0,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back, color: HardSyncColors.ink),

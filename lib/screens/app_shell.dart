@@ -66,14 +66,14 @@ class _AppShellState extends State<AppShell> {
 
         if (!useNavigationRail) {
           return Scaffold(
-            backgroundColor: HardSyncColors.cream,
+            backgroundColor: const Color(0xFFF8F6FC),
             body: IndexedStack(index: _currentIndex, children: _loadedScreens),
             bottomNavigationBar: _buildBottomNav(),
           );
         }
 
         return Scaffold(
-          backgroundColor: HardSyncColors.cream,
+          backgroundColor: const Color(0xFFF8F6FC),
           body: DecoratedBox(
             decoration: const BoxDecoration(
               gradient: LinearGradient(

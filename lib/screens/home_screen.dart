@@ -225,7 +225,6 @@ class _ProgressHero extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < 360;
-      final percent = stats?.progressPercent ?? 0;
       return InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(28),
@@ -233,15 +232,6 @@ class _ProgressHero extends StatelessWidget {
           height: compact ? 260 : 290,
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFFDFBFF),
-                Color(0xFFF1EDFF),
-                Color(0xFFE9E2FB),
-              ],
-            ),
             borderRadius: BorderRadius.circular(28),
             boxShadow: [
               BoxShadow(
@@ -251,117 +241,14 @@ class _ProgressHero extends StatelessWidget {
               ),
             ],
           ),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: AppIllustration(
-                  HardSyncAssets.illusVoiceRoleplay,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.bottomCenter,
-                ),
-              ),
-              Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        const Color(0xFFFDFBFF).withValues(alpha: .96),
-                        const Color(0xFFFDFBFF).withValues(alpha: .55),
-                        Colors.transparent,
-                      ],
-                      stops: const [0, .45, .75],
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 20,
-                right: 18,
-                top: 18,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Your Progress',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  color: HardSyncColors.ink,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            '$percent%',
-                            style: GoogleFonts.newsreader(
-                              fontSize: compact ? 34 : 42,
-                              height: 1,
-                              fontWeight: FontWeight.w800,
-                              color: HardSyncColors.ink,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'to next level',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: HardSyncColors.inkMuted),
-                          ),
-                        ],
-                      ),
-                    ),
-                    _ProgressRing(percent: percent),
-                  ],
-                ),
-              ),
-            ],
+          child: AppIllustration(
+            HardSyncAssets.illusVoiceRoleplay,
+            fit: BoxFit.cover,
+            alignment: Alignment.bottomCenter,
           ),
         ),
       );
     },
-  );
-}
-
-class _ProgressRing extends StatelessWidget {
-  const _ProgressRing({required this.percent});
-  final int percent;
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    width: 54,
-    height: 54,
-    child: Stack(
-      alignment: Alignment.center,
-      children: [
-        SizedBox(
-          width: 54,
-          height: 54,
-          child: CircularProgressIndicator(
-            value: percent / 100,
-            strokeWidth: 5,
-            backgroundColor: HardSyncColors.apricot,
-            valueColor: const AlwaysStoppedAnimation(HardSyncColors.violet),
-          ),
-        ),
-        Container(
-          width: 28,
-          height: 28,
-          decoration: const BoxDecoration(
-            color: HardSyncColors.violet,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            CupertinoIcons.star_fill,
-            size: 14,
-            color: Colors.white,
-          ),
-        ),
-      ],
-    ),
   );
 }
 
@@ -378,7 +265,7 @@ class _Metric extends StatelessWidget {
   final Color tint;
   @override
   Widget build(BuildContext context) => Container(
-    height: 146,
+    height: 170,
     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 14),
     decoration: BoxDecoration(
       color: HardSyncColors.surface,
@@ -395,11 +282,11 @@ class _Metric extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          width: 52,
-          height: 52,
+          width: 70,
+          height: 70,
           decoration: BoxDecoration(color: tint, shape: BoxShape.circle),
-          padding: const EdgeInsets.all(10),
-          child: AppIcon(icon, size: 32),
+          padding: const EdgeInsets.all(12),
+          child: AppIcon(icon, size: 44),
         ),
         const SizedBox(height: 8),
         Text(

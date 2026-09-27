@@ -25,7 +25,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: HardSyncColors.cream,
+    backgroundColor: const Color(0xFFF8F6FC),
     body: SafeArea(
       child: FutureBuilder<List<Map<String, dynamic>>>(
         future: _history,

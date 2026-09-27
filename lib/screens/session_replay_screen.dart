@@ -90,7 +90,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F2),
+      backgroundColor: const Color(0xFFF8F6FC),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
