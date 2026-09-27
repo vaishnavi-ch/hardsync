@@ -878,6 +878,28 @@ class Handler(SimpleHTTPRequestHandler):
         try:
             if not self.valid_host():
                 raise ApiError('Invalid host.', 403)
+            if self.path == '/api/replays/upload-proxy':
+                origin = self.headers.get('Origin')
+                if origin and not self.valid_origin(origin):
+                    raise ApiError('Invalid origin.', 403)
+                target_url = self.headers.get('X-Target-Url', '').strip()
+                content_type = self.headers.get('Content-Type', 'video/webm').strip()
+                account_id = ENV.get('CLOUDFLARE_R2_ACCOUNT_ID', '')
+                if not target_url or not account_id or f'{account_id}.r2.cloudflarestorage.com' not in target_url:
+                    raise ApiError('Invalid target URL.', 400)
+                length = int(self.headers.get('Content-Length', '0'))
+                if length <= 0 or length > 100 * 1024 * 1024:
+                    raise ApiError('Invalid file size.', 413)
+                blob = self.rfile.read(length)
+                req = urllib.request.Request(target_url, data=blob, headers={'Content-Type': content_type}, method='PUT')
+                try:
+                    with urllib.request.urlopen(req) as resp:
+                        if resp.status in (200, 201, 204):
+                            return self.respond({'uploaded': True})
+                        raise ApiError(f'Storage returned status {resp.status}', 502)
+                except Exception as e:
+                    raise ApiError(f'Failed to upload to storage: {str(e)}', 502)
+
             length = int(self.headers.get('Content-Length', '0'))
             if length < 0 or length > 200000: raise ApiError('Request too large.', 413)
             raw_body = self.rfile.read(length)

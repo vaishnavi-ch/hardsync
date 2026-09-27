@@ -29,6 +29,13 @@ let recordDest;
 let stopRecordCanvas;
 let avatarAudioConnected = false;
 
+function getAudioContext() {
+  if (!context || context.state === 'closed') {
+    context = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return context;
+}
+
 function getLocalAudioStream() {
   if (dailyCall) {
     const track = dailyCall.participants()?.local?.tracks?.audio?.persistentTrack;
@@ -43,30 +50,45 @@ function getAvatarAudioStream() {
 }
 
 function connectAvatarAudioIfReady() {
-  if (avatarAudioConnected || !recordCtx || !recordDest) return;
+  if (avatarAudioConnected || !recordDest) return;
   const avatarAudio = getAvatarAudioStream();
   if (!avatarAudio) return;
   try {
-    recordCtx.createMediaStreamSource(avatarAudio).connect(recordDest);
+    getAudioContext().createMediaStreamSource(avatarAudio).connect(recordDest);
     avatarAudioConnected = true;
   } catch (_) {}
 }
 
 function pickRecorderMimeType() {
-  const candidates = config?.mode === 'video'
-    ? ['video/webm;codecs=vp8,opus', 'video/webm']
-    : ['audio/webm;codecs=opus', 'audio/webm'];
+  const isVideo = config?.mode === 'video';
+  const candidates = isVideo
+    ? [
+        'video/webm;codecs=vp8,opus',
+        'video/webm',
+        'video/mp4;codecs=avc1,mp4a.40.2',
+        'video/mp4',
+      ]
+    : [
+        'audio/webm;codecs=opus',
+        'audio/webm',
+        'audio/mp4',
+        'audio/aac',
+      ];
   return candidates.find((type) => window.MediaRecorder?.isTypeSupported?.(type)) || '';
 }
 
 function startRecording() {
   if (!config?.replayUploadUrl || mediaRecorder) return;
   try {
-    recordCtx = new AudioContext();
-    recordDest = recordCtx.createMediaStreamDestination();
+    const ctx = getAudioContext();
+    recordDest = ctx.createMediaStreamDestination();
     const localAudio = getLocalAudioStream();
     if (localAudio && localAudio.getAudioTracks().length) {
-      recordCtx.createMediaStreamSource(localAudio).connect(recordDest);
+      try {
+        ctx.createMediaStreamSource(localAudio).connect(recordDest);
+      } catch (e) {
+        console.warn('[replay] local audio attach failed:', e);
+      }
     }
     connectAvatarAudioIfReady();
     const tracks = [...recordDest.stream.getAudioTracks()];
@@ -74,17 +96,17 @@ function startRecording() {
       const canvas = document.createElement('canvas');
       canvas.width = 480;
       canvas.height = 270;
-      const ctx = canvas.getContext('2d');
+      const ctx2d = canvas.getContext('2d');
       let stopped = false;
       stopRecordCanvas = () => { stopped = true; };
       const draw = () => {
         if (stopped) return;
         const avatarEl = $('avatar');
         const localEl = $('local');
-        ctx.fillStyle = '#101814';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        if (avatarEl.videoWidth) ctx.drawImage(avatarEl, 0, 0, canvas.width, canvas.height);
-        if (localEl.videoWidth) ctx.drawImage(localEl, canvas.width - 96, canvas.height - 72, 90, 66);
+        ctx2d.fillStyle = '#101814';
+        ctx2d.fillRect(0, 0, canvas.width, canvas.height);
+        if (avatarEl.videoWidth) ctx2d.drawImage(avatarEl, 0, 0, canvas.width, canvas.height);
+        if (localEl.videoWidth) ctx2d.drawImage(localEl, canvas.width - 96, canvas.height - 72, 90, 66);
         requestAnimationFrame(draw);
       };
       draw();
@@ -117,20 +139,50 @@ async function stopRecordingAndUpload() {
       if (recorder.state !== 'inactive') recorder.stop();
       else resolve();
     });
-    await recordCtx?.close();
-    const mime = recordingMime || 'video/webm';
+    const mime = recordingMime || (config?.mode === 'video' ? 'video/webm' : 'audio/webm');
     const blob = new Blob(recordedChunks, { type: mime });
     recordedChunks = [];
     if (!config.replayUploadUrl || blob.size === 0) return { replaySaved: false };
-    const response = await fetch(config.replayUploadUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': mime },
-      body: blob,
-    });
-    if (!response.ok) {
-      console.error('[replay] upload rejected', response.status, await response.text().catch(() => ''));
-      return { replaySaved: false };
+
+    let uploaded = false;
+    // 1. First attempt: Direct presigned PUT to R2
+    try {
+      const response = await fetch(config.replayUploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': mime },
+        body: blob,
+      });
+      if (response.ok) {
+        uploaded = true;
+      } else {
+        console.warn('[replay] Direct R2 upload returned', response.status);
+      }
+    } catch (directError) {
+      console.warn('[replay] Direct R2 upload failed (likely CORS), falling back to server proxy:', directError);
     }
+
+    // 2. Fallback attempt: If direct PUT failed (e.g. CORS), upload through server proxy
+    if (!uploaded) {
+      try {
+        const proxyResp = await fetch('/api/replays/upload-proxy', {
+          method: 'POST',
+          headers: {
+            'Content-Type': mime,
+            'X-Target-Url': config.replayUploadUrl,
+          },
+          body: blob,
+        });
+        if (proxyResp.ok) {
+          uploaded = true;
+        } else {
+          console.error('[replay] Fallback proxy upload returned status:', proxyResp.status);
+        }
+      } catch (proxyError) {
+        console.error('[replay] Fallback proxy upload failed:', proxyError);
+      }
+    }
+
+    if (!uploaded) return { replaySaved: false };
     return { replaySaved: true, mimeType: mime };
   } catch (error) {
     console.error('[replay] upload failed', error);
@@ -486,7 +538,7 @@ async function join() {
     $('local').srcObject = stream;
     if (config.mode === 'video') setupDraggableLocalVideo();
     startRecording();
-    context = new AudioContext();
+    context = getAudioContext();
     await context.resume();
 
     const input = context.createMediaStreamSource(stream);
