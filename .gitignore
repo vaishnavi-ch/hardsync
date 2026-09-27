@@ -66,3 +66,9 @@ android/build/
 /*.png
 /*.xml
 tools/__pycache__/
+
+# Internal documentation (keep README.md and docs/ public website)
+/*.md
+!/README.md
+.stitch/
+.tmp_screens/
