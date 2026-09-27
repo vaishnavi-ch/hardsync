@@ -588,8 +588,17 @@ class Handler(SimpleHTTPRequestHandler):
 
     def valid_host(self):
         host = self.headers.get('Host', '').split(':')[0].lower()
-        allowed = {v.strip().lower() for v in ENV.get('ALLOWED_HOSTS','127.0.0.1,localhost,0.0.0.0').split(',') if v.strip()}
-        return '*' in allowed or host in allowed
+        allowed = {v.strip().lower() for v in ENV.get('ALLOWED_HOSTS', '127.0.0.1,localhost,0.0.0.0').split(',') if v.strip()}
+        render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME', '').strip().lower()
+        if render_host:
+            allowed.add(render_host)
+        return (
+            '*' in allowed
+            or host in allowed
+            or host.endswith('.onrender.com')
+            or host.endswith('.run.app')
+            or host.endswith('.railway.app')
+        )
 
     def valid_origin(self, origin):
         if not origin: return True
@@ -597,11 +606,13 @@ class Handler(SimpleHTTPRequestHandler):
         parsed = urlparse(origin)
         if parsed.hostname in ('127.0.0.1','localhost'): return True
         allowed = {v.strip().rstrip('/') for v in ENV.get('ALLOWED_ORIGINS','').split(',') if v.strip()}
-        return origin.rstrip('/') in allowed
+        return '*' in allowed or origin.rstrip('/') in allowed
 
     def do_GET(self):
         if not self.valid_host():
             return self.respond({'error': 'Invalid host.'}, 403)
+        if self.path in ('/', ''):
+            return self.respond({'status': 'ok', 'app': 'HardSync API', 'version': '1.0.0'})
         # Native call WebViews load the same authenticated call clients as web.
         # Serve those small assets from source when the Flutter web bundle is
         # hosted separately from this API process.
