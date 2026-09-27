@@ -35,17 +35,9 @@ jobs:
         run: |
           flutter build ios --simulator --debug --no-codesign
 
-      - name: Package .app for Appetize.io
-        run: |
-          cd build/ios/iphonesimulator
-          # Appetize requires a zipped .app bundle
-          zip -r -y ../../../appetize-ios-simulator.zip Runner.app
-          cd ../../..
-          echo "Simulator build zipped successfully: $(ls -lh appetize-ios-simulator.zip)"
-
       - name: Upload Appetize Simulator Artifact
         uses: actions/upload-artifact@v4
         with:
           name: appetize-ios-simulator
-          path: appetize-ios-simulator.zip
+          path: build/ios/iphonesimulator/Runner.app
           retention-days: 7
