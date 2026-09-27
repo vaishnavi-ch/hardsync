@@ -9,6 +9,7 @@ import '../providers/subscription_provider.dart';
 import '../services/revenuecat_service.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
+import 'legal_document_screen.dart';
 import 'session_prep_screen.dart';
 
 class SubscriptionPaywallScreen extends StatefulWidget {
@@ -1425,6 +1426,42 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                 onTap: _isProcessing ? null : () => _handleRestore(subProvider),
                 child: Text(
                   'Restore purchases',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    color: HardSyncColors.inkMuted,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const LegalDocumentScreen(
+                      document: LegalDocument.terms,
+                    ),
+                  ),
+                ),
+                child: Text(
+                  'Terms of Service',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    color: HardSyncColors.inkMuted,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const LegalDocumentScreen(
+                      document: LegalDocument.privacy,
+                    ),
+                  ),
+                ),
+                child: Text(
+                  'Privacy Policy',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     color: HardSyncColors.inkMuted,
