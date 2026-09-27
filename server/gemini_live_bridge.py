@@ -16,6 +16,7 @@ from pathlib import Path
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
+import certifi
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from google import genai
 from google.genai import types
@@ -32,6 +33,13 @@ def load_project_environment():
     os.environ.setdefault('SUPABASE_URL', os.environ.get('NEXT_PUBLIC_SUPABASE_URL', ''))
     os.environ.setdefault('SUPABASE_ANON_KEY', os.environ.get(
         'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', os.environ.get('SUPABASE_PUBLISHABLE_KEY', '')))
+    # google-genai builds its SSL context from os.environ.get('SSL_CERT_FILE', certifi.where()),
+    # which only falls back to certifi when the key is absent. Render's Python 3.14 image sets
+    # SSL_CERT_FILE/SSL_CERT_DIR to paths that don't resolve in that container, so every live
+    # connection failed with a bare FileNotFoundError("[Errno 2] No such file or directory").
+    # Force certifi's bundled (always-present) CA file instead of trusting the platform's env.
+    os.environ['SSL_CERT_FILE'] = certifi.where()
+    os.environ.pop('SSL_CERT_DIR', None)
 
 load_project_environment()
 
