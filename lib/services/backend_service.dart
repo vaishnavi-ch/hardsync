@@ -16,25 +16,18 @@ class BackendService {
   static http.Client transport = http.Client();
   static Uri? baseUriOverride;
 
+  static const defaultBackendUrl = 'https://hardsync.onrender.com';
+
   static Uri uri(String path) {
     if (path.startsWith('http://') || path.startsWith('https://')) {
       return Uri.parse(path);
     }
     if (baseUriOverride != null) return baseUriOverride!.resolve(path);
-    const base = String.fromEnvironment('BACKEND_URL');
-    if (base.isNotEmpty) return Uri.parse(base).resolve(path);
-
-    // If running in browser:
-    if (Uri.base.scheme.startsWith('http')) {
-      // If we are served directly from port 8082, use same origin
-      if (Uri.base.port == 8082) {
-        return Uri.base.resolve(path);
-      }
-      // If served from Flutter dev server (e.g. localhost:50000+), point to backend at port 8082
-      final host = Uri.base.host.isNotEmpty ? Uri.base.host : '127.0.0.1';
-      return Uri.parse('http://$host:8082').resolve(path);
-    }
-    return Uri.parse('http://127.0.0.1:8082').resolve(path);
+    const base = String.fromEnvironment(
+      'BACKEND_URL',
+      defaultValue: defaultBackendUrl,
+    );
+    return Uri.parse(base).resolve(path);
   }
 
   static Future<Map<String, dynamic>> request(
@@ -80,8 +73,7 @@ class BackendService {
     }
     if (raw.startsWith('<')) {
       throw BackendException(response.statusCode, {
-        'error':
-            'Server returned HTML instead of JSON. Ensure local backend is running on port 8082.',
+        'error': 'Server returned HTML instead of JSON.',
       });
     }
 

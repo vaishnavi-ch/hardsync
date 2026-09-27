@@ -10,21 +10,11 @@ class EnvConfig {
   static Future<void> init() async {
     if (_initialized) return;
     try {
-      const base = String.fromEnvironment('BACKEND_URL');
-      Uri baseUri;
-      if (base.isNotEmpty) {
-        baseUri = Uri.parse(base);
-      } else if (Uri.base.scheme.startsWith('http')) {
-        if (Uri.base.port == 8082) {
-          baseUri = Uri.base;
-        } else {
-          final host = Uri.base.host.isNotEmpty ? Uri.base.host : '127.0.0.1';
-          baseUri = Uri.parse('http://$host:8082');
-        }
-      } else {
-        baseUri = Uri.parse('http://127.0.0.1:8082');
-      }
-      final uri = baseUri.resolve('/api/config');
+      const base = String.fromEnvironment(
+        'BACKEND_URL',
+        defaultValue: 'https://hardsync.onrender.com',
+      );
+      final uri = Uri.parse(base).resolve('/api/config');
       final response = await http.get(uri).timeout(const Duration(seconds: 5));
       if (response.statusCode == 200 && !response.body.trim().startsWith('<')) {
         (jsonDecode(response.body) as Map<String, dynamic>).forEach(

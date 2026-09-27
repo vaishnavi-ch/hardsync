@@ -213,7 +213,7 @@ Read [server/README.md](server/README.md) before running provider-backed calls. 
 
 Expected private server configuration includes Supabase URL/publishable key, Gemini key/model, Tavus key/persona, and optionally RevenueCat server secret. Exact env variable names and aliases are documented in `server/README.md` and `server/app.py`. Never paste actual key values into documentation or commit them. `GEMINI_MODEL` defaults to `gemini-3.5-flash` per the current server README.
 
-The Flutter client resolves its backend using compile-time `BACKEND_URL`, same-origin when hosted on port 8082, and local port 8082 otherwise. Do not distribute the test-call mode or expose it through a tunnel.
+The Flutter client always talks to the deployed backend. It resolves its backend URL from the compile-time `BACKEND_URL` define, defaulting to `https://hardsync.onrender.com` (the deployed `hardsync-api` Render service) when not overridden — there is no local/loopback fallback. The Gemini Live bridge is deployed separately as `hardsync-live` on Render and is only reached server-side via `GEMINI_LIVE_BRIDGE_URL`. Do not distribute the test-call mode or expose it through a tunnel.
 
 Repository commands recorded in project docs:
 

@@ -193,11 +193,14 @@ def reserve(owner, mode, provider='gemini_live', context='', scenario_id='', acc
     if mode not in VALID_MODES:
         raise ApiError('Unknown call mode.')
     expire_sessions(owner, access_token)
-    acc = account(owner, access_token)
     # When the RevenueCat Test Store is active (local/dev builds only), skip the
-    # tier gate so all call modes can be tested without real purchases.
+    # tier gate so all call modes can be tested without real purchases. Text has
+    # no tier restriction at all. Only hit RevenueCat when its result can
+    # actually change the outcome, so an unrelated billing/provider hiccup
+    # can't block session creation for a mode it was never gating.
     use_test_store = ENV.get('REVENUECAT_USE_TEST_STORE', '').lower() == 'true'
-    if not use_test_store:
+    if not use_test_store and mode in ('audio', 'video'):
+        acc = account(owner, access_token)
         if (mode == 'video' and acc['tier'] != 'ultra') or (mode == 'audio' and acc['tier'] == 'free'):
             raise ApiError('An active subscription is required for this call mode.', 403)
     result = supabase_rpc('reserve_practice_session', {
