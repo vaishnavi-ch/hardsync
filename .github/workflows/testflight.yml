@@ -13,6 +13,23 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Verify required secrets are set
+        env:
+          API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          missing=()
+          [ -z "$API_KEY_ID" ] && missing+=("APP_STORE_CONNECT_API_KEY_ID")
+          [ -z "$API_ISSUER_ID" ] && missing+=("APP_STORE_CONNECT_API_ISSUER_ID")
+          [ -z "$API_KEY_CONTENT" ] && missing+=("APP_STORE_CONNECT_API_KEY_CONTENT")
+          [ -z "$APPLE_TEAM_ID" ] && missing+=("APPLE_TEAM_ID")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing or empty repository secrets: ${missing[*]}. Add them under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
       - name: Set up Flutter SDK
         uses: subosito/flutter-action@v2
         with:
