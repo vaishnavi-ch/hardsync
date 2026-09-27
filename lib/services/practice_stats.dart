@@ -6,6 +6,8 @@ class EarnedBadge {
   final String description;
   final String asset;
   final bool earned;
+  final int count;
+  final int target;
 
   const EarnedBadge({
     required this.id,
@@ -13,6 +15,8 @@ class EarnedBadge {
     required this.description,
     required this.asset,
     required this.earned,
+    this.count = 0,
+    this.target = 2,
   });
 }
 
@@ -20,14 +24,29 @@ class PracticeStats {
   final int sessionCount;
   final int dayStreak;
   final int? averageScore;
+  final int totalMinutes;
   final List<EarnedBadge> badges;
 
   const PracticeStats({
     required this.sessionCount,
     required this.dayStreak,
     required this.averageScore,
+    required this.totalMinutes,
     required this.badges,
   });
+
+  int get progressPercent {
+    if (badges.isEmpty) return 0;
+    final earned = badges.where((b) => b.earned).length;
+    return ((earned / badges.length) * 100).round();
+  }
+
+  EarnedBadge? get nextBadge {
+    for (final badge in badges) {
+      if (!badge.earned) return badge;
+    }
+    return null;
+  }
 
   static const _badgeCategoryGroups = <String, List<String>>{
     'clear_communicator': ['communication basics'],
@@ -81,6 +100,7 @@ class PracticeStats {
     final categoryCounts = <String, int>{};
     final dates = <DateTime>{};
     final scores = <num>[];
+    var totalSeconds = 0;
 
     for (final session in sessions) {
       final createdAt = session['created_at'];
@@ -92,6 +112,9 @@ class PracticeStats {
       }
       final score = session['overall_score'];
       if (score is num) scores.add(score);
+
+      final duration = session['duration_seconds'];
+      if (duration is num) totalSeconds += duration.round();
 
       final category = session['scenarios'] is Map
           ? (session['scenarios']['category']?.toString().toLowerCase() ?? '')
@@ -113,6 +136,7 @@ class PracticeStats {
         description: meta.$2,
         asset: meta.$3,
         earned: count >= 2,
+        count: count,
       );
     }).toList();
 
@@ -122,6 +146,7 @@ class PracticeStats {
       averageScore: scores.isEmpty
           ? null
           : (scores.reduce((a, b) => a + b) / scores.length).round(),
+      totalMinutes: (totalSeconds / 60).round(),
       badges: badges,
     );
   }

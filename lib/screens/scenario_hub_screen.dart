@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../models/scenario.dart';
-import '../services/supabase_service.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
-import 'onboarding_screen.dart';
 import 'custom_scenario_screen.dart';
 import 'session_prep_screen.dart';
 import 'settings_modal.dart';
@@ -189,34 +187,14 @@ class _ScenarioHubScreenState extends State<ScenarioHubScreen> {
   }
 
   Widget _buildHeader(BuildContext context) {
-    final firstName = SupabaseService.instance.currentUserName.split(' ').first;
     return Row(
       children: [
-        InkWell(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-          ),
-          borderRadius: BorderRadius.circular(28),
-          child: const AppAvatar(HardSyncAssets.avatarCurrentUser, size: 52),
-        ),
-        const SizedBox(width: 12),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Good morning, $firstName',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 2),
-              Text(
-                'What would you like to practice?',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
+          child: Text(
+            'Practice',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
         ),
         Material(

@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final rawName = SupabaseService.instance.currentUserName.trim();
     final name = rawName.isEmpty ? 'Alex' : rawName.split(' ').first;
     return Scaffold(
-      backgroundColor: HardSyncColors.cream,
+      backgroundColor: const Color(0xFFF8F6FC),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -82,56 +82,79 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildProgressColumn(BuildContext context) => Column(
-    children: [
-      _ProgressHero(
-        onTap:
-            onOpenPractice ?? () => _open(context, const ScenarioHubScreen()),
-      ),
-      const SizedBox(height: 14),
-      FutureBuilder<PracticeStats>(
-        future: _stats,
-        builder: (context, snapshot) {
-          final stats = snapshot.data;
-          return Row(
+  Widget _buildProgressColumn(BuildContext context) => FutureBuilder<PracticeStats>(
+    future: _stats,
+    builder: (context, snapshot) {
+      final stats = snapshot.data;
+      return Column(
+        children: [
+          _ProgressHero(
+            stats: stats,
+            onTap:
+                onOpenPractice ??
+                () => _open(context, const ScenarioHubScreen()),
+          ),
+          const SizedBox(height: 14),
+          Row(
             children: [
               Expanded(
                 child: _Metric(
                   icon: HardSyncAssets.gamifyPracticeStreakFlame,
                   value: '${stats?.dayStreak ?? 0}',
                   label: 'Day streak',
+                  tint: HardSyncColors.coralMist,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _Metric(
-                  icon: HardSyncAssets.iconStopwatchSpeed,
+                  icon: HardSyncAssets.iconBookOpen,
                   value: '${stats?.sessionCount ?? 0}',
-                  label: 'Sessions',
+                  label: 'Sessions done',
+                  tint: HardSyncColors.lilacMist,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _Metric(
+                  icon: HardSyncAssets.iconHourglassTimer,
+                  value: stats == null
+                      ? '0h'
+                      : '${(stats.totalMinutes / 60).toStringAsFixed(1)}h',
+                  label: 'Time spent',
+                  tint: HardSyncColors.sunMist,
                 ),
               ),
             ],
-          );
-        },
-      ),
-    ],
+          ),
+        ],
+      );
+    },
   );
 
-  Widget _buildActionColumn(BuildContext context) => Column(
-    children: [
-      _SectionTitle(
-        title: "Today's focus",
-        action: 'Practice',
-        onTap: onOpenPractice,
-      ),
-      const SizedBox(height: 10),
-      _PracticeCard(
-        onTap:
-            onOpenPractice ?? () => _open(context, const ScenarioHubScreen()),
-      ),
-      const SizedBox(height: 14),
-      const _Encouragement(),
-    ],
+  Widget _buildActionColumn(BuildContext context) => FutureBuilder<PracticeStats>(
+    future: _stats,
+    builder: (context, snapshot) {
+      final stats = snapshot.data;
+      return Column(
+        children: [
+          _SectionTitle(
+            title: 'Continue practicing',
+            action: 'See all',
+            onTap: onOpenPractice,
+          ),
+          const SizedBox(height: 10),
+          _ContinueCard(
+            badge: stats?.nextBadge,
+            onTap:
+                onOpenPractice ??
+                () => _open(context, const ScenarioHubScreen()),
+          ),
+          const SizedBox(height: 14),
+          const _Encouragement(),
+        ],
+      );
+    },
   );
 
   static void _open(BuildContext context, Widget screen) {
@@ -149,24 +172,21 @@ class _Header extends StatelessWidget {
       const AppAvatar(HardSyncAssets.avatarCurrentUser, size: 54),
       const SizedBox(width: 12),
       Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Good morning,',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: HardSyncColors.inkMuted),
-            ),
-            Text(
-              '$name!',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
-            ),
-          ],
+        child: Text(
+          'Hey, $name!',
+          style: Theme.of(
+            context,
+          ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
         ),
       ),
+      _CircleButton(
+        icon: CupertinoIcons.search,
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ScenarioHubScreen()),
+        ),
+      ),
+      const SizedBox(width: 10),
       _CircleButton(
         icon: CupertinoIcons.bell,
         onTap: () => ScaffoldMessenger.of(
@@ -198,67 +218,105 @@ class _CircleButton extends StatelessWidget {
 }
 
 class _ProgressHero extends StatelessWidget {
-  const _ProgressHero({required this.onTap});
+  const _ProgressHero({required this.onTap, required this.stats});
   final VoidCallback onTap;
+  final PracticeStats? stats;
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < 360;
+      final percent = stats?.progressPercent ?? 0;
       return InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(28),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          height: compact ? 260 : 290,
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            color: HardSyncColors.oliveMist,
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFFDFBFF),
+                Color(0xFFF1EDFF),
+                Color(0xFFE9E2FB),
+              ],
+            ),
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: HardSyncColors.lilacBorder),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFE9E2FB).withValues(alpha: .4),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: Stack(
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'YOUR MANAGER PATH',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: HardSyncColors.violet,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Lead with confidence',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.newsreader(
-                        fontSize: compact ? 20 : 24,
-                        height: 1.05,
-                        fontWeight: FontWeight.w700,
-                        color: HardSyncColors.ink,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Your leadership journey',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
+              Positioned.fill(
+                child: AppIllustration(
+                  HardSyncAssets.illusVoiceRoleplay,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.bottomCenter,
                 ),
               ),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: compact ? 96 : 118,
-                height: compact ? 96 : 118,
-                child: const AppIllustration(
-                  HardSyncAssets.illusManagerJourneyMap,
-                  fit: BoxFit.contain,
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        const Color(0xFFFDFBFF).withValues(alpha: .96),
+                        const Color(0xFFFDFBFF).withValues(alpha: .55),
+                        Colors.transparent,
+                      ],
+                      stops: const [0, .45, .75],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 20,
+                right: 18,
+                top: 18,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Your Progress',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: HardSyncColors.ink,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            '$percent%',
+                            style: GoogleFonts.newsreader(
+                              fontSize: compact ? 34 : 42,
+                              height: 1,
+                              fontWeight: FontWeight.w800,
+                              color: HardSyncColors.ink,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'to next level',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: HardSyncColors.inkMuted),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _ProgressRing(percent: percent),
+                  ],
                 ),
               ),
             ],
@@ -269,25 +327,81 @@ class _ProgressHero extends StatelessWidget {
   );
 }
 
+class _ProgressRing extends StatelessWidget {
+  const _ProgressRing({required this.percent});
+  final int percent;
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 54,
+    height: 54,
+    child: Stack(
+      alignment: Alignment.center,
+      children: [
+        SizedBox(
+          width: 54,
+          height: 54,
+          child: CircularProgressIndicator(
+            value: percent / 100,
+            strokeWidth: 5,
+            backgroundColor: HardSyncColors.apricot,
+            valueColor: const AlwaysStoppedAnimation(HardSyncColors.violet),
+          ),
+        ),
+        Container(
+          width: 28,
+          height: 28,
+          decoration: const BoxDecoration(
+            color: HardSyncColors.violet,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            CupertinoIcons.star_fill,
+            size: 14,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 class _Metric extends StatelessWidget {
-  const _Metric({required this.icon, required this.value, required this.label});
+  const _Metric({
+    required this.icon,
+    required this.value,
+    required this.label,
+    required this.tint,
+  });
   final String icon;
   final String value;
   final String label;
+  final Color tint;
   @override
   Widget build(BuildContext context) => Container(
-    height: 126,
-    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+    height: 146,
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 14),
     decoration: BoxDecoration(
       color: HardSyncColors.surface,
       borderRadius: BorderRadius.circular(22),
-      border: Border.all(color: HardSyncColors.border),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: .05),
+          blurRadius: 14,
+          offset: const Offset(0, 6),
+        ),
+      ],
     ),
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        AppIcon(icon, size: 28),
-        const SizedBox(height: 6),
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(color: tint, shape: BoxShape.circle),
+          padding: const EdgeInsets.all(10),
+          child: AppIcon(icon, size: 32),
+        ),
+        const SizedBox(height: 8),
         Text(
           value,
           style: Theme.of(
@@ -327,108 +441,94 @@ class _SectionTitle extends StatelessWidget {
   );
 }
 
-class _PracticeCard extends StatelessWidget {
-  const _PracticeCard({required this.onTap});
+class _ContinueCard extends StatelessWidget {
+  const _ContinueCard({required this.onTap, required this.badge});
   final VoidCallback onTap;
+  final EarnedBadge? badge;
   @override
-  Widget build(BuildContext context) => _FeatureCard(
-    onTap: onTap,
-    tint: HardSyncColors.apricotMist,
-    illustration: HardSyncAssets.illusToughFeedbackMoment,
-    eyebrow: '5–7 MIN · INTERMEDIATE',
-    title: 'Give constructive feedback',
-    subtitle: 'Rehearse a clear, kind conversation with a teammate.',
-  );
-}
-
-class _FeatureCard extends StatelessWidget {
-  const _FeatureCard({
-    required this.onTap,
-    required this.tint,
-    required this.illustration,
-    required this.eyebrow,
-    required this.title,
-    required this.subtitle,
-  });
-  final VoidCallback onTap;
-  final Color tint;
-  final String illustration;
-  final String eyebrow;
-  final String title;
-  final String subtitle;
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final compact = constraints.maxWidth < 330;
-      final largeArtwork = constraints.maxWidth >= 420;
-      return Material(
-        color: tint,
+  Widget build(BuildContext context) {
+    final title = badge?.label ?? 'Keep practicing';
+    final subtitle = badge == null
+        ? 'All rehearsal badges earned'
+        : '${badge!.count} / ${badge!.target} rehearsals';
+    final fraction = badge == null
+        ? 1.0
+        : (badge!.count / badge!.target).clamp(0.0, 1.0);
+    return Material(
+      color: HardSyncColors.surface,
+      borderRadius: BorderRadius.circular(22),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(22),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(22),
-          child: Container(
-            height: compact ? 174 : (largeArtwork ? 186 : 152),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: HardSyncColors.border),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: compact ? 76 : (largeArtwork ? 148 : 92),
-                  height: compact ? 94 : (largeArtwork ? 156 : 102),
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: .55),
-                    borderRadius: BorderRadius.circular(17),
-                  ),
-                  child: AppIllustration(illustration),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .05),
+                blurRadius: 14,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 68,
+                height: 68,
+                decoration: const BoxDecoration(
+                  color: HardSyncColors.lilacMist,
+                  shape: BoxShape.circle,
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        eyebrow,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: HardSyncColors.violet,
-                          fontWeight: FontWeight.w800,
+                child: const Icon(
+                  CupertinoIcons.book_fill,
+                  color: HardSyncColors.violet,
+                  size: 34,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w800),
+                    ),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(999),
+                      child: LinearProgressIndicator(
+                        value: fraction,
+                        minHeight: 6,
+                        backgroundColor: HardSyncColors.lilacMist,
+                        valueColor: const AlwaysStoppedAnimation(
+                          HardSyncColors.violet,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        title,
-                        maxLines: 2,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w800),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+                  ],
                 ),
-                const SizedBox(width: 6),
-                const Icon(
-                  CupertinoIcons.chevron_right,
-                  size: 19,
-                  color: HardSyncColors.inkMuted,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 6),
+              const Icon(
+                CupertinoIcons.chevron_right,
+                size: 19,
+                color: HardSyncColors.inkMuted,
+              ),
+            ],
           ),
         ),
-      );
-    },
-  );
+      ),
+    );
+  }
 }
 
 class _Encouragement extends StatelessWidget {
