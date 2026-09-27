@@ -1,12 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../config/env_config.dart';
 import '../models/subscription_tier.dart';
 import '../providers/subscription_provider.dart';
 import '../services/revenuecat_service.dart';
@@ -17,6 +16,7 @@ import 'legal_document_screen.dart';
 import 'settings_modal.dart';
 import 'sign_in_screen.dart';
 import 'subscription_paywall_screen.dart';
+import 'web_viewer_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool embedded;
@@ -29,10 +29,6 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic>? _profile;
   int _sessionCount = 0;
-  bool _dailyReminder = true;
-  String _reminderTime = '09:00 AM';
-  bool _hapticsEnabled = true;
-  bool _whispersEnabled = true;
 
   @override
   void initState() {
@@ -59,12 +55,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final reminder = prefs.getBool('pref_daily_reminder') ?? true;
-      final time = prefs.getString('pref_reminder_time') ?? '09:00 AM';
-      final haptics = prefs.getBool('pref_haptics') ?? true;
-      final whispers = prefs.getBool('pref_whispers') ?? true;
-
       Map<String, dynamic>? prof;
       int count = 0;
       try {
@@ -80,10 +70,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           _profile = prof;
           _sessionCount = count;
-          _dailyReminder = reminder;
-          _reminderTime = time;
-          _hapticsEnabled = haptics;
-          _whispersEnabled = whispers;
         });
       }
     } catch (_) {}
@@ -136,8 +122,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final role = _profile?['leadership_role'] as String? ?? 'Engineering Leader';
     final email = SupabaseService.instance.currentUserEmail;
     final streak = (_profile?['streak_days'] as num?)?.toInt() ?? 1;
-    final credits = (_profile?['credits_balance'] as num?)?.toInt() ?? 30;
+    final credits = (_profile?['credits'] as num?)?.toInt() ?? 0;
     final userId = SupabaseService.instance.currentUserId ?? '';
+    final avatarAsset = _profile?['avatar_url'] as String? ??
+        SupabaseService.instance.cachedAvatarUrl ??
+        HardSyncAssets.avatarCurrentUser;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F6FC),
@@ -235,6 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         role: role,
                         email: email,
                         tier: tier,
+                        avatarAsset: avatarAsset,
                       ),
                       const SizedBox(height: 14),
 
@@ -248,11 +238,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 24),
 
                       // --- SECTION 1: ACCOUNT & PROFILE ---
-                      _buildSectionHeader('Profile & Career Persona'),
+                      _buildSectionHeader('Profile Details'),
                       _buildCard([
                         _buildActionTile(
                           icon: Icons.badge_outlined,
-                          title: 'Edit Executive Profile',
+                          title: 'Edit Your Profile',
                           subtitle: '$fullName • $role',
                           trailingIcon: Icons.arrow_forward_ios_rounded,
                           onTap: () => _showEditProfileModal(fullName, role),
@@ -261,7 +251,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _buildActionTile(
                           icon: Icons.track_changes_outlined,
                           title: 'Coaching Focus Goals',
-                          subtitle: 'High-Stakes Conflict, Executive Presence',
+                          subtitle: 'Hard conversations, staying confident',
                           trailingIcon: Icons.arrow_forward_ios_rounded,
                           onTap: _showFocusGoalsModal,
                         ),
@@ -269,7 +259,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 20),
 
                       // --- SECTION 2: SUBSCRIPTION & BILLING ---
-                      _buildSectionHeader('Membership & Flight Time'),
+                      _buildSectionHeader('Membership & Credits'),
                       _buildCard([
                         _buildActionTile(
                           icon: Icons.workspace_premium_outlined,
@@ -277,7 +267,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ? 'HardSync Ultra Pass'
                               : (tier == SubscriptionTier.pro
                                   ? 'HardSync Pro Pass'
-                                  : 'Free Flight Tier'),
+                                  : 'Free Plan'),
                           subtitle: tier == SubscriptionTier.free
                               ? 'Upgrade for unlimited audio & video simulations'
                               : 'Active subscription • Managed via App Store',
@@ -303,12 +293,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 20),
 
                       // --- SECTION 3: PRACTICE PREFERENCES ---
-                      _buildSectionHeader('Simulation & Rehearsal Room'),
+                      _buildSectionHeader('Practice Room Settings'),
                       _buildCard([
                         _buildActionTile(
                           icon: Icons.videocam_outlined,
-                          title: 'Room Hardware Settings',
-                          subtitle: 'Camera, mic defaults, and intelligence sync',
+                          title: 'Camera & Mic Settings',
+                          subtitle: 'Camera and mic defaults',
                           trailingIcon: Icons.arrow_forward_ios_rounded,
                           onTap: () => showModalBottomSheet(
                             context: context,
@@ -320,54 +310,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             builder: (_) => const SettingsModal(),
                           ),
-                        ),
-                        _buildDivider(),
-                        _buildSwitchTile(
-                          icon: Icons.alarm_outlined,
-                          title: 'Daily Practice Rehearsal Reminder',
-                          subtitle: _dailyReminder ? 'Daily at $_reminderTime' : 'Turned off',
-                          value: _dailyReminder,
-                          onChanged: (val) async {
-                            setState(() => _dailyReminder = val);
-                            final p = await SharedPreferences.getInstance();
-                            await p.setBool('pref_daily_reminder', val);
-                            if (val && mounted) {
-                              _pickReminderTime();
-                            }
-                          },
-                          onTap: _pickReminderTime,
-                        ),
-                        _buildDivider(),
-                        _buildSwitchTile(
-                          icon: Icons.vibration_outlined,
-                          title: 'Haptic Cue on Firm Boundaries',
-                          subtitle: 'Vibrate subtly when delivering high-impact clarity',
-                          value: _hapticsEnabled,
-                          onChanged: (val) async {
-                            setState(() => _hapticsEnabled = val);
-                            final p = await SharedPreferences.getInstance();
-                            await p.setBool('pref_haptics', val);
-                            _showNotice(
-                              val ? 'Haptic feedback activated' : 'Haptics silenced',
-                              isSuccess: true,
-                            );
-                          },
-                        ),
-                        _buildDivider(),
-                        _buildSwitchTile(
-                          icon: Icons.psychology_outlined,
-                          title: 'Live In-Call Whisper Coaching',
-                          subtitle: 'Real-time telemetry cues during challenging turns',
-                          value: _whispersEnabled,
-                          onChanged: (val) async {
-                            setState(() => _whispersEnabled = val);
-                            final p = await SharedPreferences.getInstance();
-                            await p.setBool('pref_whispers', val);
-                            _showNotice(
-                              val ? 'Live coaching whispers enabled' : 'Whispers muted',
-                              isSuccess: true,
-                            );
-                          },
                         ),
                       ]),
                       const SizedBox(height: 20),
@@ -409,12 +351,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 20),
 
                       // --- SECTION 5: HELP, FAQS & SUPPORT ---
-                      _buildSectionHeader('Support & Governance'),
+                      _buildSectionHeader('Support'),
                       _buildCard([
                         _buildActionTile(
+                          icon: Icons.language_rounded,
+                          title: 'Official Website & How It Works',
+                          subtitle: 'See the C.A.R.E. approach & app overview',
+                          trailingIcon: Icons.arrow_forward_ios_rounded,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const WebViewerScreen(
+                                title: 'HardSync Official Site',
+                                url: EnvConfig.landingPageUrl,
+                              ),
+                            ),
+                          ),
+                        ),
+                        _buildDivider(),
+                        _buildActionTile(
                           icon: Icons.help_outline_rounded,
-                          title: 'Executive Support & FAQs',
-                          subtitle: 'Debrief methodology, scoring rubric & tutorials',
+                          title: 'Help & FAQs',
+                          subtitle: 'How scoring works & how-to guides',
                           trailingIcon: Icons.arrow_forward_ios_rounded,
                           onTap: _showHelpCenterModal,
                         ),
@@ -422,7 +380,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _buildActionTile(
                           icon: Icons.send_rounded,
                           title: 'Send Feedback & Request Scenarios',
-                          subtitle: 'Direct line to our leadership coaching designers',
+                          subtitle: 'Direct line to our coaching team',
                           trailingIcon: Icons.arrow_forward_ios_rounded,
                           onTap: _showFeedbackModal,
                         ),
@@ -435,8 +393,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const LegalDocumentScreen(
-                                document: LegalDocument.privacy,
+                              builder: (_) => const WebViewerScreen(
+                                title: 'Privacy Policy',
+                                url: EnvConfig.privacyPolicyUrl,
+                                fallbackWidget: LegalDocumentScreen(
+                                  document: LegalDocument.privacy,
+                                ),
                               ),
                             ),
                           ),
@@ -450,8 +412,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const LegalDocumentScreen(
-                                document: LegalDocument.terms,
+                              builder: (_) => const WebViewerScreen(
+                                title: 'Terms of Service',
+                                url: EnvConfig.termsOfServiceUrl,
+                                fallbackWidget: LegalDocumentScreen(
+                                  document: LegalDocument.terms,
+                                ),
                               ),
                             ),
                           ),
@@ -475,13 +441,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _buildDivider(),
                         _buildActionTile(
                           icon: Icons.delete_forever_outlined,
-                          title: 'Delete Account & Erase Telemetry',
-                          subtitle: 'Irrevocably remove all debriefs and transcripts',
+                          title: 'Delete Account & All Data',
+                          subtitle: 'Permanently remove all your reports and transcripts',
                           isDanger: true,
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => const DeleteAccountScreen(),
+                            ),
+                          ),
+                        ),
+                        _buildDivider(),
+                        _buildActionTile(
+                          icon: Icons.open_in_browser_rounded,
+                          title: 'Web Account Deletion Portal',
+                          subtitle: 'Browser-based data removal instructions',
+                          trailingIcon: Icons.arrow_forward_ios_rounded,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const WebViewerScreen(
+                                title: 'Account Deletion Portal',
+                                url: EnvConfig.accountDeletionUrl,
+                              ),
                             ),
                           ),
                         ),
@@ -492,7 +474,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(
                           children: [
                             Text(
-                              'HardSync • Executive Leadership Flight Simulator',
+                              'HardSync • Practice for tough conversations',
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
@@ -527,6 +509,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String role,
     required String email,
     required SubscriptionTier tier,
+    required String avatarAsset,
   }) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -572,17 +555,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ],
                 ),
-                child: ClipOval(
-                  child: Image.asset(
-                    HardSyncAssets.appIcon,
-                    fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => const Icon(
-                      Icons.person,
-                      size: 38,
-                      color: HardSyncColors.violet,
-                    ),
-                  ),
-                ),
+                child: AppAvatar(avatarAsset, size: 60, borderWidth: 0),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -703,7 +676,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: _buildMetricTile(
             emoji: '🔥',
             value: '$streak d',
-            label: 'Rehearsal Streak',
+            label: 'Practice Streak',
             color: const Color(0xFFF97316),
           ),
         ),
@@ -738,7 +711,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             value: tier == SubscriptionTier.ultra
                 ? 'Ultra'
                 : (tier == SubscriptionTier.pro ? 'Pro' : 'Free'),
-            label: 'Flight Tier',
+            label: 'Plan',
             color: const Color(0xFF8B5CF6),
             onTap: () => Navigator.push(
               context,
@@ -914,51 +887,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildSwitchTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-    VoidCallback? onTap,
-  }) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      onTap: onTap,
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: HardSyncColors.lilacMist.withValues(alpha: 0.7),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: HardSyncColors.violet, size: 20),
-      ),
-      title: Text(
-        title,
-        style: GoogleFonts.plusJakartaSans(
-          fontSize: 14,
-          fontWeight: FontWeight.w700,
-          color: HardSyncColors.ink,
-        ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: GoogleFonts.plusJakartaSans(
-          fontSize: 11.5,
-          color: HardSyncColors.inkMuted,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: CupertinoSwitch(
-        value: value,
-        activeTrackColor: HardSyncColors.violet,
-        onChanged: onChanged,
-      ),
-    );
-  }
-
   // --- MODAL: EDIT EXECUTIVE PROFILE ---
   void _showEditProfileModal(String currentName, String currentRole) {
     final nameCtrl = TextEditingController(text: currentName);
@@ -1005,7 +933,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Edit Executive Profile',
+                'Edit Your Profile',
                 style: GoogleFonts.newsreader(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
@@ -1013,7 +941,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               Text(
-                'HardSync customizes roleplay resistance based on your position.',
+                'HardSync adjusts how tough the practice partner is based on your role.',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12.5,
                   color: HardSyncColors.inkMuted,
@@ -1045,7 +973,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'LEADERSHIP ROLE',
+                'YOUR ROLE',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
@@ -1152,11 +1080,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // --- MODAL: FOCUS GOALS ---
   void _showFocusGoalsModal() {
     final goals = [
-      {'title': 'High-Stakes Conflict', 'desc': 'Defuse escalated team arguments & pushback'},
-      {'title': 'Executive Presence', 'desc': 'Eliminate hedging words & command meetings'},
-      {'title': 'Radical Candor Feedback', 'desc': 'Deliver clear critical reviews without softening'},
+      {'title': 'High-Stakes Conflict', 'desc': 'Calm down heated team arguments and pushback'},
+      {'title': 'Speaking with Confidence', 'desc': 'Cut hedging words and lead the room'},
+      {'title': 'Direct Feedback', 'desc': 'Give clear, honest feedback without softening it'},
       {'title': 'Salary & Promo Defense', 'desc': 'Negotiate team budgets, headcount & raises'},
-      {'title': 'Board & Investor Pitch', 'desc': 'Deliver concise high-cadence strategy summaries'},
+      {'title': 'Presenting to Leaders', 'desc': 'Give short, confident updates to senior leaders'},
     ];
 
     showModalBottomSheet(
@@ -1192,7 +1120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             Text(
-              'Select priority flight simulator drills for your weekly schedule.',
+              'Pick what you want to practice most this week.',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 12.5,
                 color: HardSyncColors.inkMuted,
@@ -1407,16 +1335,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showHelpCenterModal() {
     final faqs = [
       {
-        'q': 'How does HardSync evaluate composure and clarity?',
-        'a': 'HardSync runs real-time voice cadence and transcript telemetry. It detects filler sounds (um, ah), passive hedging ("I guess", "kind of"), and boundary firmness (direct statements without apology).'
+        'q': 'How does HardSync check how calm and clear I am?',
+        'a': 'HardSync listens to your voice and words as you talk. It picks up on filler sounds (um, ah), soft phrases ("I guess", "kind of"), and how clearly you set boundaries.'
       },
       {
         'q': 'Are my voice recordings or camera frames stored?',
-        'a': 'Never. HardSync enforces a zero-copy client policy. Voice and video streams are processed live in-memory via WebSocket pipelines to Gemini Live. Media is never stored or shared.'
+        'a': 'Never. Your voice and video are processed live, in the moment, and are never saved or shared.'
       },
       {
-        'q': 'How do practice flight credits work?',
-        'a': 'Each simulation session utilizes 1 credit. New accounts receive complimentary credits, and Pro/Ultra subscribers enjoy unlimited priority flight time.'
+        'q': 'How do practice credits work?',
+        'a': 'Each practice session uses 1 credit. New accounts get some free credits, and Pro/Ultra members get unlimited sessions.'
       },
       {
         'q': 'Can I create my own personalized scenarios?',
@@ -1452,7 +1380,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Executive Support & FAQs',
+              'Help & FAQs',
               style: GoogleFonts.newsreader(
                 fontSize: 26,
                 fontWeight: FontWeight.w700,
@@ -1460,7 +1388,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             Text(
-              'Flight manual & coaching debrief methodology.',
+              'How coaching and scoring work.',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 12.5,
                 color: HardSyncColors.inkMuted,
@@ -1504,13 +1432,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               width: double.infinity,
               height: 48,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const WebViewerScreen(
+                        title: 'Help & FAQs',
+                        url: EnvConfig.faqUrl,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.language_rounded, size: 18),
+                label: const Text('Open Online Knowledge Base & FAQs'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: HardSyncColors.violet,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
               child: OutlinedButton.icon(
                 onPressed: () {
-                  Clipboard.setData(const ClipboardData(text: 'support@hardsync.ai'));
-                  _showNotice('Email copied: support@hardsync.ai', isSuccess: true);
+                  Clipboard.setData(ClipboardData(text: EnvConfig.supportEmail));
+                  _showNotice('Email copied: ${EnvConfig.supportEmail}', isSuccess: true);
                 },
                 icon: const Icon(Icons.email_outlined, size: 18),
-                label: const Text('Contact Support (support@hardsync.ai)'),
+                label: Text('Contact Support (${EnvConfig.supportEmail})'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: HardSyncColors.violet,
                   side: const BorderSide(color: HardSyncColors.violet),
@@ -1557,7 +1511,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Leadership Feedback',
+              'Send Feedback',
               style: GoogleFonts.newsreader(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
@@ -1578,7 +1532,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
-                hintText: 'e.g. Challenging a C-suite budget cut, handling a toxic peer...',
+                hintText: 'e.g. Pushing back on a budget cut, handling a difficult coworker...',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: const BorderSide(color: HardSyncColors.lilacBorder),
@@ -1612,29 +1566,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // --- TIME PICKER ---
-  Future<void> _pickReminderTime() async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: const TimeOfDay(hour: 9, minute: 0),
-    );
-    if (picked != null) {
-      final hour = picked.hourOfPeriod == 0 ? 12 : picked.hourOfPeriod;
-      final minute = picked.minute.toString().padLeft(2, '0');
-      final period = picked.period == DayPeriod.am ? 'AM' : 'PM';
-      final formatted = '$hour:$minute $period';
-
-      setState(() {
-        _reminderTime = formatted;
-        _dailyReminder = true;
-      });
-      final p = await SharedPreferences.getInstance();
-      await p.setString('pref_reminder_time', formatted);
-      await p.setBool('pref_daily_reminder', true);
-      _showNotice('Daily practice set for $formatted', isSuccess: true);
-    }
-  }
-
   // --- MANAGE SUBSCRIPTION ---
   Future<void> _manageSubscription() async {
     if (!kIsWeb && RevenueCatService.instance.isConfigured) {
@@ -1643,8 +1574,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return;
       } catch (_) {}
     }
+    final platformStore = defaultTargetPlatform == TargetPlatform.iOS
+        ? 'Apple ID'
+        : (defaultTargetPlatform == TargetPlatform.android ? 'Google Play' : 'account');
     _showNotice(
-      'Subscriptions are managed directly in your Google Play or App Store account settings.',
+      'Subscriptions are managed directly in your $platformStore account settings.',
     );
   }
 
@@ -1672,7 +1606,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Your Executive Profile',
+                  'Your Profile',
                   style: GoogleFonts.newsreader(
                     fontSize: 28,
                     fontWeight: FontWeight.w700,
@@ -1681,7 +1615,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Sign in to synchronize your flight history, streak, and AI composure analytics.',
+                  'Sign in to save your practice history, streak, and progress.',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 13.5,

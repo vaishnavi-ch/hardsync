@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/persona.dart';
 import '../models/scenario.dart';
+import '../services/backend_service.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
 import 'session_prep_screen.dart';
@@ -51,53 +52,56 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
     );
   }
 
-  void _generateScenario() async {
-    final note = _contextController.text.trim();
-    if (note.isEmpty && _selectedTensions.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Please select at least one tension or enter a context note.',
-          ),
-          backgroundColor: Color(0xFFFF8A43),
-        ),
-      );
-      return;
+  void _submitScenario() {
+    switch (_creationMethod) {
+      case 'template':
+        _useTemplateScenario();
+        break;
+      case 'ai':
+        _generateScenarioWithAi();
+        break;
+      case 'scratch':
+      default:
+        _buildScenarioFromScratch();
     }
+  }
 
-    setState(() => _isGenerating = true);
-    await Future.delayed(const Duration(milliseconds: 700));
-
+  // 'Start from scratch': assemble the scenario entirely from the user's own
+  // picks (persona, goal, tensions, optional note) with no network call.
+  void _buildScenarioFromScratch() {
+    final note = _contextController.text.trim();
     final persona = _getSelectedPersona();
     final tensionSummary = _selectedTensions.isNotEmpty
         ? _selectedTensions.join(', ')
-        : 'Team dynamics & accountability';
+        : 'the situation you described';
+    final goalLower =
+        _selectedGoal.isEmpty
+            ? _selectedGoal
+            : _selectedGoal[0].toLowerCase() + _selectedGoal.substring(1);
 
     final customScenario = Scenario(
       id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
       title: 'Practice: ${persona.name} · $tensionSummary',
-      subtitle: 'Targeted Rehearsal with ${persona.role}',
+      subtitle: '$_selectedGoal with ${persona.role}',
       category: 'Custom Practice',
       difficulty: ScenarioDifficulty.intermediate,
       persona: persona,
       userPersona: Scenario.userPersonaFor(persona),
       contextBrief: note.isNotEmpty
           ? note
-          : 'You are meeting with ${persona.name} (${persona.role}) to resolve $tensionSummary with firm accountability and emotional poise.',
+          : 'You are meeting with ${persona.name} (${persona.role}) to $goalLower regarding '
+                '$tensionSummary, with firm accountability and emotional poise.',
       userObjectives: [
         'Acknowledge the perspective directly without defensive hedging.',
         'Address the core friction ($tensionSummary) calmly with specific examples.',
-        'Establish firm boundaries, committed deliverables, and next check-in.',
+        'Establish firm boundaries, committed deliverables, and a next check-in.',
       ],
       trapPhrasesToAvoid: [
         'I know this is awkward, but...',
         'I guess maybe we can overlook it this time...',
-        'Please don’t take this the wrong way...',
+        "Please don't take this the wrong way...",
       ],
     );
-
-    if (!mounted) return;
-    setState(() => _isGenerating = false);
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
@@ -106,17 +110,128 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
     );
   }
 
-  void _nextStep() {
-    if (_step == 1 &&
-        _contextController.text.trim().isEmpty &&
-        _selectedTensions.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Describe the situation or choose a tension.'),
+  // 'Use a template': adapt one of the curated built-in scenarios that best
+  // matches the chosen persona/goal, again with no network call.
+  void _useTemplateScenario() {
+    const categoryByGoal = {
+      'Give feedback': 'Feedback',
+      'Handle conflict': 'Conflict and Alignment',
+      'Set expectations': 'Communication Basics',
+      'Build trust': 'One-to-Ones',
+    };
+    final note = _contextController.text.trim();
+    final wantedCategory = categoryByGoal[_selectedGoal];
+    final templates = Scenario.defaultScenarios;
+
+    final template = templates.firstWhere(
+      (s) => s.persona.id == _selectedPersonaId && s.category == wantedCategory,
+      orElse: () => templates.firstWhere(
+        (s) => s.persona.id == _selectedPersonaId,
+        orElse: () => templates.firstWhere(
+          (s) => s.category == wantedCategory,
+          orElse: () => templates.first,
+        ),
+      ),
+    );
+
+    final adapted = template.copyWith(
+      id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+      category: 'Custom Practice',
+      contextBrief: note.isNotEmpty
+          ? '${template.contextBrief}\n\nYour note: $note'
+          : template.contextBrief,
+    );
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => SessionPrepScreen(scenario: adapted)),
+    );
+  }
+
+  void _generateScenarioWithAi() async {
+    final note = _contextController.text.trim();
+    setState(() => _isGenerating = true);
+
+    try {
+      final result = await BackendService.request('/api/scenarios/generate', {
+        'description': note,
+        'goal': _selectedGoal,
+        'tensions': _selectedTensions.toList(),
+        'personaHint': _selectedPersonaId,
+      });
+
+      final difficulty = switch (result['difficulty']) {
+        'beginner' => ScenarioDifficulty.beginner,
+        'advanced' => ScenarioDifficulty.advanced,
+        _ => ScenarioDifficulty.intermediate,
+      };
+      const defensivenessByDifficulty = {
+        ScenarioDifficulty.beginner: 40,
+        ScenarioDifficulty.intermediate: 60,
+        ScenarioDifficulty.advanced: 80,
+      };
+      final persona = Persona(
+        id: 'custom_persona_${DateTime.now().millisecondsSinceEpoch}',
+        name: result['name'] as String,
+        role: result['role'] as String,
+        company: result['company'] as String,
+        avatarAsset: result['avatarAsset'] as String,
+        callBackgroundAsset: 'assets/avatars/alex_call.jpg',
+        bio: result['bio'] as String,
+        personalityTraits: result['personalityTraits'] as String,
+        baselineDefensiveness: defensivenessByDifficulty[difficulty]!,
+        pushbackPhrases: List<String>.from(result['pushbackPhrases'] as List),
+        yieldingPhrases: const [],
+        voiceStyle: 'Natural, conversational',
+        geminiVoiceName: result['geminiVoiceName'] as String,
+        geminiAvatarName: result['name'] as String,
+        tavusReplicaId: result['tavusReplicaId'] as String,
+      );
+
+      final customScenario = Scenario(
+        id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+        title: result['title'] as String,
+        subtitle: result['subtitle'] as String,
+        category: 'Custom Practice',
+        difficulty: difficulty,
+        persona: persona,
+        userPersona: Scenario.userPersonaFor(persona),
+        contextBrief: result['contextBrief'] as String,
+        userObjectives: List<String>.from(result['userObjectives'] as List),
+        trapPhrasesToAvoid: List<String>.from(
+          result['trapPhrasesToAvoid'] as List,
         ),
       );
-      return;
+
+      if (!mounted) return;
+      setState(() => _isGenerating = false);
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => SessionPrepScreen(scenario: customScenario),
+        ),
+      );
+    } on BackendException catch (e) {
+      if (!mounted) return;
+      setState(() => _isGenerating = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: const Color(0xFFFF8A43),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isGenerating = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Scenario generation returned an invalid result. Please retry.'),
+          backgroundColor: Color(0xFFFF8A43),
+        ),
+      );
     }
+  }
+
+  void _nextStep() {
     if (_step < 3) setState(() => _step++);
   }
 
@@ -220,7 +335,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
                       onPressed: _isGenerating
                           ? null
                           : _step == 3
-                          ? _generateScenario
+                          ? _submitScenario
                           : _nextStep,
                       child: _isGenerating
                           ? const SizedBox(
@@ -433,7 +548,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
         _buildContextInput(),
         const SizedBox(height: 18),
         Text(
-          'What’s your goal?',
+          'What’s your goal? (optional)',
           style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 9),
@@ -453,7 +568,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
         ),
         const SizedBox(height: 18),
         Text(
-          'What is creating friction?',
+          'What is creating friction? (optional)',
           style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 9),
@@ -466,8 +581,8 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       _wizardHeading(
-        'Choose your conversation partner',
-        'Pick the person whose role and reaction style best match the real conversation.',
+        'Choose your conversation partner (optional)',
+        'Pick who best matches the real conversation, or leave this and AI will choose based on your description.',
       ),
       const SizedBox(height: 16),
       Container(
@@ -992,7 +1107,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
               borderRadius: BorderRadius.circular(16),
             ),
           ),
-          onPressed: _isGenerating ? null : _generateScenario,
+          onPressed: _isGenerating ? null : _generateScenarioWithAi,
           child: _isGenerating
               ? const SizedBox(
                   width: 22,

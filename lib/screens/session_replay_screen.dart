@@ -249,7 +249,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Complete your first rehearsal drill to analyze composure, cadence, and boundary firmness.',
+                    'Complete your first practice session to see how calm, clear, and firm you were.',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 13,
@@ -269,7 +269,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Text(
-                'PAST REHEARSALS & DEBRIEFS',
+                'PAST PRACTICE SESSIONS',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w700,

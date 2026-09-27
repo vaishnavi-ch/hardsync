@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../config/env_config.dart';
 import '../theme/hardsync_theme.dart';
+import 'web_viewer_screen.dart';
 
 enum LegalDocument { terms, privacy }
 
@@ -13,11 +15,30 @@ class LegalDocumentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final privacy = document == LegalDocument.privacy;
+    final webUrl = privacy ? EnvConfig.privacyPolicyUrl : EnvConfig.termsOfServiceUrl;
+    final titleText = privacy ? 'Privacy Policy' : 'Terms of Service';
+
     return Scaffold(
       backgroundColor: HardSyncColors.cream,
       appBar: AppBar(
         backgroundColor: HardSyncColors.cream,
-        title: Text(privacy ? 'Privacy Policy' : 'Terms of Service'),
+        title: Text(titleText),
+        actions: [
+          TextButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => WebViewerScreen(
+                  title: titleText,
+                  url: webUrl,
+                  fallbackWidget: this,
+                ),
+              ),
+            ),
+            icon: const Icon(Icons.language, size: 18),
+            label: const Text('Live Web'),
+          ),
+        ],
       ),
       body: SelectionArea(
         child: SingleChildScrollView(
@@ -39,7 +60,7 @@ class LegalDocumentScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text('Effective 25 September 2026', style: _body(13)),
+                  Text('Effective 28 September 2026', style: _body(13)),
                   const SizedBox(height: 24),
                   ...(privacy ? _privacySections : _termsSections).map(
                     (section) => Padding(
@@ -79,7 +100,7 @@ class LegalDocumentScreen extends StatelessWidget {
 const _privacySections = <(String, String)>[
   (
     'What HardSync collects',
-    'We process account details, profile choices, course progress, practice text and transcripts, session results, subscription status, and technical diagnostics. During a live voice or video practice, your microphone or camera stream is sent to the call provider so the session can work. HardSync does not record, upload, or save call audio or video. Session transcripts and reports may be saved to your account.',
+    'We process account details, profile choices, course progress, practice text and transcripts, session results, subscription status, and technical diagnostics. During a live voice or video practice, your microphone or camera stream is sent to the call provider so the session can work. If you choose to save a replay of a session, that recording is uploaded to our cloud storage and kept until it expires or you delete it. Session transcripts and reports may be saved to your account.',
   ),
   (
     'How information is used',
@@ -87,11 +108,11 @@ const _privacySections = <(String, String)>[
   ),
   (
     'Service providers',
-    'HardSync uses Supabase for authentication and application data, Google Gemini for text, live audio and video, and analysis, and RevenueCat for subscriptions. Live call media is processed by Google Gemini under its terms and privacy policy.',
+    'HardSync uses Supabase for authentication and application data, Google Gemini for text practice, live voice, and analysis, Tavus (running on Daily) for live video avatar calls, and RevenueCat for subscriptions. Live call media is processed by Google Gemini or Tavus/Daily, depending on the mode you choose, under their own terms and privacy policies.',
   ),
   (
     'Microphone, camera, and recordings',
-    'Microphone and camera access is requested only when you start a voice or video feature. Audio and video are streamed live to the call provider and are not recorded or saved by HardSync. Your transcript and session report may be saved to your account.',
+    'Microphone and camera access is requested only when you start a voice or video feature. Audio and video are streamed live to the call provider. By default HardSync does not keep a copy of that stream. Some sessions offer an opt-in "save replay" option; if you turn it on for a session, the recording is uploaded directly from your device to our cloud storage (Cloudflare R2), stored under your account, and automatically deleted after it expires or when you remove it from your session history. Your transcript and session report may be saved to your account regardless of whether you save a replay.',
   ),
   (
     'Purchases',
@@ -111,7 +132,7 @@ const _privacySections = <(String, String)>[
   ),
   (
     'Contact',
-    'Questions and deletion requests can be submitted through the HardSync support and account deletion pages published with the web application.',
+    'Questions and deletion requests can be submitted by email to vaishnavi26ch@gmail.com, or through our web portal: https://vaishnavi-ch.github.io/hardsync/privacy.html and https://vaishnavi-ch.github.io/hardsync/account-deletion.html.',
   ),
 ];
 
@@ -146,6 +167,6 @@ const _termsSections = <(String, String)>[
   ),
   (
     'Contact',
-    'Questions about these terms can be submitted through the HardSync support page published with the web application.',
+    'Questions about these terms can be submitted by email to vaishnavi26ch@gmail.com, or viewed online at https://vaishnavi-ch.github.io/hardsync/terms.html.',
   ),
 ];

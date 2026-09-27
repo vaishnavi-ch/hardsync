@@ -35,21 +35,21 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen> {
       'id': 'push_back_leadership',
       'title': 'Pushing Back on Leadership',
       'subtitle':
-          'Saying no to unrealistic deadlines and high-stakes executive demands.',
+          'Saying no to unrealistic deadlines and pressure from above.',
       'asset': HardSyncAssets.iconShieldVerified,
     },
     {
       'id': 'team_friction',
       'title': 'Resolving Team Friction',
       'subtitle':
-          'De-escalating defensive reactions and cross-functional disagreements.',
+          'De-escalating defensive reactions and disagreements between teams.',
       'asset': HardSyncAssets.iconHandshakePartnership,
     },
     {
       'id': 'scope_salary',
       'title': 'Negotiating Scope & Salary',
       'subtitle':
-          'Advocating for personal compensation, title updates, and team headcount.',
+          'Advocating for your pay, title, and team size.',
       'asset': HardSyncAssets.iconTrophyCup,
     },
   ];

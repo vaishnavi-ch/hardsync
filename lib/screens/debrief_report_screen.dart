@@ -21,12 +21,12 @@ class DebriefReportScreen extends StatelessWidget {
 
     if (report == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Debrief Report')),
+        appBar: AppBar(title: const Text('Practice Report')),
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('No recent simulation debrief found.'),
+              const Text('No recent practice session found.'),
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
@@ -487,7 +487,7 @@ class DebriefReportScreen extends StatelessWidget {
                   const Icon(Icons.sensors, size: 18, color: Color(0xFF7C5CE7)),
                   const SizedBox(width: 8),
                   Text(
-                    'Multimodal Sensor Telemetry',
+                    'Voice & Camera Readings',
                     style: GoogleFonts.newsreader(
                       fontSize: 19,
                       fontWeight: FontWeight.w600,
@@ -503,7 +503,7 @@ class DebriefReportScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(9999),
                 ),
                 child: Text(
-                  'LIVE SENSORS',
+                  'LIVE',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 9.5,
                     fontWeight: FontWeight.w700,
@@ -516,7 +516,7 @@ class DebriefReportScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Direct measurements captured via real-time camera & microphone telemetry',
+            'Measured live from your camera and microphone',
             style: GoogleFonts.plusJakartaSans(
               fontSize: 12,
               color: HardSyncColors.muted,
@@ -547,7 +547,7 @@ class DebriefReportScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Webcam Presence & Gaze Engagement',
+                          'Camera Presence & Eye Contact',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
@@ -634,7 +634,7 @@ class DebriefReportScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Vocal Cadence & Speech Dynamics',
+                          'Speaking Speed & Patterns',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
@@ -862,7 +862,7 @@ class DebriefReportScreen extends StatelessWidget {
                   const AppIcon(HardSyncAssets.iconLightbulbIdea, size: 18),
                   const SizedBox(width: 8),
                   Text(
-                    'Actionable Coaching Blueprint',
+                    'What To Try Next',
                     style: GoogleFonts.newsreader(
                       fontSize: 19,
                       fontWeight: FontWeight.w600,
@@ -892,7 +892,7 @@ class DebriefReportScreen extends StatelessWidget {
                       const SizedBox(width: 4),
                     ],
                     Text(
-                      report.isAiGenerated ? 'GEMINI AI' : 'LIVE TELEMETRY',
+                      report.isAiGenerated ? 'AI GENERATED' : 'LIVE DATA',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 9.5,
                         fontWeight: FontWeight.w700,
@@ -924,8 +924,8 @@ class DebriefReportScreen extends StatelessWidget {
 
           Text(
             report.isAiGenerated
-                ? 'Personalized phrasing alternatives generated directly from your speech & video'
-                : 'Concrete phrasing alternatives dynamically targeted to your conversational turns',
+                ? 'Better phrases, picked from what you said and how you looked on camera'
+                : 'Specific phrases you could use instead, based on this conversation',
             style: GoogleFonts.plusJakartaSans(
               fontSize: 12,
               color: HardSyncColors.muted,

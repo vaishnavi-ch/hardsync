@@ -65,7 +65,7 @@ class TelemetryDrawer extends StatelessWidget {
                           ),
                         ),
                         child: const Text(
-                          'LIVE SENSORY HUD',
+                          'LIVE',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -76,7 +76,7 @@ class TelemetryDrawer extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       const Text(
-                        'Multimodal Telemetry',
+                        'Voice & Camera Readings',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -101,13 +101,13 @@ class TelemetryDrawer extends StatelessWidget {
 
               // 1. Cadence & WPM
               _buildTelemetryRow(
-                title: 'Vocal Pace (Cadence)',
+                title: 'Speaking Speed',
                 value: '${avgWpm.round()} WPM',
                 subtitle: avgWpm > 160
                     ? '⚠️ Rushed (>160 WPM)'
                     : avgWpm < 105
                     ? '⚠️ Hesitant (<105 WPM)'
-                    : '✓ Optimal Flow (120-145 WPM)',
+                    : '✓ Good pace (120-145 WPM)',
                 statusColor: (avgWpm >= 115 && avgWpm <= 150)
                     ? HardSyncColors.green
                     : HardSyncColors.amber,
@@ -117,11 +117,11 @@ class TelemetryDrawer extends StatelessWidget {
 
               // 2. Filler & Hedging Counter
               _buildTelemetryRow(
-                title: 'Filler & Hedging Counter',
+                title: 'Filler Words',
                 value: '$fillerCount detected',
                 subtitle: fillerCount <= 2
-                    ? '✓ Clean executive phrasing'
-                    : 'Hedging phrases detected ("sorry", "just feel like")',
+                    ? '✓ Clear, confident wording'
+                    : 'Soft phrases detected ("sorry", "just feel like")',
                 statusColor: fillerCount <= 2
                     ? HardSyncColors.green
                     : HardSyncColors.crimson,
@@ -162,7 +162,7 @@ class TelemetryDrawer extends StatelessWidget {
 
               // 4. Closed-Loop Avatar Defensiveness
               _buildTelemetryRow(
-                title: 'Avatar Defensiveness (Closed Loop)',
+                title: 'How Defensive They Are',
                 value: '$avatarDefensiveness%',
                 subtitle: avatarDefensiveness < 45
                     ? '✓ Avatar is de-escalating & yielding'

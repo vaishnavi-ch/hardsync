@@ -45,7 +45,7 @@ class MicPermissionDialog extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'HardSync requires microphone access to simulate realistic conversational speech and provide live executive debrief heuristics.',
+              'HardSync needs microphone access to run realistic practice conversations and score your speech as you talk.',
               textAlign: TextAlign.center,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
@@ -139,7 +139,7 @@ class OfflineErrorDialog extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Please verify your internet connection to continue your executive flight rehearsal session.',
+              'Please check your internet connection to continue your practice session.',
               textAlign: TextAlign.center,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
@@ -274,7 +274,7 @@ class _SignInBottomSheetState extends State<SignInBottomSheet> {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('✨ Signed in as Sarah Chen (Executive Leader)!'),
+          content: Text('✨ Signed in as Sarah Chen!'),
           backgroundColor: Color(0xFF597E66),
         ),
       );
@@ -398,7 +398,7 @@ class _SignInBottomSheetState extends State<SignInBottomSheet> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Sync your flight simulator metrics across your devices with Supabase Cloud.',
+            'Sync your practice results across your devices.',
             textAlign: TextAlign.center,
             style: GoogleFonts.plusJakartaSans(
               fontSize: 13,
@@ -407,7 +407,7 @@ class _SignInBottomSheetState extends State<SignInBottomSheet> {
           ),
           const SizedBox(height: 20),
 
-          // 1-Click Executive Demo Sign-In
+          // 1-Click Demo Sign-In
           SizedBox(
             width: double.infinity,
             height: 46,
@@ -426,7 +426,7 @@ class _SignInBottomSheetState extends State<SignInBottomSheet> {
                 color: Color(0xFFF9D689),
               ),
               label: Text(
-                '1-Click Executive Demo Sign-In',
+                '1-Click Demo Sign-In',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w600,

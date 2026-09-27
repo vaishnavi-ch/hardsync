@@ -30,9 +30,9 @@ enum SubscriptionTier {
   String get tagline {
     switch (this) {
       case SubscriptionTier.free:
-        return 'Foundational text rehearsals & scenario previews';
+        return 'Basic text practice and scenario previews';
       case SubscriptionTier.pro:
-        return 'Unlimited Gemini Live audio calls & real-time vocal telemetry';
+        return 'Unlimited voice calls with live speaking feedback';
       case SubscriptionTier.ultra:
         return 'Gemini Live video calls with camera-based coaching';
     }
@@ -43,9 +43,20 @@ enum SubscriptionTier {
       case SubscriptionTier.free:
         return '\$0 / month';
       case SubscriptionTier.pro:
-        return '\$19 / month';
+        return '\$19.99 / month';
       case SubscriptionTier.ultra:
-        return '\$39 / month';
+        return '\$39.99 / month';
+    }
+  }
+
+  int get monthlyCredits {
+    switch (this) {
+      case SubscriptionTier.free:
+        return 10;
+      case SubscriptionTier.pro:
+        return 250;
+      case SubscriptionTier.ultra:
+        return 600;
     }
   }
 
@@ -73,37 +84,37 @@ enum SubscriptionTier {
 
   bool get canUseAudioCalls =>
       this == SubscriptionTier.pro || this == SubscriptionTier.ultra;
-  bool get canUseVideoCalls => this == SubscriptionTier.ultra;
+  bool get canUseVideoCalls =>
+      this == SubscriptionTier.pro || this == SubscriptionTier.ultra;
   bool get canUseLiveFaceAnalysis => this == SubscriptionTier.ultra;
 
   List<String> get features {
     switch (this) {
       case SubscriptionTier.free:
         return const [
-          'Interactive Text Chat Simulator',
-          'Complete Scenario Catalog',
-          'Basic Transcript Debrief',
-          'No audio calls',
-          'No Gemini Live video practice',
+          'Practice by Text Chat',
+          'All Practice Scenarios',
+          '10 Free Practice Credits',
+          'Basic Session Report',
         ];
       case SubscriptionTier.pro:
         return const [
-          '🎙️ Gemini Live high-fidelity audio calls',
-          '📊 Real-Time Vocal Telemetry (WPM, Fillers, Hedging)',
-          '⏱️ Talk vs. Listen Ratio Tracking',
-          '🧠 Gemini 2.0 Speech Leadership Debrief',
-          '⚡ Custom Scenario Creator',
-          '🔒 Video Calls & Face Analysis (Ultra Only)',
+          '⚡ 250 Monthly Practice Credits',
+          '💬 Unlimited Text Practice',
+          '🎙️ Live Voice Practice Calls (1 credit/min)',
+          '📹 Photorealistic HD Video Calls (6 credits/min)',
+          '📊 Live Speaking Feedback (Speed, Fillers, Hedging)',
+          '🎯 50+ Workplace Scenarios',
+          '🛠️ Custom Scenario Creator',
         ];
       case SubscriptionTier.ultra:
         return const [
-          '📹 Gemini Live conversational video calls',
-          '🎙️ Gemini Live low-latency audio and video',
-          '👁️ Live Face & Eye-Contact Stability Analysis',
-          '🧘 Head Composure & Posture Telemetry',
-          '📸 Multimodal Visual Frame Inspection',
-          '🧠 Gemini 2.0 Multimodal Vision & Speech Debrief',
-          '🚀 Priority Model Inference Latency',
+          '⚡ 600 Monthly Practice Credits (~2.5x more practice time)',
+          '📹 Photorealistic HD Video & Live Voice Calls',
+          '🚀 Priority Access for instant video response',
+          '🛠️ Unlimited Custom Meeting Scenarios',
+          '🏆 Full Presence Check-Up',
+          '🧠 Advanced Voice & Camera Report',
         ];
     }
   }

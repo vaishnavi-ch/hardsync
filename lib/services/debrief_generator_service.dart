@@ -63,8 +63,8 @@ class DebriefGeneratorService {
       speechMetrics: speechMetrics,
       visionMetrics: const VisionMetrics(isCameraActive: false),
       aiExecutiveSummary: userTurns.isEmpty
-          ? 'No user dialogue recorded; insufficient data for feedback.'
-          : '${userTurns.length} user turns recorded. Review the transcript against your rehearsal objectives.',
+          ? 'No conversation was recorded, so there\'s not enough to give feedback on.'
+          : '${userTurns.length} turns recorded. Check the transcript against what you wanted to practice.',
       videoPresenceNotes: 'Camera presence was not measured.',
       isAiGenerated: false,
     );

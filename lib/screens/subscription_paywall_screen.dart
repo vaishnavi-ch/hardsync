@@ -3,14 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import '../config/env_config.dart';
 import '../models/scenario.dart';
 import '../models/subscription_tier.dart';
 import '../providers/subscription_provider.dart';
+import '../services/credit_service.dart';
 import '../services/revenuecat_service.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
 import 'legal_document_screen.dart';
 import 'session_prep_screen.dart';
+import 'web_viewer_screen.dart';
 
 class SubscriptionPaywallScreen extends StatefulWidget {
   const SubscriptionPaywallScreen({super.key});
@@ -1145,9 +1148,9 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                       popular: false,
                       illustration: HardSyncAssets.illusRechargeRitual,
                       benefits: const [
-                        'Text conversation practice',
-                        'Scenario previews',
-                        'Basic session feedback',
+                        'Interactive text rehearsals',
+                        'Complete scenario catalog',
+                        '10 complimentary practice credits',
                       ],
                       onTap: () =>
                           setState(() => _selectedTier = SubscriptionTier.free),
@@ -1164,9 +1167,10 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                       popular: true,
                       illustration: HardSyncAssets.illusLeadershipCompass,
                       benefits: const [
-                        'Unlimited voice rehearsals',
-                        'Real-time vocal feedback',
-                        'Custom scenarios',
+                        '250 Monthly Practice Credits',
+                        'Live Voice Rehearsal Calls (1 cr/min)',
+                        'HD Video Calls (6 cr/min)',
+                        'Live speaking feedback as you talk',
                       ],
                       onTap: () =>
                           setState(() => _selectedTier = SubscriptionTier.pro),
@@ -1183,9 +1187,10 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                       popular: false,
                       illustration: HardSyncAssets.illusSafeVideoRoleplay,
                       benefits: const [
-                        'HD video roleplay',
-                        'Gemini Live visual coaching',
-                        'Multimodal session feedback',
+                        '600 Monthly Practice Credits',
+                        'HD Video & Live Voice Rehearsals',
+                        'Priority Access for Faster Calls',
+                        'Full Presence Check-Up',
                       ],
                       onTap: () => setState(
                         () => _selectedTier = SubscriptionTier.ultra,
@@ -1193,6 +1198,8 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                     ),
                     const SizedBox(height: 18),
                     _buildComparisonMatrix(),
+                    const SizedBox(height: 18),
+                    _buildCreditPacksSection(),
                     const SizedBox(height: 14),
                     _buildTestimonialCard(),
                   ],
@@ -1437,13 +1444,17 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const LegalDocumentScreen(
-                      document: LegalDocument.terms,
+                    builder: (_) => const WebViewerScreen(
+                      title: 'Terms of Use (EULA)',
+                      url: EnvConfig.termsOfServiceUrl,
+                      fallbackWidget: LegalDocumentScreen(
+                        document: LegalDocument.terms,
+                      ),
                     ),
                   ),
                 ),
                 child: Text(
-                  'Terms of Service',
+                  'Terms of Use (EULA)',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     color: HardSyncColors.inkMuted,
@@ -1455,8 +1466,12 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const LegalDocumentScreen(
-                      document: LegalDocument.privacy,
+                    builder: (_) => const WebViewerScreen(
+                      title: 'Privacy Policy',
+                      url: EnvConfig.privacyPolicyUrl,
+                      fallbackWidget: LegalDocumentScreen(
+                        document: LegalDocument.privacy,
+                      ),
                     ),
                   ),
                 ),
@@ -1470,6 +1485,16 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Payment is charged to your store account upon confirmation. Subscriptions renew automatically unless canceled at least 24 hours prior to the end of the current period. Manage or cancel anytime in your account settings.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 10,
+              height: 1.35,
+              color: const Color(0xFF9E9CA3),
+            ),
           ),
         ],
       ),
@@ -1488,7 +1513,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Capability Breakdown',
+            'What\'s Included',
             style: GoogleFonts.plusJakartaSans(
               fontSize: 13.5,
               fontWeight: FontWeight.bold,
@@ -1496,35 +1521,182 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          _buildMatrixRow('Text Simulator', free: true, pro: true, ultra: true),
+          _buildMatrixRow('Text Practice', free: true, pro: true, ultra: true),
           const Divider(height: 14, color: Color(0xFFF0EBE3)),
           _buildMatrixRow(
-            'Audio call Calls',
+            'Live Voice Rehearsals',
             free: false,
             pro: true,
             ultra: true,
           ),
           const Divider(height: 14, color: Color(0xFFF0EBE3)),
           _buildMatrixRow(
-            'Vocal Cadence Telemetry',
+            'HD Video Avatar Calls',
             free: false,
             pro: true,
             ultra: true,
           ),
           const Divider(height: 14, color: Color(0xFFF0EBE3)),
           _buildMatrixRow(
-            'Gemini Live Video Calls',
+            'Live Speaking Feedback',
             free: false,
-            pro: false,
+            pro: true,
             ultra: true,
           ),
           const Divider(height: 14, color: Color(0xFFF0EBE3)),
           _buildMatrixRow(
-            'Live Face & Eye Analysis',
+            'Monthly Practice Credits',
+            free: false,
+            pro: true,
+            ultra: true,
+          ),
+          const Divider(height: 14, color: Color(0xFFF0EBE3)),
+          _buildMatrixRow(
+            'VIP Priority GPU Pipeline',
             free: false,
             pro: false,
             ultra: true,
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCreditPacksSection() {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2DCD2)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEF3C7),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.bolt, color: Color(0xFFD97706), size: 18),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Top Up Practice Credits',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: HardSyncColors.ink,
+                      ),
+                    ),
+                    Text(
+                      '1 Credit = \$0.10 value • Never expires',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        color: HardSyncColors.inkMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          ...CreditService.creditPacks.map((pack) {
+            return Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: pack.popular ? const Color(0xFFF7F2FC) : const Color(0xFFFAF8F5),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: pack.popular ? HardSyncColors.violet : const Color(0xFFEBE5DA),
+                  width: pack.popular ? 1.5 : 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            pack.title,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: HardSyncColors.ink,
+                            ),
+                          ),
+                          if (pack.popular) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: HardSyncColors.violet,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'POPULAR',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${pack.credits} Credits • \$${(pack.price / pack.credits).toStringAsFixed(2)} / credit',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          color: HardSyncColors.inkMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: pack.popular ? HardSyncColors.violet : HardSyncColors.ink,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: _isProcessing ? null : () => _buyCreditPack(pack),
+                    child: Text(
+                      pack.priceString,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -1772,6 +1944,49 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
     }
   }
 
+  Future<void> _buyCreditPack(CreditPack pack) async {
+    setState(() => _isProcessing = true);
+    try {
+      if (!RevenueCatService.instance.isConfigured) {
+        _showPurchaseSnack('Purchases are not available on this platform right now.');
+        return;
+      }
+      final offerings = await RevenueCatService.instance.getOfferings();
+      Package? packageToBuy;
+      if (offerings != null) {
+        for (final offering in offerings.all.values) {
+          for (final candidate in offering.availablePackages) {
+            if (candidate.storeProduct.identifier == pack.id) {
+              packageToBuy = candidate;
+              break;
+            }
+          }
+          if (packageToBuy != null) break;
+        }
+      }
+      if (packageToBuy == null) {
+        _showPurchaseSnack('${pack.title} is not set up for purchase yet.');
+        return;
+      }
+      // Credits are granted server-side once RevenueCat's webhook confirms
+      // this purchase, not by this client -- a client-authored balance
+      // change must never be trusted.
+      await RevenueCatService.instance.purchasePackage(packageToBuy);
+      _showPurchaseSnack('Purchase complete! Your credits will appear shortly.');
+    } catch (_) {
+      _showPurchaseSnack('The purchase could not be completed. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
+    }
+  }
+
+  void _showPurchaseSnack(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: HardSyncColors.ink),
+    );
+  }
+
   Future<void> _handleRestore(SubscriptionProvider subProvider) async {
     setState(() => _isProcessing = true);
     try {
@@ -1785,7 +2000,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
             content: Text(
               restored
                   ? 'Subscriptions restored successfully! Account status refreshed.'
-                  : 'No active StoreKit / Play purchases found.',
+                  : 'No active subscriptions found for this account.',
             ),
             backgroundColor: HardSyncColors.violetDark,
           ),

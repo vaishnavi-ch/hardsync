@@ -166,8 +166,16 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                         icon: const Icon(Icons.arrow_back_rounded),
                         tooltip: 'End call and go back',
                       ),
-                      const Expanded(
-                        child: Text('Voice call', textAlign: TextAlign.center),
+                      Expanded(
+                        child: Text(
+                          sim.isLowOnCredits
+                              ? 'Ending in ${sim.secondsRemaining}s — out of credits'
+                              : 'Voice call',
+                          textAlign: TextAlign.center,
+                          style: sim.isLowOnCredits
+                              ? const TextStyle(color: Color(0xFFC75438))
+                              : null,
+                        ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -414,7 +422,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                           const SizedBox(height: 14),
                           Text(
                             sim.isGeneratingDebrief
-                                ? 'Finalizing your executive debrief...'
+                                ? 'Putting together your report...'
                                 : sim.error != null
                                 ? 'Could not connect'
                                 : 'Session completed',
@@ -771,6 +779,27 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                             ),
                           ),
                         ],
+                        if (sim.isLowOnCredits) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFC75438).withOpacity(0.85),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              'Ending in ${sim.secondsRemaining}s — out of credits',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -1077,7 +1106,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
-          onPressed: () => _finish(sim),
+          onPressed: () => _finish(sim, returnToPrevious: true),
           icon: const Icon(
             Icons.arrow_back_ios_new,
             size: 18,

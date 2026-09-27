@@ -8,6 +8,8 @@ import '../providers/simulation_provider.dart';
 import '../providers/subscription_provider.dart';
 import 'live_call_screen.dart';
 import 'subscription_paywall_screen.dart';
+import '../services/credit_service.dart';
+import '../services/supabase_service.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
 
@@ -29,6 +31,21 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
   bool _initializedRoles = false;
   bool _starting = false;
   bool _saveReplay = false;
+  int? _creditBalance;
+
+  Future<void> _loadCreditBalance() async {
+    if (!SupabaseService.instance.isAuthenticated) return;
+    try {
+      final profile = await SupabaseService.instance.fetchOwnProfile();
+      if (!mounted) return;
+      setState(() {
+        _creditBalance = (profile['credits'] as num?)?.toInt();
+      });
+    } catch (_) {
+      // Balance is a helpful preview only; the server is the source of truth
+      // and still enforces this at reservation time if the fetch fails.
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -52,6 +69,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
   @override
   void initState() {
     super.initState();
+    _loadCreditBalance();
     // Use scenario objectives or fallback talking points
     if (widget.scenario.userObjectives.isNotEmpty) {
       _talkingPoints = [
@@ -776,21 +794,21 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                   mode: CallMode.text,
                   iconAsset: HardSyncAssets.iconChatBubbles,
                   isLocked: false,
-                  badge: 'FREE',
+                  badge: '1 CR',
                 ),
                 _buildModeTab(
                   label: 'Voice Audio',
                   mode: CallMode.audio,
                   iconAsset: HardSyncAssets.iconHeartbeatPulseHealth,
                   isLocked: !sub.canUseAudioCalls,
-                  badge: 'PRO',
+                  badge: '1 CR/M',
                 ),
                 _buildModeTab(
-                  label: 'Gemini Video',
+                  label: 'HD Video',
                   mode: CallMode.video,
                   iconAsset: HardSyncAssets.iconLaptopComputer,
                   isLocked: !sub.canUseVideoCalls,
-                  badge: 'ULTRA',
+                  badge: '6 CR/M',
                 ),
               ],
             ),
@@ -799,6 +817,64 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
             const SizedBox(height: 10),
             _buildReplayConsentRow(),
           ],
+          const SizedBox(height: 10),
+
+          // Transparent credit rate disclosure
+          Builder(
+            builder: (context) {
+              final balance = _creditBalance;
+              final affordable = balance == null
+                  ? null
+                  : CreditService.affordableMinutes(balance, _selectedCallMode);
+              final outOfCredits = affordable != null && affordable < 1;
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                decoration: BoxDecoration(
+                  color: outOfCredits
+                      ? const Color(0xFFFDEDEA)
+                      : const Color(0xFFFAF7F2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: outOfCredits
+                        ? const Color(0xFFE8B4A8)
+                        : const Color(0xFFEBE5DA),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      outOfCredits ? Icons.error_outline : Icons.bolt,
+                      size: 16,
+                      color: outOfCredits
+                          ? const Color(0xFFC75438)
+                          : const Color(0xFFD97706),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        outOfCredits
+                            ? 'Not enough credits for ${_selectedCallMode.name}. Buy more or upgrade to continue.'
+                            : _selectedCallMode == CallMode.text
+                            ? '1 Credit per session (${CreditService.formatCreditValue(CreditService.textCostPerSession)}) • Flat rate'
+                            : (_selectedCallMode == CallMode.audio
+                                  ? '1 Credit per minute (${CreditService.formatCreditValue(CreditService.voiceCostPerMinute)}/min)'
+                                        '${affordable != null ? ' • ~$affordable min available' : ''}'
+                                  : '6 Credits per minute (${CreditService.formatCreditValue(CreditService.videoCostPerMinute)}/min)'
+                                        '${affordable != null ? ' • ~$affordable min available' : ''}'),
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: outOfCredits
+                              ? const Color(0xFF8B3D2E)
+                              : HardSyncColors.ink,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
           const SizedBox(height: 12),
 
           SizedBox(
@@ -824,7 +900,22 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                       }
                       if (_selectedCallMode == CallMode.video &&
                           !sub.canUseVideoCalls) {
-                        _showUpgradeSheet(context, SubscriptionTier.ultra);
+                        _showUpgradeSheet(context, SubscriptionTier.pro);
+                        return;
+                      }
+                      final balance = _creditBalance;
+                      final affordable = balance == null
+                          ? null
+                          : CreditService.affordableMinutes(
+                              balance,
+                              _selectedCallMode,
+                            );
+                      if (affordable != null && affordable < 1) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const SubscriptionPaywallScreen(),
+                          ),
+                        );
                         return;
                       }
 

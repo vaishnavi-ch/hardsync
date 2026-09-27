@@ -4,7 +4,6 @@ import '../services/practice_stats.dart';
 import '../services/session_history.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
-import 'session_detail_screen.dart';
 import 'scenario_hub_screen.dart';
 
 class ProgressScreen extends StatefulWidget {
@@ -101,42 +100,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
               ),
               const SizedBox(height: 12),
               _badgesGrid(stats.badges),
-              const SizedBox(height: 24),
-              Text(
-                'Recent practice',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 10),
-              ...sessions.map((session) {
-                final scenario = session['scenarios'];
-                final title = scenario is Map
-                    ? scenario['title']?.toString() ?? 'Practice session'
-                    : 'Practice session';
-                final score = session['overall_score'];
-                return Card(
-                  color: HardSyncColors.surface,
-                  child: ListTile(
-                    title: Text(title),
-                    subtitle: Text(
-                      score is num
-                          ? 'Saved score: ${score.round()}%'
-                          : 'Session saved',
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      final id = session['id']?.toString();
-                      if (id != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => SessionDetailScreen(sessionId: id),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                );
-              }),
             ],
           );
         },

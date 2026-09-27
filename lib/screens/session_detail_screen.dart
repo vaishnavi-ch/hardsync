@@ -194,7 +194,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
               CircularProgressIndicator(strokeWidth: 2.5),
               SizedBox(height: 16),
               Text(
-                'Synthesizing Leadership Debrief...',
+                'Putting together your report...',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               SizedBox(height: 8),
@@ -213,7 +213,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _heading('Your leadership debrief'),
+              _heading('Your practice report'),
               Text(
                 a?['message'] ??
                     'Get feedback based on the session transcript.',
@@ -234,7 +234,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _heading('Your leadership debrief'),
+            _heading('Your practice report'),
             Text(a['summary'] ?? ''),
             const SizedBox(height: 14),
             Text(

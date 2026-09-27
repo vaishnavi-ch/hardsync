@@ -4,12 +4,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../config/env_config.dart';
 import '../services/supabase_service.dart';
 import '../services/revenuecat_service.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
 import 'legal_document_screen.dart';
 import 'profile_screen.dart';
+import 'web_viewer_screen.dart';
 
 const _navy = HardSyncColors.ink;
 const _paper = HardSyncColors.cream;
@@ -185,8 +187,12 @@ class AuthWelcomeScreen extends StatelessWidget {
                       onPressed: () => Navigator.push(
                         context,
                         _route(
-                          const LegalDocumentScreen(
-                            document: LegalDocument.terms,
+                          const WebViewerScreen(
+                            title: 'Terms of Service',
+                            url: EnvConfig.termsOfServiceUrl,
+                            fallbackWidget: LegalDocumentScreen(
+                              document: LegalDocument.terms,
+                            ),
                           ),
                         ),
                       ),
@@ -200,8 +206,12 @@ class AuthWelcomeScreen extends StatelessWidget {
                       onPressed: () => Navigator.push(
                         context,
                         _route(
-                          const LegalDocumentScreen(
-                            document: LegalDocument.privacy,
+                          const WebViewerScreen(
+                            title: 'Privacy Policy',
+                            url: EnvConfig.privacyPolicyUrl,
+                            fallbackWidget: LegalDocumentScreen(
+                              document: LegalDocument.privacy,
+                            ),
                           ),
                         ),
                       ),
@@ -761,6 +771,25 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
           child: OutlinedButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Center(
+          child: TextButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              _route(
+                const WebViewerScreen(
+                  title: 'Account Deletion Portal',
+                  url: EnvConfig.accountDeletionUrl,
+                ),
+              ),
+            ),
+            icon: const Icon(Icons.open_in_browser_rounded, size: 16),
+            label: const Text(
+              'Online Data Deletion Instructions',
+              style: TextStyle(fontSize: 12),
+            ),
           ),
         ),
       ],

@@ -440,7 +440,7 @@ class Scenario {
         userObjectives: [
           'Validate Jordan\'s urgency before stating current squad bandwidth.',
           'Hold the boundary against weekend emergency work.',
-          'Offer an executive trade-off: a focused 2-page summary Monday, full deck Wednesday.',
+          'Offer a fair trade: a short 2-page summary Monday, full deck Wednesday.',
         ],
         trapPhrasesToAvoid: [
           "We can't do this, my team will quit.",

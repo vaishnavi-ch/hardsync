@@ -25,6 +25,22 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _stats = _loadStats();
+    SupabaseService.instance.addListener(_onProfileChanged);
+    if (SupabaseService.instance.cachedAvatarUrl == null) {
+      SupabaseService.instance.fetchOwnProfile().then((_) {
+        if (mounted) setState(() {});
+      }).catchError((_) {});
+    }
+  }
+
+  @override
+  void dispose() {
+    SupabaseService.instance.removeListener(_onProfileChanged);
+    super.dispose();
+  }
+
+  void _onProfileChanged() {
+    if (mounted) setState(() {});
   }
 
   Future<PracticeStats> _loadStats() async {
@@ -38,6 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final rawName = SupabaseService.instance.currentUserName.trim();
     final name = rawName.isEmpty ? 'Alex' : rawName.split(' ').first;
+    final avatarAsset =
+        SupabaseService.instance.cachedAvatarUrl ?? HardSyncAssets.avatarCurrentUser;
     return Scaffold(
       backgroundColor: const Color(0xFFF8F6FC),
       body: SafeArea(
@@ -56,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     32,
                   ),
                   children: [
-                    _Header(name: name),
+                    _Header(name: name, avatarAsset: avatarAsset),
                     const SizedBox(height: 18),
                     if (wide)
                       Row(
@@ -163,13 +181,14 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.name});
+  const _Header({required this.name, required this.avatarAsset});
   final String name;
+  final String avatarAsset;
 
   @override
   Widget build(BuildContext context) => Row(
     children: [
-      const AppAvatar(HardSyncAssets.avatarCurrentUser, size: 54),
+      AppAvatar(avatarAsset, size: 54),
       const SizedBox(width: 12),
       Expanded(
         child: Text(
@@ -242,7 +261,7 @@ class _ProgressHero extends StatelessWidget {
             ],
           ),
           child: AppIllustration(
-            HardSyncAssets.illusVoiceRoleplay,
+            HardSyncAssets.illusMindsetReset,
             fit: BoxFit.cover,
             alignment: Alignment.bottomCenter,
           ),

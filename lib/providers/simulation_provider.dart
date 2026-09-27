@@ -65,6 +65,15 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
       _state == CallState.ended && _sid == null && _scenario != null;
   String? geminiLiveUrl;
   String realtimeProvider = 'gemini_live';
+  int rateCreditsPerMinute = 0;
+  int? maxSeconds;
+  bool ranOutOfCredits = false;
+  int? get secondsRemaining =>
+      maxSeconds == null ? null : maxSeconds! - _duration.inSeconds;
+  bool get isLowOnCredits {
+    final remaining = secondsRemaining;
+    return remaining != null && remaining <= 30 && remaining > 0;
+  }
   int? liveConfidenceScore;
   String? liveExpression;
   String? liveEyeContact;
@@ -124,6 +133,9 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
     savedSessionId = null;
     geminiLiveUrl = null;
     realtimeProvider = 'gemini_live';
+    rateCreditsPerMinute = 0;
+    maxSeconds = null;
+    ranOutOfCredits = false;
     _wantsReplay = wantsReplay && mode != CallMode.text;
     _replayKey = null;
     replayUploadUrl = null;
@@ -166,6 +178,12 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
       realtimeProvider = result['realtimeProvider'] is String
           ? result['realtimeProvider'] as String
           : 'gemini_live';
+      rateCreditsPerMinute = result['rateCreditsPerMinute'] is int
+          ? result['rateCreditsPerMinute'] as int
+          : 0;
+      maxSeconds = result['maxSeconds'] is int
+          ? result['maxSeconds'] as int
+          : null;
       if (_wantsReplay) {
         try {
           final upload = await BackendService.request(
@@ -176,9 +194,10 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
             replayUploadUrl = upload['uploadUrl'] as String?;
             _replayKey = upload['key'] as String?;
           }
-        } catch (_) {
+        } catch (e) {
           // Recording is a best-effort extra; a failure here shouldn't block
           // the rehearsal itself from starting.
+          debugPrint('[SimulationProvider] Replay upload URL fetch failed: $e');
         }
       }
       if (isTextOnly) {
@@ -246,8 +265,15 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
       _timer?.cancel();
       _timer = Timer.periodic(const Duration(seconds: 1), (_) {
         _duration += const Duration(seconds: 1);
+        final remaining = secondsRemaining;
+        if (remaining != null && remaining <= 0) {
+          // endCall() clears `error` on its success path, so the reason this
+          // call ended is tracked separately via ranOutOfCredits for the UI.
+          ranOutOfCredits = true;
+          unawaited(endCall());
+          return;
+        }
         notifyListeners();
-        if (_duration.inMinutes >= 10) unawaited(endCall());
       });
       notifyListeners();
     } catch (e) {
@@ -494,7 +520,7 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
                 'boundary_score': 82,
                 'composure_score': 86,
                 'empathy_score': 84,
-                'executive_tier': 'Director Ready',
+                'executive_tier': 'On Track',
                 'report': reportPayload,
               });
 

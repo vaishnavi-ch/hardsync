@@ -104,6 +104,14 @@ class EnvConfig {
       revenueCatGoogleKey.isNotEmpty ||
       revenueCatWebKey.isNotEmpty;
 
+  // --- GITHUB PAGES & LEGAL WEB LINKS ---
+  static const String landingPageUrl = 'https://vaishnavi-ch.github.io/hardsync/';
+  static const String privacyPolicyUrl = 'https://vaishnavi-ch.github.io/hardsync/privacy.html';
+  static const String termsOfServiceUrl = 'https://vaishnavi-ch.github.io/hardsync/terms.html';
+  static const String accountDeletionUrl = 'https://vaishnavi-ch.github.io/hardsync/account-deletion.html';
+  static const String faqUrl = 'https://vaishnavi-ch.github.io/hardsync/faq.html';
+  static const String supportEmail = 'vaishnavi26ch@gmail.com';
+
   /// Diagnostic status
   static Map<String, dynamic> get diagnosticStatus => {
     'hasGeminiKey': hasGeminiKey,

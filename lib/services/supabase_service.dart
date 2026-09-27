@@ -62,14 +62,22 @@ class SupabaseService extends ChangeNotifier {
 
   String? get currentUserId => client?.auth.currentUser?.id;
 
+  /// The signed-in user's chosen avatar asset path, cached from the last
+  /// profile fetch or update so screens that can't await a fetch (e.g. a
+  /// header rendered before the profile loads) still show the right avatar.
+  String? _cachedAvatarUrl;
+  String? get cachedAvatarUrl => _cachedAvatarUrl;
+
   Future<Map<String, dynamic>> fetchOwnProfile() async {
     final userId = currentUserId;
     if (client == null || userId == null) {
       throw StateError('Sign in to load your profile.');
     }
-    return Map<String, dynamic>.from(
+    final profile = Map<String, dynamic>.from(
       await client!.from('profiles').select().eq('id', userId).single(),
     );
+    _cachedAvatarUrl = profile['avatar_url'] as String?;
+    return profile;
   }
 
   Future<void> updateOwnProfile(Map<String, dynamic> changes) async {
@@ -91,6 +99,9 @@ class SupabaseService extends ChangeNotifier {
     );
     if (safe.isEmpty) return;
     await client!.from('profiles').update(safe).eq('id', userId);
+    if (safe.containsKey('avatar_url')) {
+      _cachedAvatarUrl = safe['avatar_url'] as String?;
+    }
     if (changes.containsKey('full_name') && changes['full_name'] != null) {
       try {
         await client!.auth.updateUser(
@@ -191,7 +202,7 @@ class SupabaseService extends ChangeNotifier {
               ? (Uri.base.origin.isNotEmpty ? Uri.base.origin : null)
               : 'talkbound://login-callback',
           data: {
-            'full_name': fullName ?? 'Executive Trainee',
+            'full_name': fullName ?? 'New Member',
             'leadership_role': leadershipRole ?? 'Engineering Leader',
           },
         );

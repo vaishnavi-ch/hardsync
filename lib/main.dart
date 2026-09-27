@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
@@ -10,6 +11,7 @@ import 'providers/settings_provider.dart';
 import 'providers/simulation_provider.dart';
 import 'providers/subscription_provider.dart';
 import 'screens/app_shell.dart';
+import 'screens/avatar_picker_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/sign_in_screen.dart';
 import 'services/revenuecat_service.dart';
@@ -20,9 +22,11 @@ import 'theme/hardsync_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   WidgetsBinding.instance.ensureSemantics();
+  final isMobileDevice =
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode,
+      enabled: !kReleaseMode && !isMobileDevice,
       builder: (context) => const HardSyncApp(),
     ),
   );
@@ -183,11 +187,16 @@ class _AppLaunchGateState extends State<AppLaunchGate> {
   bool _hasSeenOnboarding = false;
   bool _loadingOnboardingState = true;
 
+  String? _avatarCheckedUserId;
+  bool _checkingAvatarSetup = false;
+  bool _needsAvatarSetup = false;
+
   @override
   void initState() {
     super.initState();
     SupabaseService.instance.addListener(_authChanged);
     _loadOnboardingState();
+    _maybeCheckAvatarSetup();
   }
 
   Future<void> _completeOnboarding() async {
@@ -205,8 +214,39 @@ class _AppLaunchGateState extends State<AppLaunchGate> {
     });
   }
 
+  // Every account (new signups and existing accounts without a stored
+  // choice) is offered the avatar picker exactly once, tracked per-user
+  // locally so re-launching the app never nags them again.
+  Future<void> _maybeCheckAvatarSetup() async {
+    final userId = SupabaseService.instance.currentUserId;
+    if (userId == null) {
+      _avatarCheckedUserId = null;
+      return;
+    }
+    if (userId == _avatarCheckedUserId) return;
+    _avatarCheckedUserId = userId;
+    if (mounted) setState(() => _checkingAvatarSetup = true);
+    final preferences = await SharedPreferences.getInstance();
+    final done = preferences.getBool('avatar_setup_done_$userId') ?? false;
+    if (!mounted || userId != SupabaseService.instance.currentUserId) return;
+    setState(() {
+      _needsAvatarSetup = !done;
+      _checkingAvatarSetup = false;
+    });
+  }
+
+  Future<void> _completeAvatarSetup() async {
+    final userId = SupabaseService.instance.currentUserId;
+    if (userId != null) {
+      final preferences = await SharedPreferences.getInstance();
+      await preferences.setBool('avatar_setup_done_$userId', true);
+    }
+    if (mounted) setState(() => _needsAvatarSetup = false);
+  }
+
   void _authChanged() {
     if (mounted) setState(() {});
+    _maybeCheckAvatarSetup();
   }
 
   @override
@@ -218,6 +258,12 @@ class _AppLaunchGateState extends State<AppLaunchGate> {
   @override
   Widget build(BuildContext context) {
     if (SupabaseService.instance.isAuthenticated) {
+      if (_checkingAvatarSetup) {
+        return const _LaunchScreen();
+      }
+      if (_needsAvatarSetup) {
+        return AvatarPickerScreen(onDone: _completeAvatarSetup);
+      }
       return const AppShell();
     }
     if (_loadingOnboardingState) {

@@ -17,6 +17,22 @@ class HardSyncAssets {
   static const String avatarPriya = '$_avatarBase/avatar_03.png';
   static const String avatarElena = '$_avatarBase/avatar_17.png';
 
+  // Curated picker options offered during account setup. Deliberately
+  // distinct from the persona avatars above so a user's own picture never
+  // matches an AI persona's face during a call.
+  static const List<String> avatarPresets = [
+    '$_avatarBase/avatar_02.png',
+    '$_avatarBase/avatar_05.png',
+    '$_avatarBase/avatar_08.png',
+    '$_avatarBase/avatar_12.png',
+    '$_avatarBase/avatar_15.png',
+    '$_avatarBase/avatar_19.png',
+    '$_avatarBase/avatar_28.png',
+    '$_avatarBase/avatar_33.png',
+    '$_avatarBase/avatar_38.png',
+    '$_avatarBase/avatar_50.png',
+  ];
+
   // ==========================================
   // --- 7 Executive & Leadership Badges ---
   // ==========================================
