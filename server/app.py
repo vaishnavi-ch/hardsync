@@ -315,7 +315,7 @@ def create_session(owner, data, access_token):
     voice_name = str(data.get('voiceName', ''))[:64]
     avatar_name = str(data.get('avatarName', ''))[:64]
     tavus_replica_id = str(data.get('tavusReplicaId', ''))[:64]
-    if not re.fullmatch(r'[a-f0-9]{8,20}', tavus_replica_id):
+    if not re.fullmatch(r'r[a-f0-9]{7,19}', tavus_replica_id):
         tavus_replica_id = None
     sid = reserve(owner, mode, provider if mode != 'text' else 'gemini_text', context,
                   str(data.get('scenarioId', '')), access_token, voice_name, avatar_name)
