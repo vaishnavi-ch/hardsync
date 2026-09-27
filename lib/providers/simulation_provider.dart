@@ -51,6 +51,11 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
   String? replayUploadUrl;
   bool replaySaved = false;
   bool get wantsReplay => _wantsReplay;
+  // Distinct from wantsReplay: this reflects whether a recording will
+  // actually happen (the upload URL request succeeded), not just whether
+  // the user opted in — so the UI never claims to be recording when the
+  // upload URL fetch silently failed.
+  bool get isRecording => _wantsReplay && replayUploadUrl != null;
   String? _conflictingSessionId;
   bool _recovering = false;
   bool get hasSessionConflict => _conflictingSessionId != null;
@@ -215,7 +220,11 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
           'sessionId': _conflictingSessionId,
         });
       }
-      await startCall(_scenario!, mode: _mode);
+      // startCall resets _wantsReplay from its parameter, so the current
+      // value (set by the original startCall that's being retried) must be
+      // threaded through explicitly or a retried call silently drops the
+      // user's recording consent.
+      await startCall(_scenario!, mode: _mode, wantsReplay: _wantsReplay);
     } catch (e) {
       error = 'Could not close the earlier rehearsal: $e';
     } finally {

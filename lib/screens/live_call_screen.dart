@@ -254,7 +254,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                       if (sim.callState == CallState.inCall) ...[
                         const SizedBox(height: 8),
                         Text(
-                          sim.wantsReplay
+                          sim.isRecording
                               ? 'Recording this session for playback later'
                               : 'Live call only · audio and video are not saved',
                           style: GoogleFonts.plusJakartaSans(
@@ -697,40 +697,79 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  // Timer Pill
+                  // Timer Pill (+ recording indicator, when opted in)
                   Padding(
                     padding: const EdgeInsets.only(left: 12),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.15),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const AppIcon(
-                            HardSyncAssets.iconHourglassTimer,
-                            size: 12,
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
                           ),
-                          const SizedBox(width: 5),
-                          Text(
-                            sim.formattedTimer,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.2,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.15),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const AppIcon(
+                                HardSyncAssets.iconHourglassTimer,
+                                size: 12,
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                sim.formattedTimer,
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (sim.isRecording) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFC75438).withOpacity(0.85),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 7,
+                                  height: 7,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Recording',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                      ),
+                      ],
                     ),
                   ),
                 ],

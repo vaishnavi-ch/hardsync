@@ -626,6 +626,7 @@ class Handler(SimpleHTTPRequestHandler):
             '/call-assets/persona/marcus.png': ROOT / 'assets' / 'avatars' / 'split' / 'flutter_256' / 'avatar_24.png',
             '/call-assets/persona/priya.png': ROOT / 'assets' / 'avatars' / 'split' / 'flutter_256' / 'avatar_03.png',
             '/call-assets/persona/elena.png': ROOT / 'assets' / 'avatars' / 'split' / 'flutter_256' / 'avatar_17.png',
+            '/call-assets/user-avatar.png': ROOT / 'assets' / 'avatars' / 'split' / 'flutter_256' / 'avatar_21.png',
         }
         asset_path = call_assets.get(self.path.split('?', 1)[0])
         if asset_path and asset_path.is_file():

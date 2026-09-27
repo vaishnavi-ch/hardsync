@@ -208,29 +208,19 @@ class _ProgressHero extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(28),
         child: Container(
-          height: compact ? 360 : 390,
-          clipBehavior: Clip.antiAlias,
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: HardSyncColors.oliveMist,
             borderRadius: BorderRadius.circular(28),
             border: Border.all(color: HardSyncColors.lilacBorder),
           ),
-          child: Stack(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Positioned(
-                right: -18,
-                bottom: -12,
-                width: 270,
-                height: 238,
-                child: AppIllustration(
-                  HardSyncAssets.illusManagerJourneyMap,
-                  fit: BoxFit.contain,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(22),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       'YOUR MANAGER PATH',
@@ -240,12 +230,14 @@ class _ProgressHero extends StatelessWidget {
                         letterSpacing: 1,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 6),
                     Text(
-                      'Lead with\nconfidence',
+                      'Lead with confidence',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.newsreader(
-                        fontSize: compact ? 30 : 40,
-                        height: .95,
+                        fontSize: compact ? 20 : 24,
+                        height: 1.05,
                         fontWeight: FontWeight.w700,
                         color: HardSyncColors.ink,
                       ),
@@ -253,42 +245,20 @@ class _ProgressHero extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'Your leadership journey',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    const Spacer(),
-                    Container(
-                      width: 185,
-                      padding: EdgeInsets.all(compact ? 10 : 13),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: .88),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Rehearse a real 1:1',
-                            style: Theme.of(context).textTheme.titleSmall
-                                ?.copyWith(fontWeight: FontWeight.w800),
-                          ),
-                          if (compact)
-                            Text(
-                              'Before it happens for real',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            )
-                          else ...[
-                            const SizedBox(height: 8),
-                            Text(
-                              'Before it happens for real',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
                   ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: compact ? 96 : 118,
+                height: compact ? 96 : 118,
+                child: const AppIllustration(
+                  HardSyncAssets.illusManagerJourneyMap,
+                  fit: BoxFit.contain,
                 ),
               ),
             ],
