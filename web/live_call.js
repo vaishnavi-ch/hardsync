@@ -122,11 +122,15 @@ async function stopRecordingAndUpload() {
     const blob = new Blob(recordedChunks, { type: mime });
     recordedChunks = [];
     if (!config.replayUploadUrl || blob.size === 0) return { replaySaved: false };
-    await fetch(config.replayUploadUrl, {
+    const response = await fetch(config.replayUploadUrl, {
       method: 'PUT',
       headers: { 'Content-Type': mime },
       body: blob,
     });
+    if (!response.ok) {
+      console.error('[replay] upload rejected', response.status, await response.text().catch(() => ''));
+      return { replaySaved: false };
+    }
     return { replaySaved: true, mimeType: mime };
   } catch (error) {
     console.error('[replay] upload failed', error);
@@ -459,11 +463,16 @@ async function joinTavus() {
   }
 }
 
+function waitingLabel() {
+  const name = (config?.personaName || '').trim();
+  return name ? `Waiting for ${name} to join…` : 'Connecting…';
+}
+
 async function join() {
   if (started || !config) return;
   started = true;
   $('join').hidden = true;
-  $('status').textContent = 'Connecting…';
+  $('status').textContent = waitingLabel();
   if (config.realtimeProvider === 'tavus') return joinTavus();
   try {
     stream = await navigator.mediaDevices.getUserMedia({

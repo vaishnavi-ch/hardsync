@@ -21,6 +21,7 @@ class GeminiLiveEmbedView extends StatefulWidget {
   final bool microphoneEnabled;
   final bool cameraEnabled;
   final String personaId;
+  final String personaName;
   final String? replayUploadUrl;
   final ValueChanged<Map<String, dynamic>>? onEvent;
   final VoidCallback? onLoaded;
@@ -35,6 +36,7 @@ class GeminiLiveEmbedView extends StatefulWidget {
     this.microphoneEnabled = true,
     this.cameraEnabled = true,
     this.personaId = '',
+    this.personaName = '',
     this.replayUploadUrl,
     this.onEvent,
     this.onLoaded,
@@ -151,6 +153,7 @@ class _GeminiLiveEmbedViewState extends State<GeminiLiveEmbedView> {
             ? '/call-assets/persona/${widget.personaId}.png'
             : '/call-assets/ai-avatar.png',
       ).toString(),
+      'personaName': widget.personaName,
       'realtimeProvider': widget.realtimeProvider,
       'mic': widget.microphoneEnabled,
       'video': widget.cameraEnabled,

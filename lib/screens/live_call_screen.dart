@@ -137,6 +137,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                   microphoneEnabled: settings.micEnabled,
                   cameraEnabled: false,
                   personaId: sim.activeCounterpart.id,
+                  personaName: sim.activeCounterpart.name,
                   replayUploadUrl: sim.replayUploadUrl,
                   onEvent: (event) {
                     if (event['type'] == 'user-action-required') {
@@ -372,6 +373,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
               microphoneEnabled: settings.micEnabled,
               cameraEnabled: sim.isVideoActive && settings.cameraEnabled,
               personaId: sim.activeCounterpart.id,
+              personaName: sim.activeCounterpart.name,
               replayUploadUrl: sim.replayUploadUrl,
               onEvent: sim.providerEvent,
             ),
