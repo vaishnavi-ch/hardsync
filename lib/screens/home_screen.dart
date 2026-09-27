@@ -2,17 +2,37 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../services/practice_stats.dart';
+import '../services/session_history.dart';
 import '../services/supabase_service.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
-import 'learning_screen.dart';
 import 'scenario_hub_screen.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key, this.onOpenLearn, this.onOpenPractice});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key, this.onOpenPractice});
 
-  final VoidCallback? onOpenLearn;
   final VoidCallback? onOpenPractice;
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late Future<PracticeStats> _stats;
+
+  @override
+  void initState() {
+    super.initState();
+    _stats = _loadStats();
+  }
+
+  Future<PracticeStats> _loadStats() async {
+    final sessions = await SessionHistoryService.fetchAll();
+    return PracticeStats.fromSessions(sessions);
+  }
+
+  VoidCallback? get onOpenPractice => widget.onOpenPractice;
 
   @override
   Widget build(BuildContext context) {
@@ -65,51 +85,40 @@ class HomeScreen extends StatelessWidget {
   Widget _buildProgressColumn(BuildContext context) => Column(
     children: [
       _ProgressHero(
-        onTap: onOpenLearn ?? () => _open(context, const LearningScreen()),
+        onTap:
+            onOpenPractice ?? () => _open(context, const ScenarioHubScreen()),
       ),
       const SizedBox(height: 14),
-      const Row(
-        children: [
-          Expanded(
-            child: _Metric(
-              icon: HardSyncAssets.gamifyPracticeStreakFlame,
-              value: '0',
-              label: 'Day streak',
-            ),
-          ),
-          SizedBox(width: 10),
-          Expanded(
-            child: _Metric(
-              icon: HardSyncAssets.iconBookOpen,
-              value: '0',
-              label: 'Lessons',
-            ),
-          ),
-          SizedBox(width: 10),
-          Expanded(
-            child: _Metric(
-              icon: HardSyncAssets.iconStopwatchSpeed,
-              value: '0',
-              label: 'Practice',
-            ),
-          ),
-        ],
+      FutureBuilder<PracticeStats>(
+        future: _stats,
+        builder: (context, snapshot) {
+          final stats = snapshot.data;
+          return Row(
+            children: [
+              Expanded(
+                child: _Metric(
+                  icon: HardSyncAssets.gamifyPracticeStreakFlame,
+                  value: '${stats?.dayStreak ?? 0}',
+                  label: 'Day streak',
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _Metric(
+                  icon: HardSyncAssets.iconStopwatchSpeed,
+                  value: '${stats?.sessionCount ?? 0}',
+                  label: 'Sessions',
+                ),
+              ),
+            ],
+          );
+        },
       ),
     ],
   );
 
   Widget _buildActionColumn(BuildContext context) => Column(
     children: [
-      _SectionTitle(
-        title: 'Start learning',
-        action: 'Explore',
-        onTap: onOpenLearn,
-      ),
-      const SizedBox(height: 10),
-      _ContinueCard(
-        onTap: onOpenLearn ?? () => _open(context, const LearningScreen()),
-      ),
-      const SizedBox(height: 18),
       _SectionTitle(
         title: "Today's focus",
         action: 'Practice',
@@ -258,13 +267,13 @@ class _ProgressHero extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Build your skills',
+                            'Rehearse a real 1:1',
                             style: Theme.of(context).textTheme.titleSmall
                                 ?.copyWith(fontWeight: FontWeight.w800),
                           ),
                           if (compact)
                             Text(
-                              'Learn at your own pace',
+                              'Before it happens for real',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.bodySmall,
@@ -272,7 +281,7 @@ class _ProgressHero extends StatelessWidget {
                           else ...[
                             const SizedBox(height: 8),
                             Text(
-                              'Learn at your own pace',
+                              'Before it happens for real',
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
@@ -345,20 +354,6 @@ class _SectionTitle extends StatelessWidget {
       ),
       TextButton(onPressed: onTap, child: Text(action)),
     ],
-  );
-}
-
-class _ContinueCard extends StatelessWidget {
-  const _ContinueCard({required this.onTap});
-  final VoidCallback onTap;
-  @override
-  Widget build(BuildContext context) => _FeatureCard(
-    onTap: onTap,
-    tint: HardSyncColors.lilacMist,
-    illustration: HardSyncAssets.illusActiveListening,
-    eyebrow: 'START LEARNING',
-    title: 'Make your 1:1 useful',
-    subtitle: 'Set a goal, hear what matters, and agree on a next step.',
   );
 }
 

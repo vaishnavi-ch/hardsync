@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:hardsync/models/learning_course.dart';
 import 'package:hardsync/models/scenario.dart';
 import 'package:hardsync/providers/simulation_provider.dart';
 import 'package:hardsync/providers/subscription_provider.dart';
 import 'package:hardsync/screens/custom_scenario_screen.dart';
 import 'package:hardsync/screens/app_shell.dart';
 import 'package:hardsync/screens/home_screen.dart';
-import 'package:hardsync/screens/learning_screen.dart';
 import 'package:hardsync/screens/progress_screen.dart';
 import 'package:hardsync/screens/session_prep_screen.dart';
 import 'package:hardsync/screens/subscription_paywall_screen.dart';
@@ -59,8 +57,8 @@ void main() {
 
     await pumpAt(tester, const HomeScreen(), size: const Size(1024, 768));
     final progressTop = tester.getTopLeft(find.text('YOUR MANAGER PATH')).dy;
-    final learningTop = tester.getTopLeft(find.text('START LEARNING')).dy;
-    expect((progressTop - learningTop).abs(), lessThan(120));
+    final focusTop = tester.getTopLeft(find.text("Today's focus")).dy;
+    expect((progressTop - focusTop).abs(), lessThan(120));
     expect(tester.takeException(), isNull);
   });
 
@@ -97,12 +95,12 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
   });
 
-  testWidgets('progress roadmap fits and shows saved-practice empty state', (
+  testWidgets('progress screen fits and shows saved-practice empty state', (
     tester,
   ) async {
     await pumpAt(tester, const ProgressScreen());
-    expect(find.text('Your roadmap'), findsOneWidget);
-    expect(find.text('Your learning journey'), findsOneWidget);
+    expect(find.text('Your performance'), findsOneWidget);
+    expect(find.text('Your practice results will show here'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -126,23 +124,6 @@ void main() {
     expect(find.text('Continue to practice setup'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
-
-  testWidgets(
-    'lesson player covers explanation reflection quiz retry and completion',
-    (tester) async {
-      final course = LearningCatalog.courses.first;
-      await pumpAt(
-        tester,
-        LessonScreen(course: course, lesson: course.lessons.first, index: 0),
-      );
-      expect(find.text('A 1:1 situation'), findsOneWidget);
-      expect(find.text('The idea'), findsOneWidget);
-      expect(find.text('Use this simple approach'), findsOneWidget);
-      expect(find.text('Mark read & practise scenarios'), findsOneWidget);
-      await tester.ensureVisible(find.text('Mark read & practise scenarios'));
-      expect(tester.takeException(), isNull);
-    },
-  );
 
   testWidgets(
     'session preparation fits compact mobile with all modes visible',

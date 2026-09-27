@@ -8,9 +8,8 @@ import '../services/supabase_service.dart';
 import '../services/revenuecat_service.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
-import 'settings_modal.dart';
 import 'legal_document_screen.dart';
-import 'subscription_paywall_screen.dart';
+import 'profile_screen.dart';
 
 const _navy = HardSyncColors.ink;
 const _paper = HardSyncColors.cream;
@@ -594,117 +593,7 @@ class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key, this.embedded = false});
   @override
   Widget build(BuildContext context) {
-    final service = SupabaseService.instance,
-        name = SupabaseService.instance.currentUserName;
-    return _AuthPage(
-      child: Column(
-        children: [
-          if (!embedded) ...[
-            Align(
-              alignment: Alignment.centerLeft,
-              child: IconButton(
-                onPressed: () => Navigator.maybePop(context),
-                icon: const Icon(Icons.close, color: _navy),
-              ),
-            ),
-            const SizedBox(height: 18),
-          ] else ...[
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text('Your Profile', style: _title(31)),
-            ),
-            const SizedBox(height: 18),
-          ],
-          Row(
-            children: [
-              const AppAvatar(HardSyncAssets.avatarCurrentUser, size: 58),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(name, style: _body(size: 17, weight: FontWeight.w700)),
-                    Text(
-                      service.currentUserEmail,
-                      overflow: TextOverflow.ellipsis,
-                      style: _body(size: 11.5, color: const Color(0xFF676B8C)),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          _MenuTile(
-            icon: Icons.person_outline,
-            label: 'Profile',
-            onTap: () =>
-                _notice(context, 'Your profile is synced with HardSync.'),
-          ),
-          _MenuTile(
-            icon: Icons.settings_outlined,
-            label: 'Settings',
-            onTap: () => showModalBottomSheet(
-              context: context,
-              showDragHandle: true,
-              builder: (_) => const SettingsModal(),
-            ),
-          ),
-          _MenuTile(
-            icon: Icons.mail_outline,
-            label: 'Subscription',
-            onTap: () => Navigator.push(
-              context,
-              _route(const SubscriptionPaywallScreen()),
-            ),
-          ),
-          if (!kIsWeb && RevenueCatService.instance.isConfigured)
-            _MenuTile(
-              icon: Icons.manage_accounts_outlined,
-              label: 'Manage subscription',
-              onTap: () async {
-                try {
-                  await RevenueCatUI.presentCustomerCenter();
-                } catch (_) {
-                  if (context.mounted) {
-                    _notice(
-                      context,
-                      'Subscription management is temporarily unavailable.',
-                    );
-                  }
-                }
-              },
-            ),
-          _MenuTile(
-            icon: Icons.help_outline,
-            label: 'Help & support',
-            onTap: () => _notice(context, 'Support is ready to help.'),
-          ),
-          const SizedBox(height: 12),
-          _MenuTile(
-            icon: Icons.logout,
-            label: 'Log out',
-            danger: true,
-            onTap: () => showDialog(
-              context: context,
-              builder: (_) => LogoutDialog(showSignedOut: !embedded),
-            ),
-          ),
-          _MenuTile(
-            icon: Icons.delete_outline,
-            label: 'Delete account',
-            danger: true,
-            onTap: () =>
-                Navigator.push(context, _route(const DeleteAccountScreen())),
-          ),
-          const Spacer(),
-          Text(
-            'Version 1.0.0',
-            style: _body(size: 10.5, color: const Color(0xFF878AA0)),
-          ),
-        ],
-      ),
-    );
+    return ProfileScreen(embedded: embedded);
   }
 }
 
@@ -1107,41 +996,6 @@ class _OrDivider extends StatelessWidget {
   );
 }
 
-class _MenuTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final bool danger;
-  const _MenuTile({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.danger = false,
-  });
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 7),
-    child: Material(
-      color: danger ? const Color(0xFFFFECE9) : Colors.transparent,
-      borderRadius: BorderRadius.circular(14),
-      child: ListTile(
-        dense: true,
-        onTap: onTap,
-        leading: Icon(icon, size: 20, color: danger ? _red : _navy),
-        title: Text(
-          label,
-          style: _body(size: 13, color: danger ? _red : _navy),
-        ),
-        trailing: Icon(
-          Icons.chevron_right,
-          size: 20,
-          color: danger ? _red : _navy,
-        ),
-      ),
-    ),
-  );
-}
-
 class _DeleteFact extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -1188,6 +1042,3 @@ void _showError(BuildContext context, Object error) =>
         backgroundColor: _red,
       ),
     );
-void _notice(BuildContext context, String message) => ScaffoldMessenger.of(
-  context,
-).showSnackBar(SnackBar(content: Text(message)));

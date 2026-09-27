@@ -34,7 +34,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
     super.didChangeDependencies();
     _simulation ??= context.read<SimulationProvider>();
     _simulation!.finishMedia = () async {
-      await _callController.finish?.call();
+      return await _callController.finish?.call();
     };
   }
 
@@ -137,6 +137,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                   microphoneEnabled: settings.micEnabled,
                   cameraEnabled: false,
                   personaId: sim.activeCounterpart.id,
+                  replayUploadUrl: sim.replayUploadUrl,
                   onEvent: (event) {
                     if (event['type'] == 'user-action-required') {
                       if (mounted) setState(() => _needsAudioTap = true);
@@ -253,7 +254,9 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                       if (sim.callState == CallState.inCall) ...[
                         const SizedBox(height: 8),
                         Text(
-                          'Live call only · audio and video are not saved',
+                          sim.wantsReplay
+                              ? 'Recording this session for playback later'
+                              : 'Live call only · audio and video are not saved',
                           style: GoogleFonts.plusJakartaSans(
                             color: HardSyncColors.inkMuted,
                             fontSize: 11,
@@ -369,6 +372,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
               microphoneEnabled: settings.micEnabled,
               cameraEnabled: sim.isVideoActive && settings.cameraEnabled,
               personaId: sim.activeCounterpart.id,
+              replayUploadUrl: sim.replayUploadUrl,
               onEvent: sim.providerEvent,
             ),
           )

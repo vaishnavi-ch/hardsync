@@ -10,6 +10,7 @@ class GeminiLiveEmbedView extends StatelessWidget {
   final bool microphoneEnabled;
   final bool cameraEnabled;
   final String personaId;
+  final String? replayUploadUrl;
   final ValueChanged<Map<String, dynamic>>? onEvent;
   final VoidCallback? onLoaded;
   const GeminiLiveEmbedView({
@@ -22,6 +23,7 @@ class GeminiLiveEmbedView extends StatelessWidget {
     this.microphoneEnabled = true,
     this.cameraEnabled = true,
     this.personaId = '',
+    this.replayUploadUrl,
     this.onEvent,
     this.onLoaded,
   });

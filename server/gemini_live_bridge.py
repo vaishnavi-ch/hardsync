@@ -66,19 +66,15 @@ def client():
     raise RuntimeError('Set GEMINI_LIVE_API_KEY (Express Mode) or configure GOOGLE_CLOUD_PROJECT with ADC.')
 
 def avatar_client():
-    # Live Avatar (video mode) uses the Vertex AI Enterprise Agent Platform.
-    # The enterprise endpoint does NOT accept plain API keys — it requires
-    # OAuth2 Application Default Credentials (ADC).
-    # Set up: gcloud auth application-default login
-    #         gcloud config set project YOUR_PROJECT_ID
-    project = os.environ.get('GOOGLE_CLOUD_PROJECT', '')
-    location = os.environ.get('GEMINI_AVATAR_LOCATION', 'us-central1')
-    if not project:
-        raise RuntimeError(
-            'Set GOOGLE_CLOUD_PROJECT in .env and run '
-            '"gcloud auth application-default login" to enable Live Avatar.'
-        )
-    return genai.Client(vertexai=True, project=project, location=location)
+    # Live Avatar (video mode) only exists on the Gemini Enterprise Agent
+    # Platform endpoints, reached with `enterprise=True` + an Agent Platform
+    # API key. This is a distinct credential/endpoint from the plain Gemini
+    # Developer API key `client()` uses for audio/text and vision analysis.
+    key = os.environ.get('VERTEX_AGENT_PLATFORM_API_KEY', '')
+    if not key:
+        raise RuntimeError('Set VERTEX_AGENT_PLATFORM_API_KEY to enable Live Avatar video calls.')
+    return genai.Client(api_key=key, enterprise=True,
+                        location=os.environ.get('GEMINI_AVATAR_LOCATION', 'us-central1'))
 
 def scenario_prompt(session_id: str, owner: str, access_token: str) -> tuple[str, str, str, str]:
     """Read roleplay context (persona voice, mode, avatar) with the signed-in user's RLS-scoped token."""

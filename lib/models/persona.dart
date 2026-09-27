@@ -15,6 +15,7 @@ class Persona {
   final String voiceStyle;
   final String geminiVoiceName;
   final String geminiAvatarName;
+  final String tavusReplicaId;
 
   const Persona({
     required this.id,
@@ -31,6 +32,7 @@ class Persona {
     required this.voiceStyle,
     required this.geminiVoiceName,
     required this.geminiAvatarName,
+    required this.tavusReplicaId,
   });
 
   static List<Persona> get defaultPersonas => [
@@ -61,6 +63,9 @@ class Persona {
       voiceStyle: 'Natural, conversational, slightly wry, articulate',
       geminiVoiceName: 'Puck',
       geminiAvatarName: 'Ben',
+      // "Daniel - Office": young, tan-skinned, dark wavy hair, casual — the
+      // closest stock Tavus replica to Alex's illustrated look.
+      tavusReplicaId: 'rf4703150052',
     ),
     const Persona(
       id: 'jordan',
@@ -89,6 +94,9 @@ class Persona {
       voiceStyle: 'Crisp, fast-paced, authoritative, decisive',
       geminiVoiceName: 'Kore',
       geminiAvatarName: 'Kai',
+      // "Celine - Casual": long dark hair, tan skin, casual — closest stock
+      // Tavus replica to Jordan's illustrated look.
+      tavusReplicaId: 'r1a0108fbd75',
     ),
     const Persona(
       id: 'marcus',
@@ -117,6 +125,9 @@ class Persona {
       voiceStyle: 'Emotional, earnest, slightly guarded, authentic',
       geminiVoiceName: 'Puck',
       geminiAvatarName: 'Sam',
+      // "Darius - Outdoor": Black man with a short beard, casual — closest
+      // stock Tavus replica to Marcus's illustrated look.
+      tavusReplicaId: 'r4ba1277e4fb',
     ),
     const Persona(
       id: 'priya',
@@ -145,6 +156,9 @@ class Persona {
       voiceStyle: 'Diplomatic, articulate, steady, measured',
       geminiVoiceName: 'Kore',
       geminiAvatarName: 'Sam',
+      // "Priya - Office": direct name and visual match — South Asian woman,
+      // long dark hair, professional attire.
+      tavusReplicaId: 'r4dc9377a68e',
     ),
     const Persona(
       id: 'elena',
@@ -171,6 +185,9 @@ class Persona {
       voiceStyle: 'Direct, clear, steady, commanding',
       geminiVoiceName: 'Kore',
       geminiAvatarName: 'Kai',
+      // "Rose - Business": light brown hair, fair skin, sharp business
+      // blazer — closest stock Tavus replica to Elena's executive look.
+      tavusReplicaId: 'r6c7a6cb6d9b',
     ),
   ];
 }

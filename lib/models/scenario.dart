@@ -1,5 +1,6 @@
 import 'persona.dart';
 import 'user_persona.dart';
+import '../theme/hardsync_assets.dart';
 
 enum ScenarioDifficulty { beginner, intermediate, advanced }
 
@@ -490,6 +491,71 @@ class Scenario {
         ],
       ),
     ];
+  }
+
+  static String illustrationFor(String scenarioId) {
+    switch (scenarioId) {
+      case 'scenario_managing_former_peer':
+        return HardSyncAssets.illusManager11;
+      case 'practice_urgent_request':
+        return HardSyncAssets.illusDemandingExecutivePersona;
+      case 'practice_feedback_review':
+        return HardSyncAssets.illusToughFeedbackMoment;
+      case 'scenario_cross_team_alignment':
+        return HardSyncAssets.illusConflictBridge;
+      case 'practice_more_clear_request':
+        return HardSyncAssets.illusCareFramework;
+      case 'practice_listening_another_view':
+        return HardSyncAssets.illusActiveListening;
+      case 'practice_feedback_followup':
+        return HardSyncAssets.illusConversationRewind;
+      case 'practice_boundary_scope':
+        return HardSyncAssets.illusBurnoutBattery;
+      case 'practice_conflict_customer_quality':
+        return HardSyncAssets.illusPushbackPractice;
+      case 'practice_delegate_checkin':
+        return HardSyncAssets.illusPauseAndReframe;
+      case 'practice_change_senior':
+        return HardSyncAssets.illusExecutiveChallenge;
+      case 'practice_senior_disagreement':
+        return HardSyncAssets.illusDifficultConversationArena;
+      case 'practice_repair_meeting':
+        return HardSyncAssets.illusMindsetReset;
+      case 'practice_update_priority':
+        return HardSyncAssets.illusToneAwareness;
+      case 'practice_team_one_to_one':
+        return HardSyncAssets.illusQuietTeamMemberPersona;
+      case 'practice_feedback_missed_handoff':
+        return HardSyncAssets.illusFeedbackSandwichVisual;
+      case 'practice_say_no_peer':
+        return HardSyncAssets.illusScriptBuilder;
+      case 'practice_conflict_priority':
+        return HardSyncAssets.illusEmpathyLens;
+      case 'practice_manage_up_scope':
+        return HardSyncAssets.illusLeadershipCompass;
+      case 'practice_change_uncertainty':
+        return HardSyncAssets.illusDifficultConversationsPath;
+      case 'practice_clear_update':
+        return HardSyncAssets.illusCaseStudyScene;
+      case 'practice_listening_change':
+        return HardSyncAssets.illusBetterResponse;
+      case 'practice_feedback_positive':
+        return HardSyncAssets.illusHighPerformerPersona;
+      case 'practice_boundary_timeline':
+        return HardSyncAssets.illusOverwhelmedEmployeePersona;
+      case 'practice_conflict_design':
+        return HardSyncAssets.illusSituationActionImpact;
+      case 'practice_delegate_task':
+        return HardSyncAssets.illusRemoteTeammatePersona;
+      case 'practice_senior_tradeoff':
+        return HardSyncAssets.illusQuoteHighlight;
+      case 'practice_clear_request':
+        return HardSyncAssets.illusConversationBlueprint;
+      case 'practice_listening':
+        return HardSyncAssets.illusDefensiveDirectReportPersona;
+      default:
+        return HardSyncAssets.illusSafeRehearsalRoom;
+    }
   }
 
   static UserPersona userPersonaFor(Persona persona) {

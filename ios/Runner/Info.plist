@@ -18,6 +18,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>hardsync</string>
+				<string>talkbound</string>
 			</array>
 		</dict>
 	</array>

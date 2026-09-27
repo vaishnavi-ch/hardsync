@@ -18,6 +18,7 @@ class GeminiLiveEmbedView extends StatefulWidget {
   final bool microphoneEnabled;
   final bool cameraEnabled;
   final String personaId;
+  final String? replayUploadUrl;
   final ValueChanged<Map<String, dynamic>>? onEvent;
   final VoidCallback? onLoaded;
   const GeminiLiveEmbedView({
@@ -30,6 +31,7 @@ class GeminiLiveEmbedView extends StatefulWidget {
     this.microphoneEnabled = true,
     this.cameraEnabled = true,
     this.personaId = '',
+    this.replayUploadUrl,
     this.onEvent,
     this.onLoaded,
   });
@@ -40,6 +42,7 @@ class GeminiLiveEmbedView extends StatefulWidget {
 class _GeminiLiveEmbedViewState extends State<GeminiLiveEmbedView> {
   static int _nextId = 0;
   Completer<void>? _finished;
+  Map<String, dynamic>? _finishResult;
   late String _viewId;
   html.IFrameElement? _iframe;
   StreamSubscription<html.MessageEvent>? _messages;
@@ -75,6 +78,7 @@ class _GeminiLiveEmbedViewState extends State<GeminiLiveEmbedView> {
       'realtimeProvider': widget.realtimeProvider,
       'mic': widget.microphoneEnabled,
       'video': widget.cameraEnabled,
+      if (widget.replayUploadUrl != null) 'replayUploadUrl': widget.replayUploadUrl,
     });
   }
 
@@ -82,10 +86,13 @@ class _GeminiLiveEmbedViewState extends State<GeminiLiveEmbedView> {
   void initState() {
     super.initState();
     widget.controller?.finish = () async {
-      if (_iframe == null) return;
+      if (_iframe == null) return null;
       _finished ??= Completer<void>();
       _post({'type': 'finish'});
-      await _finished!.future.timeout(const Duration(seconds: 10));
+      try {
+        await _finished!.future.timeout(const Duration(seconds: 10));
+      } catch (_) {}
+      return _finishResult;
     };
     widget.controller?.toggleMic = () => _post({'type': 'toggle_mic'});
     widget.controller?.toggleCamera = () => _post({'type': 'toggle_camera'});
@@ -105,6 +112,10 @@ class _GeminiLiveEmbedViewState extends State<GeminiLiveEmbedView> {
       try {
         final data = jsonDecode(event.data as String) as Map<String, dynamic>;
         if (data['type'] == 'finished') {
+          _finishResult = {
+            'mimeType': data['mimeType'],
+            'replaySaved': data['replaySaved'] == true,
+          };
           if (_finished != null && !_finished!.isCompleted) {
             _finished!.complete();
           }

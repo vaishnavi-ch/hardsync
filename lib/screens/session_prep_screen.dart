@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../models/scenario.dart';
-import '../models/learning_course.dart';
 import '../models/subscription_tier.dart';
 import '../models/user_persona.dart';
 import '../providers/simulation_provider.dart';
@@ -29,6 +28,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
   CallMode _selectedCallMode = CallMode.text;
   bool _initializedRoles = false;
   bool _starting = false;
+  bool _saveReplay = false;
 
   @override
   void didChangeDependencies() {
@@ -75,9 +75,6 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
 
   int get _checkedCount => _talkingPointsChecked.where((c) => c).length;
 
-  List<LearningCourse> get _quickReads =>
-      LearningCatalog.coursesForScenario(widget.scenario.id);
-
   @override
   Widget build(BuildContext context) {
     final scenario = widget.scenario;
@@ -121,19 +118,10 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                                   Expanded(
                                     child: Column(
                                       children: [
-                                        if (_quickReads.isNotEmpty)
-                                          _buildGoalBox(scenario),
+                                        _buildGoalBox(scenario),
                                         const SizedBox(height: 14),
-                                        if (_quickReads.isNotEmpty) ...[
-                                          _buildTalkingPointsCard(),
-                                          const SizedBox(height: 14),
-                                        ],
-                                        if (_quickReads.isNotEmpty) ...[
-                                          ..._quickReads.map(
-                                            _buildQuickReadCard,
-                                          ),
-                                          const SizedBox(height: 14),
-                                        ],
+                                        _buildTalkingPointsCard(),
+                                        const SizedBox(height: 14),
                                         _buildMentorTipCard(),
                                         const SizedBox(height: 14),
                                         _buildChallengesSection(),
@@ -150,17 +138,10 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                                   const SizedBox(height: 14),
                                   _buildStudioCustomizer(),
                                   const SizedBox(height: 14),
-                                  if (_quickReads.isNotEmpty)
-                                    _buildGoalBox(scenario),
+                                  _buildGoalBox(scenario),
                                   const SizedBox(height: 14),
-                                  if (_quickReads.isNotEmpty) ...[
-                                    _buildTalkingPointsCard(),
-                                    const SizedBox(height: 14),
-                                  ],
-                                  if (_quickReads.isNotEmpty) ...[
-                                    ..._quickReads.map(_buildQuickReadCard),
-                                    const SizedBox(height: 14),
-                                  ],
+                                  _buildTalkingPointsCard(),
+                                  const SizedBox(height: 14),
                                   _buildMentorTipCard(),
                                   const SizedBox(height: 14),
                                   _buildChallengesSection(),
@@ -222,25 +203,8 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
     );
   }
 
-  String _getPersonaIllustration(String personaId) {
-    switch (personaId) {
-      case 'alex':
-        return HardSyncAssets.skepticalPersonaInterviewee;
-      case 'jordan':
-        return HardSyncAssets.firmExecutiveStakeholder;
-      case 'marcus':
-        return HardSyncAssets.studentSpeakingExplaining;
-      case 'priya':
-        return HardSyncAssets.curiousPersonaInterviewee;
-      default:
-        return HardSyncAssets.studentThinkingPensive;
-    }
-  }
-
   Widget _buildScenarioCard(Scenario scenario) {
-    final personaIllus = scenario.id == 'scenario_managing_former_peer'
-        ? HardSyncAssets.illusManager11
-        : _getPersonaIllustration(scenario.persona.id);
+    final personaIllus = Scenario.illustrationFor(scenario.id);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -544,86 +508,6 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
     );
   }
 
-  Widget _buildQuickReadCard(LearningCourse course) {
-    final matchingLessons = course.lessons
-        .where(
-          (lesson) => lesson.practiceScenarioIds.contains(widget.scenario.id),
-        )
-        .toList();
-    if (matchingLessons.isEmpty) return const SizedBox.shrink();
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF1EDFF),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE2D8FF)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const AppIcon(HardSyncAssets.iconBookOpen, size: 24),
-              const SizedBox(width: 9),
-              Expanded(
-                child: Text(
-                  'Quick byte · ${matchingLessons.first.title}',
-                  style: GoogleFonts.newsreader(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1E2522),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            course.promise,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 12,
-              height: 1.4,
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF49435A),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            matchingLessons
-                .map(
-                  (lesson) => '${lesson.concept}\nExample: ${lesson.example}',
-                )
-                .join('\n\n'),
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 12,
-              height: 1.45,
-              color: const Color(0xFF616B66),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Skill: ${course.promise}',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 12,
-              height: 1.45,
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF49435A),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Use your own words. There may be more than one good way to handle this.',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 11,
-              height: 1.4,
-              color: const Color(0xFF616B66),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildMentorTipCard() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -911,6 +795,10 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
               ],
             ),
           ),
+          if (_selectedCallMode != CallMode.text) ...[
+            const SizedBox(height: 10),
+            _buildReplayConsentRow(),
+          ],
           const SizedBox(height: 12),
 
           SizedBox(
@@ -944,6 +832,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                       await simulation.startCall(
                         widget.scenario,
                         mode: _selectedCallMode,
+                        wantsReplay: _saveReplay,
                       );
                       // Auto-retry once on session conflict (closes the stale session)
                       if (simulation.hasSessionConflict ||
@@ -1048,6 +937,47 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                 decoration: TextDecoration.underline,
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReplayConsentRow() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAF7F2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFEBE5DA)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Save a recording for playback',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1E2522),
+                  ),
+                ),
+                Text(
+                  'Off by default. Only you can view it; auto-deleted after 30 days.',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10.5,
+                    color: HardSyncColors.inkMuted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: _saveReplay,
+            onChanged: (value) => setState(() => _saveReplay = value),
           ),
         ],
       ),
@@ -1268,7 +1198,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          if (_quickReads.isNotEmpty)
+          if (scenario.trapPhrasesToAvoid.isNotEmpty)
             Text(
               'Try to avoid:',
               style: GoogleFonts.newsreader(
@@ -1278,7 +1208,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
               ),
             ),
           const SizedBox(height: 6),
-          if (_quickReads.isNotEmpty)
+          if (scenario.trapPhrasesToAvoid.isNotEmpty)
             ...scenario.trapPhrasesToAvoid.map(
               (phrase) => Padding(
                 padding: const EdgeInsets.only(bottom: 4),

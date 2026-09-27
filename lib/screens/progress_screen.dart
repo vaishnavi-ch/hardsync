@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/learning_course.dart';
-import '../services/supabase_service.dart';
+import '../services/practice_stats.dart';
+import '../services/session_history.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
-import 'learning_screen.dart';
 import 'session_detail_screen.dart';
 import 'scenario_hub_screen.dart';
 
@@ -19,20 +16,11 @@ class ProgressScreen extends StatefulWidget {
 
 class _ProgressScreenState extends State<ProgressScreen> {
   late Future<List<Map<String, dynamic>>> _history;
-  Set<String> _learningDone = {};
 
   @override
   void initState() {
     super.initState();
-    _history = SupabaseService.instance.fetchUserSessionHistory();
-    SharedPreferences.getInstance().then((prefs) {
-      if (mounted) {
-        setState(
-          () => _learningDone =
-              prefs.getStringList('learning_progress')?.toSet() ?? {},
-        );
-      }
-    });
+    _history = SessionHistoryService.fetchAll();
   }
 
   @override
@@ -51,43 +39,26 @@ class _ProgressScreenState extends State<ProgressScreen> {
               'Progress could not be loaded',
               'Check your connection and try again.',
               onRetry: () => setState(() {
-                _history = SupabaseService.instance.fetchUserSessionHistory();
+                _history = SessionHistoryService.fetchAll();
               }),
             );
           }
           final sessions = snapshot.data ?? const [];
           if (sessions.isEmpty) return _emptyState(context);
-          final scores = sessions
-              .map((session) => session['overall_score'])
-              .whereType<num>()
-              .toList();
-          final average = scores.isEmpty
-              ? null
-              : (scores.reduce((a, b) => a + b) / scores.length).round();
+          final stats = PracticeStats.fromSessions(sessions);
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
             children: [
               Text(
-                'Your roadmap',
+                'Your performance',
                 style: Theme.of(context).textTheme.headlineLarge,
               ),
               const SizedBox(height: 6),
               Text(
-                'Small steps to handle real manager conversations with more confidence.',
+                'Track how your rehearsals are going over time.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              const SizedBox(height: 16),
-              _roadmapHero(context),
-              const SizedBox(height: 17),
-              Text(
-                'Your learning journey',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 10),
-              ...LearningCatalog.paths.indexed.map(
-                (entry) => _pathCard(context, entry.$2, entry.$1),
-              ),
-              const SizedBox(height: 22),
+              const SizedBox(height: 20),
               Text(
                 'Practice progress',
                 style: Theme.of(context).textTheme.titleLarge,
@@ -100,16 +71,36 @@ class _ProgressScreenState extends State<ProgressScreen> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  Expanded(child: _statCard('Sessions', '${sessions.length}')),
+                  Expanded(
+                    child: _statCard('Day streak', '${stats.dayStreak}'),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _statCard('Sessions', '${stats.sessionCount}'),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: _statCard(
                       'Average score',
-                      average == null ? 'No score' : '$average%',
+                      stats.averageScore == null
+                          ? 'No score'
+                          : '${stats.averageScore}%',
                     ),
                   ),
                 ],
               ),
+              const SizedBox(height: 24),
+              Text(
+                'Badges',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Earned by completing rehearsals in each skill area.',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 12),
+              _badgesGrid(stats.badges),
               const SizedBox(height: 24),
               Text(
                 'Recent practice',
@@ -156,22 +147,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
   Widget _emptyState(BuildContext context) => ListView(
     padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
     children: [
-      Text('Your roadmap', style: Theme.of(context).textTheme.headlineLarge),
+      Text(
+        'Your performance',
+        style: Theme.of(context).textTheme.headlineLarge,
+      ),
       const SizedBox(height: 6),
       Text(
-        'Small steps to handle real manager conversations with more confidence.',
+        'Track how your rehearsals are going over time.',
         style: Theme.of(context).textTheme.bodyMedium,
-      ),
-      const SizedBox(height: 16),
-      _roadmapHero(context),
-      const SizedBox(height: 17),
-      Text(
-        'Your learning journey',
-        style: Theme.of(context).textTheme.titleLarge,
-      ),
-      const SizedBox(height: 10),
-      ...LearningCatalog.paths.indexed.map(
-        (entry) => _pathCard(context, entry.$2, entry.$1),
       ),
       const SizedBox(height: 18),
       Container(
@@ -221,150 +204,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
     ],
   );
 
-  Widget _roadmapHero(BuildContext context) => Container(
-    height: 300,
-    clipBehavior: Clip.antiAlias,
-    decoration: BoxDecoration(
-      color: HardSyncColors.lilacMist,
-      borderRadius: BorderRadius.circular(24),
-    ),
-    child: Stack(
-      children: [
-        const Positioned(
-          right: 0,
-          bottom: -5,
-          width: 210,
-          height: 190,
-          child: AppIllustration(HardSyncAssets.illusManagerJourneyMap),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(18),
-          child: SizedBox(
-            width: 210,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'YOUR LEADERSHIP ROADMAP',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: .8,
-                    color: HardSyncColors.violet,
-                  ),
-                ),
-                const SizedBox(height: 9),
-                Text(
-                  'Build skills\none conversation at a time.',
-                  style: GoogleFonts.newsreader(
-                    fontSize: 25,
-                    height: 1.02,
-                    fontWeight: FontWeight.w700,
-                    color: HardSyncColors.ink,
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  'Learn · practise · reflect',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: HardSyncColors.inkMuted,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-
-  Widget _pathCard(BuildContext context, LearningPath path, int index) {
-    final courses = path.courseIds.map(LearningCatalog.byId).toList();
-    final total = courses.fold<int>(
-      0,
-      (sum, course) => sum + course.lessons.length,
-    );
-    final done = courses.fold<int>(
-      0,
-      (sum, course) =>
-          sum +
-          course.lessons.indexed
-              .where(
-                (lesson) => _learningDone.contains('${course.id}:${lesson.$1}'),
-              )
-              .length,
-    );
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: HardSyncColors.border),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const LearningScreen()),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              Container(
-                width: 67,
-                height: 67,
-                decoration: BoxDecoration(
-                  color: HardSyncColors.lilacMist,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: AppIllustration(path.illustration),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      path.title,
-                      style: GoogleFonts.newsreader(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: HardSyncColors.ink,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      '$done of $total quick bytes · ${courses.length} topics',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    const SizedBox(height: 7),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(99),
-                      child: LinearProgressIndicator(
-                        value: total == 0 ? 0 : done / total,
-                        minHeight: 5,
-                        color: HardSyncColors.violet,
-                        backgroundColor: HardSyncColors.lilacMist,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: HardSyncColors.violet,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _messageState(
     BuildContext context,
     String title,
@@ -407,6 +246,50 @@ class _ProgressScreenState extends State<ProgressScreen> {
         ],
       ),
     ),
+  );
+
+  Widget _badgesGrid(List<EarnedBadge> badges) => GridView.builder(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: badges.length,
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 3,
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
+      childAspectRatio: 0.82,
+    ),
+    itemBuilder: (context, index) {
+      final badge = badges[index];
+      return Opacity(
+        opacity: badge.earned ? 1 : 0.35,
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: HardSyncColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: HardSyncColors.border),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: AppIllustration(badge.asset, fit: BoxFit.contain),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                badge.label,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
   );
 
   Widget _statCard(String label, String value) => Container(

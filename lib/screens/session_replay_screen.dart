@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/debrief_report.dart';
-import '../services/backend_service.dart';
+import '../services/session_history.dart';
 import '../services/supabase_service.dart';
 import '../theme/hardsync_assets.dart';
 import 'session_detail_screen.dart';
@@ -25,37 +25,21 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
   }
 
   Future<Map<String, dynamic>> _fetchHistory() async {
-    if (SupabaseService.instance.isAuthenticated) {
-      try {
-        final rows = await SupabaseService.instance.fetchUserSessionHistory();
-        if (rows.isNotEmpty) {
-          return {
-            'reports': rows.map((r) {
-              final reportData = r['report'] as Map<String, dynamic>? ?? {};
-              return {
-                'id': r['id'],
-                'title':
-                    r['scenarios']?['title'] ??
-                    reportData['title'] ??
-                    'Rehearsal',
-                'completedAt': r['created_at'],
-                'durationSeconds': r['duration_seconds'],
-                'mode': reportData['mode'] ?? 'video',
-                'overallScore': r['overall_score'],
-                'executiveTier': r['executive_tier'],
-              };
-            }).toList(),
-          };
-        }
-      } catch (_) {}
-    }
-    try {
-      final res = await BackendService.request('/api/history');
-      if (res['reports'] is List) return res;
-      return {'reports': []};
-    } catch (_) {
-      return {'reports': []};
-    }
+    final rows = await SessionHistoryService.fetchAll();
+    return {
+      'reports': rows.map((r) {
+        final scenario = r['scenarios'] is Map ? r['scenarios'] as Map : {};
+        return {
+          'id': r['id'],
+          'title': scenario['title'] ?? 'Rehearsal',
+          'completedAt': r['created_at'],
+          'durationSeconds': r['duration_seconds'],
+          'mode': 'video',
+          'overallScore': r['overall_score'],
+          'executiveTier': r['executive_tier'],
+        };
+      }).toList(),
+    };
   }
 
   void _reload() {

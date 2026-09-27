@@ -59,3 +59,14 @@ android {
 flutter {
     source = "../.."
 }
+
+// video_player_android pulls in the full androidx.media3 exoplayer suite,
+// including protocol modules (SmoothStreaming, RTSP, etc.) this app never
+// uses for its simple recorded-webm playback. Excluding them avoids
+// depending on artifacts that intermittently fail to resolve through
+// network-inspecting proxies (e.g. antivirus TLS interception).
+configurations.all {
+    exclude(group = "androidx.media3", module = "media3-exoplayer-smoothstreaming")
+    exclude(group = "androidx.media3", module = "media3-exoplayer-rtsp")
+    exclude(group = "androidx.media3", module = "media3-exoplayer-ima")
+}

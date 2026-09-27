@@ -53,6 +53,12 @@ class HardSyncAssets {
   static const String gamifyTryAgain = '$_gamifyBase/Try Again.png';
 
   // ==========================================
+  // --- App Brand Identity & Official Mascot ---
+  // ==========================================
+  static const String appMascot = '$_illusBase/HardSync Mascot.png';
+  static const String appIcon = '$_illusBase/App Icon.png';
+
+  // ==========================================
   // --- 56 Individual Extracted Illustrations ---
   // ==========================================
   static const String illusAiCoachWhisper = '$_illusBase/AI Coach Whisper.png';

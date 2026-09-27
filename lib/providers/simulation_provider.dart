@@ -45,7 +45,12 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
   String? _sid;
   String? savedSessionId;
   String? get currentSessionId => _sid;
-  Future<void> Function()? finishMedia;
+  Future<Map<String, dynamic>?> Function()? finishMedia;
+  bool _wantsReplay = false;
+  String? _replayKey;
+  String? replayUploadUrl;
+  bool replaySaved = false;
+  bool get wantsReplay => _wantsReplay;
   String? _conflictingSessionId;
   bool _recovering = false;
   bool get hasSessionConflict => _conflictingSessionId != null;
@@ -93,6 +98,7 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
   Future<void> startCall(
     Scenario scenario, {
     CallMode mode = CallMode.text,
+    bool wantsReplay = false,
   }) async {
     if (_state == CallState.connecting ||
         _state == CallState.inCall ||
@@ -113,6 +119,10 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
     savedSessionId = null;
     geminiLiveUrl = null;
     realtimeProvider = 'gemini_live';
+    _wantsReplay = wantsReplay && mode != CallMode.text;
+    _replayKey = null;
+    replayUploadUrl = null;
+    replaySaved = false;
     liveConfidenceScore = null;
     liveExpression = null;
     liveEyeContact = null;
@@ -127,6 +137,7 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
         if (mode != CallMode.text) 'realtimeProvider': 'gemini_live',
         if (mode != CallMode.text) 'voiceName': activeCounterpart.geminiVoiceName,
         if (mode == CallMode.video) 'avatarName': activeCounterpart.geminiAvatarName,
+        if (mode == CallMode.video) 'tavusReplicaId': activeCounterpart.tavusReplicaId,
         'context':
             'You are ${activeCounterpart.name}, ${activeCounterpart.role}. '
             'Personality: ${activeCounterpart.personalityTraits}. The user is ${_user.title}. '
@@ -150,6 +161,21 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
       realtimeProvider = result['realtimeProvider'] is String
           ? result['realtimeProvider'] as String
           : 'gemini_live';
+      if (_wantsReplay) {
+        try {
+          final upload = await BackendService.request(
+            '/api/replays/upload-url',
+            {'sessionId': _sid},
+          );
+          if (generation == _generation) {
+            replayUploadUrl = upload['uploadUrl'] as String?;
+            _replayKey = upload['key'] as String?;
+          }
+        } catch (_) {
+          // Recording is a best-effort extra; a failure here shouldn't block
+          // the rehearsal itself from starting.
+        }
+      }
       if (isTextOnly) {
         await connected();
         _append(false, activeCounterpart.pushbackPhrases.first);
@@ -362,7 +388,50 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
     try {
       if (!isTextOnly && finishMedia != null) {
         try {
-          await finishMedia!();
+          final mediaResult = await finishMedia!();
+          if (mediaResult?['replaySaved'] == true &&
+              _replayKey != null &&
+              _sid != null) {
+            try {
+              await BackendService.request('/api/replays/complete', {
+                'sessionId': _sid,
+                'key': _replayKey,
+                'mimeType': mediaResult?['mimeType'] ?? 'video/webm',
+                'durationSeconds': _duration.inSeconds,
+              });
+              replaySaved = true;
+            } catch (_) {}
+          }
+        } catch (_) {}
+      }
+      // Tavus (not our own bridge) runs speech-to-text for video calls, so
+      // the transcript only exists on their side. Pull it in before ending
+      // the conversation, which is what releases it server-side.
+      if (realtimeProvider == 'tavus' && _turns.isEmpty && _sid != null) {
+        try {
+          final result = await BackendService.request(
+            '/api/sessions/tavus-transcript',
+            {'sessionId': _sid},
+          );
+          final turns = result['transcript'];
+          if (turns is List) {
+            for (final entry in turns) {
+              if (entry is! Map) continue;
+              final text = entry['text']?.toString().trim() ?? '';
+              if (text.isEmpty) continue;
+              final isUser = entry['role'] == 'user';
+              _turns.add(DialogueTurn(
+                id: 'turn_${_turns.length}',
+                speaker: isUser ? DialogueSpeaker.user : DialogueSpeaker.avatar,
+                speakerName: isUser ? 'You' : activeCounterpart.name,
+                text: text,
+                timestamp: Duration(
+                  seconds: (num.tryParse('${entry['seconds']}') ?? 0).round(),
+                ),
+                tone: ConversationalTone.neutral,
+              ));
+            }
+          }
         } catch (_) {}
       }
       _state = CallState.ended;

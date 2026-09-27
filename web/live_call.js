@@ -15,6 +15,124 @@ const activeAudio = new Set();
 let avatarMediaSource;
 let avatarSourceBuffer;
 const avatarQueue = [];
+let dailyCall;
+
+// Opt-in session recording: mixes the local mic and the counterpart's voice
+// into one audio graph, and (video mode only) composites the local/avatar
+// <video> elements onto a canvas, so MediaRecorder gets one combined stream
+// that looks like what the user actually saw and heard.
+let mediaRecorder;
+let recordedChunks = [];
+let recordingMime = '';
+let recordCtx;
+let recordDest;
+let stopRecordCanvas;
+let avatarAudioConnected = false;
+
+function getLocalAudioStream() {
+  if (dailyCall) {
+    const track = dailyCall.participants()?.local?.tracks?.audio?.persistentTrack;
+    return track ? new MediaStream([track]) : null;
+  }
+  return stream || null;
+}
+
+function getAvatarAudioStream() {
+  const el = $('avatar').srcObject;
+  return el instanceof MediaStream && el.getAudioTracks().length ? el : null;
+}
+
+function connectAvatarAudioIfReady() {
+  if (avatarAudioConnected || !recordCtx || !recordDest) return;
+  const avatarAudio = getAvatarAudioStream();
+  if (!avatarAudio) return;
+  try {
+    recordCtx.createMediaStreamSource(avatarAudio).connect(recordDest);
+    avatarAudioConnected = true;
+  } catch (_) {}
+}
+
+function pickRecorderMimeType() {
+  const candidates = config?.mode === 'video'
+    ? ['video/webm;codecs=vp8,opus', 'video/webm']
+    : ['audio/webm;codecs=opus', 'audio/webm'];
+  return candidates.find((type) => window.MediaRecorder?.isTypeSupported?.(type)) || '';
+}
+
+function startRecording() {
+  if (!config?.replayUploadUrl || mediaRecorder) return;
+  try {
+    recordCtx = new AudioContext();
+    recordDest = recordCtx.createMediaStreamDestination();
+    const localAudio = getLocalAudioStream();
+    if (localAudio && localAudio.getAudioTracks().length) {
+      recordCtx.createMediaStreamSource(localAudio).connect(recordDest);
+    }
+    connectAvatarAudioIfReady();
+    const tracks = [...recordDest.stream.getAudioTracks()];
+    if (config.mode === 'video') {
+      const canvas = document.createElement('canvas');
+      canvas.width = 480;
+      canvas.height = 270;
+      const ctx = canvas.getContext('2d');
+      let stopped = false;
+      stopRecordCanvas = () => { stopped = true; };
+      const draw = () => {
+        if (stopped) return;
+        const avatarEl = $('avatar');
+        const localEl = $('local');
+        ctx.fillStyle = '#101814';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (avatarEl.videoWidth) ctx.drawImage(avatarEl, 0, 0, canvas.width, canvas.height);
+        if (localEl.videoWidth) ctx.drawImage(localEl, canvas.width - 96, canvas.height - 72, 90, 66);
+        requestAnimationFrame(draw);
+      };
+      draw();
+      tracks.push(...canvas.captureStream(24).getVideoTracks());
+    }
+    recordingMime = pickRecorderMimeType();
+    mediaRecorder = new MediaRecorder(
+      new MediaStream(tracks),
+      recordingMime ? { mimeType: recordingMime } : undefined,
+    );
+    recordedChunks = [];
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data && event.data.size) recordedChunks.push(event.data);
+    };
+    mediaRecorder.start(1000);
+  } catch (error) {
+    console.error('[replay] could not start recording', error);
+    mediaRecorder = null;
+  }
+}
+
+async function stopRecordingAndUpload() {
+  if (!mediaRecorder) return { replaySaved: false };
+  stopRecordCanvas?.();
+  const recorder = mediaRecorder;
+  mediaRecorder = null;
+  try {
+    await new Promise((resolve) => {
+      recorder.onstop = resolve;
+      if (recorder.state !== 'inactive') recorder.stop();
+      else resolve();
+    });
+    await recordCtx?.close();
+    const mime = recordingMime || 'video/webm';
+    const blob = new Blob(recordedChunks, { type: mime });
+    recordedChunks = [];
+    if (!config.replayUploadUrl || blob.size === 0) return { replaySaved: false };
+    await fetch(config.replayUploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': mime },
+      body: blob,
+    });
+    return { replaySaved: true, mimeType: mime };
+  } catch (error) {
+    console.error('[replay] upload failed', error);
+    return { replaySaved: false };
+  }
+}
 
 const $ = (id) => document.getElementById(id);
 const send = (type, data = {}) => {
@@ -151,6 +269,9 @@ function play(data) {
   const source = context.createBufferSource();
   source.buffer = buffer;
   source.connect(context.destination);
+  if (recordDest) {
+    try { source.connect(recordDest); } catch (_) {}
+  }
   assistantSpeaking = true;
   document.body.classList.add('assistant-speaking');
   assistantTurnComplete = false;
@@ -191,10 +312,16 @@ function setupDraggableLocalVideo() {
     converted = true;
   }
 
+  // Reserve space at top (header/HUD) and bottom (native call control dock)
+  // so the thumbnail can never be dragged under native buttons, which sit
+  // above the WebView in touch hit-test order and would swallow drags.
+  const TOP_SAFE = 190;
+  const BOTTOM_SAFE = 150;
+
   function clampPosition() {
     const rect = el.getBoundingClientRect();
     const left = Math.max(4, Math.min(window.innerWidth - rect.width - 4, rect.left));
-    const top = Math.max(4, Math.min(window.innerHeight - rect.height - 4, rect.top));
+    const top = Math.max(TOP_SAFE, Math.min(window.innerHeight - rect.height - BOTTOM_SAFE, rect.top));
     el.style.left = `${left}px`;
     el.style.top = `${top}px`;
   }
@@ -241,9 +368,9 @@ function setupDraggableLocalVideo() {
         el.style.width = '';
         el.style.maxWidth = '';
         el.style.left = 'auto';
-        el.style.top = 'auto';
         el.style.right = '16px';
-        el.style.bottom = '16px';
+        el.style.top = '200px';
+        el.style.bottom = 'auto';
         converted = false;
       }
       lastTapTime = now;
@@ -268,11 +395,76 @@ function captureVideoFrame() {
   }, 'image/jpeg', 0.7);
 }
 
+// Tavus's photoreal replica is delivered over a Daily.co WebRTC room (the
+// `config.url` Tavus handed back), not our own raw WebSocket protocol. Daily
+// hands us real MediaStreamTracks directly, so both the replica's video/audio
+// and our own local camera/mic are attached straight to the existing <video>
+// elements instead of going through the MediaSource/AudioContext pipeline
+// used for the plain Gemini Live bridge.
+function attachDailyTrack(el, track, kind) {
+  const current = el.srcObject instanceof MediaStream ? el.srcObject : new MediaStream();
+  const existing = kind === 'video' ? current.getVideoTracks() : current.getAudioTracks();
+  if (existing[0] === track) return;
+  existing.forEach((t) => current.removeTrack(t));
+  if (track) current.addTrack(track);
+  if (el.srcObject !== current) el.srcObject = current;
+}
+
+function updateDailyParticipant(participant) {
+  if (!participant) return;
+  const videoTrack = participant.tracks?.video?.persistentTrack;
+  const audioTrack = participant.tracks?.audio?.persistentTrack;
+  if (participant.local) {
+    if (videoTrack) attachDailyTrack($('local'), videoTrack, 'video');
+    return;
+  }
+  const video = $('avatar');
+  if (videoTrack) attachDailyTrack(video, videoTrack, 'video');
+  if (audioTrack) attachDailyTrack(video, audioTrack, 'audio');
+  if (videoTrack || audioTrack) {
+    video.muted = false;
+    video.style.display = 'block';
+    $('avatarIllustration').hidden = true;
+    video.play().catch((error) => send('error', { message: `Avatar video play() blocked: ${error.message}` }));
+  }
+  if (audioTrack) connectAvatarAudioIfReady();
+}
+
+async function joinTavus() {
+  try {
+    const call = window.DailyIframe.createCallObject({ subscribeToTracksAutomatically: true });
+    dailyCall = call;
+    call.on('joined-meeting', () => {
+      $('status').textContent = 'Listening…';
+      send('connected');
+      startRecording();
+    });
+    call.on('participant-joined', (event) => updateDailyParticipant(event.participant));
+    call.on('participant-updated', (event) => updateDailyParticipant(event.participant));
+    call.on('left-meeting', () => { if (started) send('left'); });
+    call.on('error', (event) => send('error', { message: event?.errorMsg || 'Tavus call error.' }));
+    await call.join({
+      url: config.url,
+      userName: 'You',
+      startVideoOff: config.video === false,
+      startAudioOff: config.mic === false,
+    });
+    if (config.mode === 'video') setupDraggableLocalVideo();
+  } catch (error) {
+    started = false;
+    $('status').textContent = 'Allow microphone/camera access, then tap to start.';
+    $('join').textContent = 'Start call';
+    $('join').hidden = false;
+    send('user-action-required', { message: error.message });
+  }
+}
+
 async function join() {
   if (started || !config) return;
   started = true;
   $('join').hidden = true;
   $('status').textContent = 'Connecting…';
+  if (config.realtimeProvider === 'tavus') return joinTavus();
   try {
     stream = await navigator.mediaDevices.getUserMedia({
       audio: config.mic === false ? false : {
@@ -284,6 +476,7 @@ async function join() {
     });
     $('local').srcObject = stream;
     if (config.mode === 'video') setupDraggableLocalVideo();
+    startRecording();
     context = new AudioContext();
     await context.resume();
 
@@ -359,6 +552,14 @@ function finish() {
   finishing = (async () => {
     clearInterval(videoTimer);
     started = false;
+    const replayResult = await stopRecordingAndUpload();
+    if (dailyCall) {
+      try { await dailyCall.leave(); } catch (_) {}
+      try { await dailyCall.destroy(); } catch (_) {}
+      dailyCall = null;
+      send('finished', replayResult);
+      return;
+    }
     stopPlayback();
     if (avatarMediaSource?.readyState === 'open') {
       try { avatarMediaSource.endOfStream(); } catch (_) {}
@@ -367,7 +568,7 @@ function finish() {
     try { socket?.close(); } catch (_) {}
     stream?.getTracks().forEach((track) => track.stop());
     await context?.close();
-    send('finished');
+    send('finished', replayResult);
   })();
   return finishing;
 }
@@ -396,9 +597,15 @@ window.addEventListener('message', (event) => {
     finish();
   } else if (message.type === 'toggle_mic') {
     muted = !muted;
-    stream?.getAudioTracks().forEach((track) => { track.enabled = !muted; });
+    if (dailyCall) dailyCall.setLocalAudio(!muted);
+    else stream?.getAudioTracks().forEach((track) => { track.enabled = !muted; });
   } else if (message.type === 'toggle_camera') {
-    stream?.getVideoTracks().forEach((track) => { track.enabled = !track.enabled; });
+    if (dailyCall) {
+      const enabled = dailyCall.localVideo();
+      dailyCall.setLocalVideo(!enabled);
+    } else {
+      stream?.getVideoTracks().forEach((track) => { track.enabled = !track.enabled; });
+    }
   } else if (message.type === 'join') {
     join();
   }

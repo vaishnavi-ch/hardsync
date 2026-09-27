@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'profile_screen.dart';
-import 'learning_screen.dart';
 import 'home_screen.dart';
 import 'progress_screen.dart';
 import 'scenario_hub_screen.dart';
+import 'session_replay_screen.dart';
 import '../theme/hardsync_theme.dart';
 
 class AppShell extends StatefulWidget {
@@ -31,12 +31,9 @@ class _AppShellState extends State<AppShell> {
   }
 
   Widget _createScreen(int index) => switch (index) {
-    0 => HomeScreen(
-      onOpenLearn: () => _selectTab(1),
-      onOpenPractice: () => _selectTab(2),
-    ),
-    1 => const LearningScreen(),
-    2 => const ScenarioHubScreen(isEmbedded: true),
+    0 => HomeScreen(onOpenPractice: () => _selectTab(1)),
+    1 => const ScenarioHubScreen(isEmbedded: true),
+    2 => const SessionReplayScreen(),
     3 => const ProgressScreen(),
     4 => const ProfileScreen(),
     _ => const SizedBox.shrink(),
@@ -117,19 +114,19 @@ class _AppShellState extends State<AppShell> {
   Widget _buildNavigationRail({required bool extended}) {
     const icons = [
       CupertinoIcons.house,
-      CupertinoIcons.book,
       CupertinoIcons.mic,
+      CupertinoIcons.clock,
       CupertinoIcons.chart_bar,
       CupertinoIcons.person,
     ];
     const selectedIcons = [
       CupertinoIcons.house_fill,
-      CupertinoIcons.book_fill,
       CupertinoIcons.mic_fill,
+      CupertinoIcons.clock_fill,
       CupertinoIcons.chart_bar_fill,
       CupertinoIcons.person_fill,
     ];
-    const labels = ['Home', 'Learn', 'Practice', 'Roadmap', 'Me'];
+    const labels = ['Home', 'Practice', 'History', 'Performance', 'You'];
 
     return NavigationRail(
       extended: extended,
@@ -227,28 +224,28 @@ class _AppShellState extends State<AppShell> {
               ),
               _buildNavItem(
                 index: 1,
-                icon: CupertinoIcons.book,
-                selectedIcon: CupertinoIcons.book_fill,
-                label: 'Learn',
-              ),
-              _buildNavItem(
-                index: 2,
                 icon: CupertinoIcons.mic,
                 selectedIcon: CupertinoIcons.mic_fill,
                 label: 'Practice',
                 prominent: true,
               ),
               _buildNavItem(
+                index: 2,
+                icon: CupertinoIcons.clock,
+                selectedIcon: CupertinoIcons.clock_fill,
+                label: 'History',
+              ),
+              _buildNavItem(
                 index: 3,
                 icon: CupertinoIcons.chart_bar,
                 selectedIcon: CupertinoIcons.chart_bar_fill,
-                label: 'Roadmap',
+                label: 'Performance',
               ),
               _buildNavItem(
                 index: 4,
                 icon: CupertinoIcons.person,
                 selectedIcon: CupertinoIcons.person_fill,
-                label: 'Me',
+                label: 'You',
               ),
             ],
           ),

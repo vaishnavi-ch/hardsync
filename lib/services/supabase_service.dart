@@ -91,6 +91,23 @@ class SupabaseService extends ChangeNotifier {
     );
     if (safe.isEmpty) return;
     await client!.from('profiles').update(safe).eq('id', userId);
+    if (changes.containsKey('full_name') && changes['full_name'] != null) {
+      try {
+        await client!.auth.updateUser(
+          UserAttributes(data: {'full_name': changes['full_name']}),
+        );
+      } catch (e) {
+        debugPrint('[SupabaseService] Auth metadata sync non-fatal warning: $e');
+      }
+    }
+    notifyListeners();
+  }
+
+  Future<void> updatePassword(String newPassword) async {
+    if (!_isInitialized || client == null) {
+      throw StateError('Sign in before updating your password.');
+    }
+    await client!.auth.updateUser(UserAttributes(password: newPassword));
     notifyListeners();
   }
 
@@ -403,7 +420,7 @@ class SupabaseService extends ChangeNotifier {
 
       final rows = await client!
           .from('session_attempts')
-          .select('*, scenarios(title)')
+          .select('*, scenarios(title, category)')
           .eq('user_id', userId)
           .order('created_at', ascending: false)
           .limit(50);

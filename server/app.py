@@ -6,6 +6,7 @@ import secrets
 import subprocess
 import json
 import os
+import re
 import threading
 import time
 import traceback
@@ -37,6 +38,10 @@ ENV.setdefault('SUPABASE_URL', ENV.get('NEXT_PUBLIC_SUPABASE_URL', ''))
 ENV.setdefault('SUPABASE_ANON_KEY', ENV.get('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY') or ENV.get('SUPABASE_PUBLISHABLE_KEY') or ENV.get('NEXT_PUBLIC_SUPABASE_ANON_KEY', ''))
 LOCK = threading.RLock()
 VALID_MODES = {'text', 'audio', 'video'}
+# Stock Tavus replica ("Daniel - Office"): a professional-looking photoreal
+# presenter, used until per-persona replica mapping is built.
+DEFAULT_TAVUS_REPLICA_ID = 'rf4703150052'
+TAVUS_CONVERSATIONS = {}  # sid -> Tavus conversation_id, for ending on hangup
 
 class ApiError(Exception):
     def __init__(self, message, status=400, details=None):
@@ -220,6 +225,72 @@ def gemini_live_url(owner, sid):
     query = urlencode({'sessionId': sid, 'owner': owner, 'expires': expires, 'signature': signature})
     return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, query, ''))
 
+def create_tavus_conversation(sid, context, replica_id=None):
+    """Create a Tavus Conversational Video Interface session (Daily-hosted room)."""
+    api_key = ENV.get('TAVUS_API_KEY', '').strip()
+    if not api_key:
+        raise ApiError('Tavus is not configured. Set TAVUS_API_KEY on the server.', 503)
+    result = remote(
+        'https://tavusapi.com/v2/conversations',
+        {
+            'replica_id': replica_id or DEFAULT_TAVUS_REPLICA_ID,
+            'conversation_name': f'HardSync-{sid}',
+            'conversational_context': context[:2000],
+        },
+        {'x-api-key': api_key},
+        method='POST',
+    )
+    conversation_url = result.get('conversation_url')
+    conversation_id = result.get('conversation_id')
+    if not conversation_url or not conversation_id:
+        raise ApiError('Tavus did not return a conversation URL.', 502)
+    with LOCK:
+        TAVUS_CONVERSATIONS[sid] = conversation_id
+    return conversation_url
+
+def tavus_transcript(sid):
+    """Pull the end-of-call transcript Tavus recorded for this conversation.
+
+    Tavus (not our own bridge) runs the speech-to-text for video calls, so
+    this is the only way to recover what was actually said for analysis.
+    """
+    with LOCK:
+        conversation_id = TAVUS_CONVERSATIONS.get(sid)
+    api_key = ENV.get('TAVUS_API_KEY', '').strip()
+    if not conversation_id or not api_key:
+        return {'transcript': []}
+    try:
+        result = remote(
+            f'https://tavusapi.com/v2/conversations/{conversation_id}?verbose=true',
+            None, {'x-api-key': api_key}, method='GET',
+        )
+    except ApiError:
+        return {'transcript': []}
+    turns = []
+    for event in result.get('events') or []:
+        if event.get('event_type') != 'application.transcription_ready':
+            continue
+        for entry in (event.get('properties') or {}).get('transcript') or []:
+            role = entry.get('role')
+            text = str(entry.get('content', '')).strip()
+            if role not in ('user', 'assistant') or not text:
+                continue
+            turns.append({'role': role, 'text': text, 'seconds': entry.get('seconds_from_start', 0)})
+    return {'transcript': turns}
+
+def end_tavus_conversation(sid):
+    with LOCK:
+        conversation_id = TAVUS_CONVERSATIONS.pop(sid, None)
+    if not conversation_id:
+        return
+    api_key = ENV.get('TAVUS_API_KEY', '').strip()
+    if not api_key:
+        return
+    try:
+        remote(f'https://tavusapi.com/v2/conversations/{conversation_id}/end', {}, {'x-api-key': api_key}, method='POST')
+    except ApiError:
+        pass  # Best-effort; Tavus also auto-expires idle conversations.
+
 def create_session(owner, data, access_token):
     if not isinstance(data, dict):
         raise ApiError('JSON object required.')
@@ -228,20 +299,28 @@ def create_session(owner, data, access_token):
     mode = data.get('mode', 'text')
     if mode not in VALID_MODES:
         raise ApiError('Unknown call mode.')
-    # Gemini handles every realtime audio and video practice.
-    provider = 'gemini_live'
+    # Video calls use Tavus's photoreal avatars; voice-only calls stay on
+    # the plain Gemini Live audio bridge.
+    provider = 'tavus' if mode == 'video' else 'gemini_live'
     if mode == 'text' and not ENV.get('GEMINI_API_KEY'):
         raise ApiError('AI dialogue is not configured.', 503)
-    if mode != 'text' and provider == 'gemini_live' and (not ENV.get('GEMINI_LIVE_BRIDGE_URL') or not ENV.get('GEMINI_LIVE_SHARED_SECRET')):
+    if mode == 'audio' and provider == 'gemini_live' and (not ENV.get('GEMINI_LIVE_BRIDGE_URL') or not ENV.get('GEMINI_LIVE_SHARED_SECRET')):
         raise ApiError('Gemini Live is not configured.', 503)
+    if mode == 'video' and provider == 'tavus' and not ENV.get('TAVUS_API_KEY'):
+        raise ApiError('Tavus is not configured.', 503)
     context = str(data.get('context', ''))[:6000]
     voice_name = str(data.get('voiceName', ''))[:64]
     avatar_name = str(data.get('avatarName', ''))[:64]
+    tavus_replica_id = str(data.get('tavusReplicaId', ''))[:64]
+    if not re.fullmatch(r'[a-f0-9]{8,20}', tavus_replica_id):
+        tavus_replica_id = None
     sid = reserve(owner, mode, provider if mode != 'text' else 'gemini_text', context,
                   str(data.get('scenarioId', '')), access_token, voice_name, avatar_name)
     try:
         result = {'id': sid, 'mode': mode}
-        if mode != 'text':
+        if mode == 'video':
+            result.update({'realtimeProvider': 'tavus', 'liveUrl': create_tavus_conversation(sid, context, tavus_replica_id)})
+        elif mode != 'text':
             result.update({'realtimeProvider': 'gemini_live', 'liveUrl': gemini_live_url(owner, sid)})
         return result
     except Exception:
@@ -257,6 +336,7 @@ def end_session(owner, sid, access_token):
         cancel_unconnected_session(owner, sid, access_token)
     else:
         supabase_rpc('end_practice_session', {'p_session_id': sid}, access_token)
+    end_tavus_conversation(sid)
     return {'ended': True}
 
 def generate(owner, data, access_token):
@@ -647,6 +727,8 @@ class Handler(SimpleHTTPRequestHandler):
                 }, self.access_token)
                 if not connected: raise ApiError('Session is no longer available.',409)
                 return self.respond({'connected': True})
+            if self.path == '/api/sessions/tavus-transcript':
+                return self.respond(tavus_transcript(sid))
             if self.path == '/api/sessions/end':
                 return self.respond(end_session(owner, sid, self.access_token))
             if self.path == '/api/sessions/report':

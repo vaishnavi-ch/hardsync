@@ -1,0 +1,51 @@
+name: Build iOS Simulator App for Appetize.io
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-ios-simulator:
+    name: Build iOS Simulator (.app)
+    runs-on: macos-14
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java for any Android/tooling needs
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.2'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS Simulator Bundle (No code signing required)
+        run: |
+          flutter build ios --simulator --debug --no-codesign
+
+      - name: Package .app for Appetize.io
+        run: |
+          cd build/ios/iphonesimulator
+          # Appetize requires a zipped .app bundle
+          zip -r -y ../../../appetize-ios-simulator.zip Runner.app
+          cd ../../..
+          echo "Simulator build zipped successfully: $(ls -lh appetize-ios-simulator.zip)"
+
+      - name: Upload Appetize Simulator Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: appetize-ios-simulator
+          path: appetize-ios-simulator.zip
+          retention-days: 7

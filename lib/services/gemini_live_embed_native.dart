@@ -21,6 +21,7 @@ class GeminiLiveEmbedView extends StatefulWidget {
   final bool microphoneEnabled;
   final bool cameraEnabled;
   final String personaId;
+  final String? replayUploadUrl;
   final ValueChanged<Map<String, dynamic>>? onEvent;
   final VoidCallback? onLoaded;
 
@@ -34,6 +35,7 @@ class GeminiLiveEmbedView extends StatefulWidget {
     this.microphoneEnabled = true,
     this.cameraEnabled = true,
     this.personaId = '',
+    this.replayUploadUrl,
     this.onEvent,
     this.onLoaded,
   });
@@ -46,6 +48,7 @@ class _GeminiLiveEmbedViewState extends State<GeminiLiveEmbedView> {
   static const _permissionChannel = MethodChannel('hardsync/media_permissions');
   late final WebViewController _web;
   Completer<void>? _finished;
+  Map<String, dynamic>? _finishResult;
   bool _sentConfiguration = false;
 
   @override
@@ -119,6 +122,10 @@ class _GeminiLiveEmbedViewState extends State<GeminiLiveEmbedView> {
         _configure();
         widget.onLoaded?.call();
       } else if (event['type'] == 'finished') {
+        _finishResult = {
+          'mimeType': event['mimeType'],
+          'replaySaved': event['replaySaved'] == true,
+        };
         if (_finished != null && !_finished!.isCompleted) _finished!.complete();
       } else {
         widget.onEvent?.call(event);
@@ -147,6 +154,7 @@ class _GeminiLiveEmbedViewState extends State<GeminiLiveEmbedView> {
       'realtimeProvider': widget.realtimeProvider,
       'mic': widget.microphoneEnabled,
       'video': widget.cameraEnabled,
+      if (widget.replayUploadUrl != null) 'replayUploadUrl': widget.replayUploadUrl,
       // The Flutter "Begin Call" button the user just tapped IS the required
       // user gesture (mediaTypesRequiringUserAction is also cleared for
       // WKWebView below), so join immediately rather than asking again.
@@ -167,10 +175,17 @@ class _GeminiLiveEmbedViewState extends State<GeminiLiveEmbedView> {
     }
   }
 
-  Future<void> _finish() async {
+  Future<Map<String, dynamic>?> _finish() async {
     _finished ??= Completer<void>();
     await _send({'type': 'finish'});
-    await _finished!.future.timeout(const Duration(seconds: 45));
+    try {
+      await _finished!.future.timeout(const Duration(seconds: 45));
+    } catch (_) {
+      // The recording upload can legitimately take a while on a slow
+      // connection; if it times out, just report no replay rather than
+      // blocking the user from leaving the call screen.
+    }
+    return _finishResult;
   }
 
   @override

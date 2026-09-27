@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -28,27 +29,52 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <title>HardSync</title>
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://reqwhdhkpazfvvefvsnv.supabase.co" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <style>
-    html, body { margin: 0; height: 100%; background: #faf8f4; }
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      background: #faf8f4;
+    }
+
     #app-loading {
-      position: fixed; inset: 0; display: grid; place-items: center;
-      color: #17182b; font: 600 18px system-ui, -apple-system, sans-serif;
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: #17182b;
+      font: 600 18px system-ui, -apple-system, sans-serif;
     }
+
     #app-loading::before {
-      content: ''; position: absolute; width: 46px; height: 46px;
-      border: 3px solid #e2d8ff; border-top-color: #7c5ce7;
-      border-radius: 50%; animation: spin .75s linear infinite;
+      content: '';
+      position: absolute;
+      width: 46px;
+      height: 46px;
+      border: 3px solid #e2d8ff;
+      border-top-color: #7c5ce7;
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
     }
-    #app-loading span { margin-top: 88px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #app-loading span {
+      margin-top: 88px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
+
 <body>
   <div id="app-loading" role="status" aria-label="Loading HardSync"><span>HardSync</span></div>
   <script src="flutter_bootstrap.js" async></script>
@@ -68,4 +94,5 @@
     })();
   </script>
 </body>
+
 </html>

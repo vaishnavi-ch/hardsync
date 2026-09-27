@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../models/scenario.dart';
-import '../models/learning_course.dart';
 import '../services/supabase_service.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
@@ -32,9 +31,7 @@ class _ScenarioHubScreenState extends State<ScenarioHubScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scenarios = Scenario.defaultScenarios
-        .where((scenario) => !LearningCatalog.linkedScenarioIds.contains(scenario.id))
-        .toList();
+    final scenarios = Scenario.defaultScenarios;
     final filtered = scenarios
         .where((item) => _matchesCategory(item, _selectedCategory))
         .toList();
@@ -367,7 +364,7 @@ class _ScenarioHubScreenState extends State<ScenarioHubScreen> {
                         borderRadius: BorderRadius.circular(18),
                       ),
                       child: AppIllustration(
-                        _scenarioIllustration(scenario.id),
+                        Scenario.illustrationFor(scenario.id),
                       ),
                     ),
                     const SizedBox(width: 14),
@@ -443,21 +440,6 @@ class _ScenarioHubScreenState extends State<ScenarioHubScreen> {
       context,
       MaterialPageRoute(builder: (_) => SessionPrepScreen(scenario: scenario)),
     );
-  }
-
-  String _scenarioIllustration(String scenarioId) {
-    switch (scenarioId) {
-      case 'scenario_managing_former_peer':
-        return HardSyncAssets.illusManager11;
-      case 'practice_urgent_request':
-        return HardSyncAssets.illusDemandingExecutivePersona;
-      case 'practice_feedback_review':
-        return HardSyncAssets.illusToughFeedbackMoment;
-      case 'scenario_cross_team_alignment':
-        return HardSyncAssets.illusConflictBridge;
-      default:
-        return HardSyncAssets.illusSafeRehearsalRoom;
-    }
   }
 
   static const _cardPalettes = <(Color, Color)>[

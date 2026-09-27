@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,7 +20,12 @@ import 'theme/hardsync_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   WidgetsBinding.instance.ensureSemantics();
-  runApp(const HardSyncApp());
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => const HardSyncApp(),
+    ),
+  );
 }
 
 class HardSyncApp extends StatefulWidget {
@@ -33,6 +40,7 @@ class _HardSyncAppState extends State<HardSyncApp> {
 
   Future<void> _initializeCore() async {
     final splashStarted = DateTime.now();
+    await EnvConfig.init();
     // Supabase restores the persisted login locally and is the only service
     // required before deciding which launch screen to show.
     await SupabaseService.instance.init();
@@ -52,7 +60,6 @@ class _HardSyncAppState extends State<HardSyncApp> {
   }
 
   Future<void> _initializeOptionalServices() async {
-    await EnvConfig.init();
     await RevenueCatService.instance.init(
       appUserId: SupabaseService.instance.currentUserId,
     );
@@ -83,6 +90,8 @@ class _HardSyncAppState extends State<HardSyncApp> {
       child: MaterialApp(
         title: 'HardSync — Leadership Flight Simulator',
         debugShowCheckedModeBanner: false,
+        locale: DevicePreview.locale(context),
+        builder: DevicePreview.appBuilder,
         theme: HardSyncTheme.lightTheme,
         home: FutureBuilder<void>(
           future: _coreReady,
@@ -136,22 +145,15 @@ class _LaunchScreenState extends State<_LaunchScreen>
                 ),
               ),
               child: Container(
-                width: 208,
-                height: 208,
-                padding: const EdgeInsets.all(18),
+                width: 220,
+                height: 256,
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: HardSyncColors.lilacMist,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: HardSyncColors.violet.withValues(alpha: .12),
-                      blurRadius: 36,
-                      offset: const Offset(0, 14),
-                    ),
-                  ],
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(32),
                 ),
                 child: const AppIllustration(
-                  HardSyncAssets.illusCoachThinking,
+                  HardSyncAssets.appMascot,
                   fit: BoxFit.contain,
                 ),
               ),

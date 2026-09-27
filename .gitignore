@@ -61,3 +61,8 @@ __pycache__/
 *.mp4
 android/build/
 .agents/
+
+# Local screenshots and dumps from device debugging
+/*.png
+/*.xml
+tools/__pycache__/

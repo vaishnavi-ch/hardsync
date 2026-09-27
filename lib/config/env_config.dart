@@ -38,11 +38,15 @@ class EnvConfig {
   static bool get hasGeminiKey => _env['HAS_GEMINI'] == 'true';
 
   // --- SUPABASE CONFIGURATION ---
+  static const _defaultSupabaseUrl = 'https://reqwhdhkpazfvvefvsnv.supabase.co';
+  static const _defaultSupabaseAnonKey = 'sb_publishable_VRnfgnMucLLuO7CJdre_yA_CAXQhjNH';
+
   static String get supabaseUrl {
     const fromDefine = String.fromEnvironment('SUPABASE_URL');
     if (fromDefine.isNotEmpty) return fromDefine;
     final inMap = _env['SUPABASE_URL'] ?? _env['NEXT_PUBLIC_SUPABASE_URL'];
-    return inMap?.trim() ?? '';
+    if (inMap != null && inMap.trim().isNotEmpty) return inMap.trim();
+    return _defaultSupabaseUrl;
   }
 
   static String get supabaseAnonKey {
@@ -53,7 +57,8 @@ class EnvConfig {
         _env['NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY'] ??
         _env['SUPABASE_PUBLISHABLE_KEY'] ??
         _env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
-    return inMap?.trim() ?? '';
+    if (inMap != null && inMap.trim().isNotEmpty) return inMap.trim();
+    return _defaultSupabaseAnonKey;
   }
 
   static bool get isSupabaseConfigured =>
@@ -61,6 +66,7 @@ class EnvConfig {
 
   // --- REVENUECAT CONFIGURATION ---
   static const _defaultUseTestStore = true;
+  static const _defaultRevenueCatTestStoreKey = 'test_OIDobrEmvzshDcQyHUTygCqVdOp';
 
   static bool get useRevenueCatTestStore {
     const fromDefine = String.fromEnvironment('REVENUECAT_USE_TEST_STORE');
@@ -76,7 +82,8 @@ class EnvConfig {
     if (fromDefine.isNotEmpty) return fromDefine;
     final inMap =
         _env['REVENUECAT_TEST_STORE_KEY'] ?? _env['REVENUECAT_API_KEY'];
-    return inMap?.trim() ?? '';
+    if (inMap != null && inMap.trim().isNotEmpty) return inMap.trim();
+    return _defaultRevenueCatTestStoreKey;
   }
 
   static String get revenueCatAppleKey {

@@ -6,6 +6,7 @@ import '../services/backend_service.dart';
 import '../services/supabase_service.dart';
 import '../theme/hardsync_theme.dart';
 import '../theme/hardsync_assets.dart';
+import '../widgets/replay_player_widget.dart';
 
 class SessionDetailScreen extends StatefulWidget {
   final String sessionId;
@@ -26,6 +27,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
   String _tab = 'Insights';
   String _query = '';
   Timer? _poll;
+  Future<Map<String, dynamic>>? _replay;
   @override
   void initState() {
     super.initState();
@@ -333,6 +335,47 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
     ];
   }
 
+  List<Widget> _recording() {
+    _replay ??= BackendService.request('/api/replays/playback-url', {
+      'sessionId': widget.sessionId,
+    });
+    return [
+      FutureBuilder<Map<String, dynamic>>(
+        future: _replay,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return _card(
+              const SizedBox(
+                height: 160,
+                child: Center(child: CircularProgressIndicator(strokeWidth: 2.5)),
+              ),
+            );
+          }
+          if (snapshot.hasError || snapshot.data?['playbackUrl'] == null) {
+            return _card(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _heading('No recording saved'),
+                  const Text(
+                    'Recording is opt-in per session. Turn it on next time from the "Save a recording for playback" switch before you start the call.',
+                  ),
+                ],
+              ),
+            );
+          }
+          final data = snapshot.data!;
+          return _card(
+            ReplayPlayerWidget(
+              url: data['playbackUrl'] as String,
+              audioOnly: _report?['mode'] == 'audio',
+            ),
+          );
+        },
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final report = _report;
@@ -405,6 +448,11 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                           value: 'Transcript',
                           label: Text(mode == 'text' ? 'Chat' : 'Transcript'),
                         ),
+                        if (mode != 'text')
+                          const ButtonSegment(
+                            value: 'Recording',
+                            label: Text('Recording'),
+                          ),
                       ],
                       selected: {_tab},
                       onSelectionChanged: (v) => setState(() => _tab = v.first),
@@ -412,6 +460,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                     const SizedBox(height: 24),
                     if (_tab == 'Insights') ..._insights(),
                     if (_tab == 'Transcript') ..._transcript(),
+                    if (_tab == 'Recording') ..._recording(),
                   ],
                 ),
               ),

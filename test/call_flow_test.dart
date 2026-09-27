@@ -9,9 +9,21 @@ import 'package:hardsync/providers/simulation_provider.dart';
 import 'package:hardsync/services/backend_service.dart';
 
 void main() {
-  final original = BackendService.transport;
+  TestWidgetsFlutterBinding.ensureInitialized();
+  http.Client? original;
   late SimulationProvider sim;
   late List<http.Request> requests;
+
+  setUpAll(() {
+    original = BackendService.transport;
+  });
+
+  tearDownAll(() {
+    if (original != null) {
+      BackendService.transport = original!;
+    }
+  });
+
   setUp(() {
     sim = SimulationProvider();
     requests = [];
@@ -33,7 +45,6 @@ void main() {
   });
   tearDown(() {
     sim.dispose();
-    BackendService.transport = original;
     BackendService.sessionId = null;
     BackendService.baseUriOverride = null;
   });
@@ -115,7 +126,7 @@ void main() {
   test(
     'call end waits for recording finalization before saving its report',
     () async {
-      final media = Completer<void>();
+      final media = Completer<Map<String, dynamic>?>();
       await sim.startCall(
         Scenario.defaultScenarios.first,
         mode: CallMode.video,
@@ -130,7 +141,7 @@ void main() {
         requests.where((r) => r.url.path == '/api/sessions/report'),
         isEmpty,
       );
-      media.complete();
+      media.complete(null);
       await ending;
       expect(sim.savedSessionId, 'session');
       expect(sim.callState, CallState.ended);
