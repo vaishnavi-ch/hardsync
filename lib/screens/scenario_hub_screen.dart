@@ -50,16 +50,10 @@ class _ScenarioHubScreenState extends State<ScenarioHubScreen> {
                       sliver: SliverToBoxAdapter(child: _buildHeader(context)),
                     ),
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 4, 20, 18),
-                      sliver: SliverToBoxAdapter(
-                        child: _buildHero(context, scenarios.first),
-                      ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                      padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
                       sliver: SliverToBoxAdapter(
                         child: Text(
-                          'Choose a rehearsal',
+                          'Choose a scenario',
                           style: Theme.of(context).textTheme.headlineLarge,
                         ),
                       ),
@@ -205,8 +199,12 @@ class _ScenarioHubScreenState extends State<ScenarioHubScreen> {
           child: InkWell(
             onTap: () => showModalBottomSheet(
               context: context,
+              showDragHandle: true,
               isScrollControlled: true,
-              backgroundColor: Colors.transparent,
+              backgroundColor: HardSyncColors.cream,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
               builder: (_) => const SettingsModal(),
             ),
             customBorder: const CircleBorder(),
@@ -222,68 +220,6 @@ class _ScenarioHubScreenState extends State<ScenarioHubScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildHero(BuildContext context, Scenario scenario) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 172),
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: HardSyncColors.lilacMist,
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(17, 14, 4, 14),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _eyebrow('TRY A QUICK PRACTICE'),
-                  const SizedBox(height: 6),
-                  Text(
-                    scenario.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.newsreader(
-                      fontSize: 21,
-                      height: 1.02,
-                      fontWeight: FontWeight.w700,
-                      color: HardSyncColors.ink,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Rehearse a real 1:1 before it happens.',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 8),
-                  FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(0, 40),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    onPressed: () => _openScenario(context, scenario),
-                    icon: const Icon(Icons.play_arrow_rounded, size: 17),
-                    label: const Text('Start'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(
-            width: 126,
-            height: 158,
-            child: AppIllustration(HardSyncAssets.illusSafeRehearsalRoom),
-          ),
-        ],
-      ),
     );
   }
 

@@ -8,7 +8,6 @@ import 'package:hardsync/providers/subscription_provider.dart';
 import 'package:hardsync/screens/custom_scenario_screen.dart';
 import 'package:hardsync/screens/app_shell.dart';
 import 'package:hardsync/screens/home_screen.dart';
-import 'package:hardsync/screens/progress_screen.dart';
 import 'package:hardsync/screens/session_prep_screen.dart';
 import 'package:hardsync/screens/subscription_paywall_screen.dart';
 import 'package:hardsync/theme/hardsync_theme.dart';
@@ -95,33 +94,23 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
   });
 
-  testWidgets('progress screen fits and shows saved-practice empty state', (
-    tester,
-  ) async {
-    await pumpAt(tester, const ProgressScreen());
-    expect(find.text('Your performance'), findsOneWidget);
-    expect(find.text('Your practice results will show here'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
   testWidgets('custom scenario advances through all guided builder states', (
     tester,
   ) async {
     await pumpAt(tester, const CustomScenarioScreen());
-    expect(find.text('Create your own scenario'), findsOneWidget);
-
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
     expect(find.text('Define the situation'), findsOneWidget);
 
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
-    expect(find.text('Choose your conversation partner'), findsOneWidget);
+    expect(
+      find.text('Choose your conversation partner (optional)'),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
     expect(find.text('Review your scenario'), findsOneWidget);
-    expect(find.text('Continue to practice setup'), findsOneWidget);
+    expect(find.text('Generate with AI'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

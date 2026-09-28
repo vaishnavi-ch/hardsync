@@ -61,37 +61,37 @@ class PracticeStats {
   static const _badgeMeta = <String, (String, String, String)>{
     'clear_communicator': (
       'Clear Communicator',
-      'Complete 2 Communication Basics rehearsals',
+      'Complete 2 Communication Basics scenarios',
       HardSyncAssets.badgeClearCommunicatorBadge,
     ),
     'conflict_navigator': (
       'Conflict Navigator',
-      'Complete 2 Conflict & Alignment rehearsals',
+      'Complete 2 Conflict & Alignment scenarios',
       HardSyncAssets.badgeConflictNavigatorBadge,
     ),
     'empathy_leader': (
       'Empathy Leader',
-      'Complete 2 Listening rehearsals',
+      'Complete 2 Listening scenarios',
       HardSyncAssets.badgeEmpathyLeaderBadge,
     ),
     'feedback_builder': (
       'Feedback Builder',
-      'Complete 2 Feedback rehearsals',
+      'Complete 2 Feedback scenarios',
       HardSyncAssets.badgeFeedbackBuilderBadge,
     ),
     'team_builder': (
       'Team Builder',
-      'Complete 2 Delegation rehearsals',
+      'Complete 2 Delegation scenarios',
       HardSyncAssets.badgeTeamBuilderBadge,
     ),
     'one_on_one_champion': (
       '1:1 Champion',
-      'Complete 2 one-to-one style rehearsals',
+      'Complete 2 one-to-one style scenarios',
       HardSyncAssets.badgeOneononeChampionBadge,
     ),
     'executive_presence': (
       'Executive Presence',
-      'Complete 2 Managing Up / Leading Change rehearsals',
+      'Complete 2 Managing Up / Leading Change scenarios',
       HardSyncAssets.badgeExecutivePresenceBadge,
     ),
   };

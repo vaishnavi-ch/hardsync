@@ -382,11 +382,21 @@ def tavus_transcript(sid):
             if role not in ('user', 'assistant') or not text:
                 continue
             turns.append({'role': role, 'text': text, 'seconds': entry.get('seconds_from_start', 0)})
+    if turns:
+        # Transcript is in hand; stop holding the mapping open. If it's still
+        # empty, leave it so a later retry (transcription_ready can lag a few
+        # seconds after the conversation ends) can still resolve it.
+        with LOCK:
+            TAVUS_CONVERSATIONS.pop(sid, None)
     return {'transcript': turns}
 
 def end_tavus_conversation(sid):
+    # Deliberately kept (not popped) in TAVUS_CONVERSATIONS: Tavus only
+    # finalizes its `application.transcription_ready` event after the
+    # conversation ends, so tavus_transcript() still needs this mapping for
+    # the transcript fetch(es) that happen after this call returns.
     with LOCK:
-        conversation_id = TAVUS_CONVERSATIONS.pop(sid, None)
+        conversation_id = TAVUS_CONVERSATIONS.get(sid)
     if not conversation_id:
         return
     api_key = ENV.get('TAVUS_API_KEY', '').strip()
@@ -794,6 +804,15 @@ class Handler(SimpleHTTPRequestHandler):
         from urllib.parse import urlparse
         parsed = urlparse(origin)
         if parsed.hostname in ('127.0.0.1','localhost'): return True
+        # The live_call.html/js WebView client is served BY this same server
+        # and calls back to its own relative paths (e.g. the replay upload
+        # proxy). Browsers send an Origin header on those same-origin POSTs
+        # too, and it points at this server's own host - which ALLOWED_ORIGINS
+        # (meant for the separately-hosted web frontend) doesn't include, so
+        # without this check same-origin calls from our own pages get 403'd.
+        own_host = self.headers.get('Host', '').split(':')[0].lower()
+        if own_host and parsed.hostname and parsed.hostname.lower() == own_host:
+            return True
         allowed = {v.strip().rstrip('/') for v in ENV.get('ALLOWED_ORIGINS','').split(',') if v.strip()}
         return '*' in allowed or origin.rstrip('/') in allowed
 

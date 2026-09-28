@@ -369,7 +369,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // 1. Full-screen Video Player or Illustrated Rehearsal Room
+        // 1. Full-screen Video Player or Illustrated Scenario Room
         if (sim.geminiLiveUrl != null && !ended)
           Positioned.fill(
             child: GeminiLiveEmbedView(
@@ -653,7 +653,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              'Live Roleplay Rehearsal',
+                              'Live Roleplay Scenario',
                               style: GoogleFonts.plusJakartaSans(
                                 color: Colors.white70,
                                 fontSize: 11.5,
@@ -925,7 +925,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                     const SizedBox(width: 8),
                     Text(
                       sim.callState == CallState.connecting
-                          ? 'Connecting with $counterpartName...'
+                          ? 'Waiting for $counterpartName to join...'
                           : sim.isBusy
                           ? '$counterpartName speaking'
                           : 'Listening to you',

@@ -107,7 +107,7 @@ class AuthWelcomeScreen extends StatelessWidget {
             width: double.infinity,
             color: const Color(0xFFF0E9FF),
             child: const AppIllustration(
-              HardSyncAssets.illusSafeRehearsalRoom,
+              HardSyncAssets.illusBetterResponse,
               fit: BoxFit.cover,
               alignment: Alignment.bottomCenter,
             ),
@@ -145,7 +145,7 @@ class AuthWelcomeScreen extends StatelessWidget {
                 _SocialButton(
                   icon: const Icon(Icons.apple, color: Colors.black, size: 22),
                   label: 'Continue with Apple',
-                  onPressed: () => _oauth(context, OAuthProvider.apple),
+                  onPressed: () => _appleSignIn(context),
                 ),
                 const SizedBox(height: 9),
                 _SocialButton(
@@ -237,6 +237,14 @@ class AuthWelcomeScreen extends StatelessWidget {
       if (context.mounted) _showError(context, e);
     }
   }
+
+  Future<void> _appleSignIn(BuildContext context) async {
+    try {
+      await SupabaseService.instance.signInWithApple();
+    } catch (e) {
+      if (context.mounted) _showError(context, e);
+    }
+  }
 }
 
 class AuthFormScreen extends StatefulWidget {
@@ -260,7 +268,12 @@ class _AuthFormScreenState extends State<AuthFormScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => _AuthPage(
+  Widget build(BuildContext context) {
+    // Hide the decorative illustration once the keyboard is up so the fields
+    // and the primary button below them still fit above it without the user
+    // having to hunt for a scroll position that reveals the button.
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+    return _AuthPage(
     child: SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Column(
@@ -279,14 +292,16 @@ class _AuthFormScreenState extends State<AuthFormScreen> {
                 : 'Good conversations start here.',
             style: _body(size: 13, color: const Color(0xFF555A91)),
           ),
-          if (!widget.signUp) ...[
+          if (!widget.signUp && !keyboardOpen) ...[
             const SizedBox(height: 8),
             const SizedBox(
               height: 190,
               width: double.infinity,
               child: AppIllustration(HardSyncAssets.illusManager11),
             ),
-          ] else
+          ] else if (!widget.signUp)
+            const SizedBox(height: 14)
+          else
             const SizedBox(height: 30),
           if (widget.signUp) ...[
             _Field(
@@ -376,7 +391,7 @@ class _AuthFormScreenState extends State<AuthFormScreen> {
           _SocialButton(
             icon: const Icon(Icons.apple, color: Colors.black, size: 21),
             label: widget.signUp ? 'Sign up with Apple' : 'Continue with Apple',
-            onPressed: () => _oauth(OAuthProvider.apple),
+            onPressed: _appleSignIn,
           ),
           const SizedBox(height: 16),
           Center(
@@ -408,6 +423,7 @@ class _AuthFormScreenState extends State<AuthFormScreen> {
       ),
     ),
   );
+  }
 
   Future<void> _submit() async {
     if (_email.text.trim().isEmpty ||
@@ -452,6 +468,14 @@ class _AuthFormScreenState extends State<AuthFormScreen> {
   Future<void> _oauth(OAuthProvider provider) async {
     try {
       await SupabaseService.instance.signInWithOAuth(provider);
+    } catch (e) {
+      if (mounted) _showError(context, e);
+    }
+  }
+
+  Future<void> _appleSignIn() async {
+    try {
+      await SupabaseService.instance.signInWithApple();
     } catch (e) {
       if (mounted) _showError(context, e);
     }

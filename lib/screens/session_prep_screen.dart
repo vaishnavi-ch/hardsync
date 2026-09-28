@@ -787,30 +787,60 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
               color: HardSyncColors.lilacMist,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Row(
-              children: [
-                _buildModeTab(
-                  label: 'Text Drill',
-                  mode: CallMode.text,
-                  iconAsset: HardSyncAssets.iconChatBubbles,
-                  isLocked: false,
-                  badge: '1 CR',
-                ),
-                _buildModeTab(
-                  label: 'Voice Audio',
-                  mode: CallMode.audio,
-                  iconAsset: HardSyncAssets.iconHeartbeatPulseHealth,
-                  isLocked: !sub.canUseAudioCalls,
-                  badge: '1 CR/M',
-                ),
-                _buildModeTab(
-                  label: 'HD Video',
-                  mode: CallMode.video,
-                  iconAsset: HardSyncAssets.iconLaptopComputer,
-                  isLocked: !sub.canUseVideoCalls,
-                  badge: '6 CR/M',
-                ),
-              ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final tabWidth = constraints.maxWidth / 3;
+                return Stack(
+                  children: [
+                    AnimatedPositioned(
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOut,
+                      left: tabWidth * _selectedCallMode.index,
+                      top: 0,
+                      bottom: 0,
+                      width: tabWidth,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.04),
+                              blurRadius: 4,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        _buildModeTab(
+                          label: 'Text Drill',
+                          mode: CallMode.text,
+                          iconAsset: HardSyncAssets.iconChatBubbles,
+                          isLocked: false,
+                          badge: '1 CR',
+                        ),
+                        _buildModeTab(
+                          label: 'Voice Audio',
+                          mode: CallMode.audio,
+                          iconAsset: HardSyncAssets.iconHeartbeatPulseHealth,
+                          isLocked: !sub.canUseAudioCalls,
+                          badge: '1 CR/M',
+                        ),
+                        _buildModeTab(
+                          label: 'HD Video',
+                          mode: CallMode.video,
+                          iconAsset: HardSyncAssets.iconLaptopComputer,
+                          isLocked: !sub.canUseVideoCalls,
+                          badge: '6 CR/M',
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           if (_selectedCallMode != CallMode.text) ...[
@@ -929,7 +959,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                       if (simulation.hasSessionConflict ||
                           (simulation.callState == CallState.ended &&
                               simulation.error != null &&
-                              simulation.error!.contains('earlier rehearsal'))) {
+                              simulation.error!.contains('earlier scenario'))) {
                         await simulation.retryStart();
                       }
                       if (!context.mounted) return;
@@ -938,13 +968,13 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                         // If there's still a conflict after auto-retry, show a
                         // prominent "Force End" button instead of just a snackbar.
                         if (simulation.hasSessionConflict ||
-                            (simulation.error?.contains('earlier rehearsal') == true)) {
+                            (simulation.error?.contains('earlier scenario') == true)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 8),
                               backgroundColor: const Color(0xFF844335),
                               content: const Text(
-                                'A previous rehearsal is blocking. Tap "Force End" to clear it.',
+                                'A previous scenario is blocking. Tap "Force End" to clear it.',
                               ),
                               action: SnackBarAction(
                                 label: 'Force End',
@@ -968,7 +998,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                             SnackBar(
                               content: Text(
                                 simulation.error ??
-                                    'Could not start the rehearsal.',
+                                    'Could not start the scenario.',
                               ),
                               backgroundColor: const Color(0xFF844335),
                             ),
@@ -991,7 +1021,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                     const SizedBox(width: 10),
                     Text(
                       _starting
-                          ? 'Preparing rehearsal…'
+                          ? 'Preparing scenario…'
                           : _selectedCallMode == CallMode.video
                           ? 'Begin Video Call'
                           : (_selectedCallMode == CallMode.audio
@@ -1086,22 +1116,9 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => _selectedCallMode = mode),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 4,
-                      offset: const Offset(0, 1),
-                    ),
-                  ]
-                : null,
-          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

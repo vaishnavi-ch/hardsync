@@ -215,8 +215,10 @@ class _AppLaunchGateState extends State<AppLaunchGate> {
   }
 
   // Every account (new signups and existing accounts without a stored
-  // choice) is offered the avatar picker exactly once, tracked per-user
-  // locally so re-launching the app never nags them again.
+  // choice) is offered the avatar picker exactly once. The local flag lets
+  // repeat launches skip a network round trip, but a reinstall wipes that
+  // flag, so we also fall back to checking the profile's saved avatar_url
+  // (server-side) before deciding to show the picker again.
   Future<void> _maybeCheckAvatarSetup() async {
     final userId = SupabaseService.instance.currentUserId;
     if (userId == null) {
@@ -227,7 +229,19 @@ class _AppLaunchGateState extends State<AppLaunchGate> {
     _avatarCheckedUserId = userId;
     if (mounted) setState(() => _checkingAvatarSetup = true);
     final preferences = await SharedPreferences.getInstance();
-    final done = preferences.getBool('avatar_setup_done_$userId') ?? false;
+    var done = preferences.getBool('avatar_setup_done_$userId') ?? false;
+    if (!done) {
+      try {
+        final profile = await SupabaseService.instance.fetchOwnProfile();
+        final avatarUrl = profile['avatar_url'] as String?;
+        if (avatarUrl != null && avatarUrl.isNotEmpty) {
+          done = true;
+          await preferences.setBool('avatar_setup_done_$userId', true);
+        }
+      } catch (_) {
+        // Profile fetch failed (e.g. offline); fall back to local flag.
+      }
+    }
     if (!mounted || userId != SupabaseService.instance.currentUserId) return;
     setState(() {
       _needsAvatarSetup = !done;

@@ -129,7 +129,7 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen> {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              'PERSONALIZE YOUR REHEARSALS',
+                              'PERSONALIZE YOUR SCENARIOS',
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 10.5,
                                 fontWeight: FontWeight.bold,

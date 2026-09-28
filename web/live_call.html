@@ -9,7 +9,11 @@
     #avatarIllustration{width:min(92vw,82vh);height:min(92vw,82vh);object-fit:contain;filter:drop-shadow(0 18px 30px #39236122);animation:float 3.2s ease-in-out infinite;transition:filter .25s,transform .25s}
     #avatar{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#1d2434;display:none}
     #local{position:absolute;right:16px;top:200px;width:38%;max-width:220px;aspect-ratio:3/4;object-fit:cover;background:#1d2434;border-radius:18px;border:2px solid #fff;box-shadow:0 8px 28px #25193b33;touch-action:none;cursor:grab}
-    #status{position:absolute;top:16px;left:16px;padding:8px 12px;border-radius:999px;background:#fff;color:#4b4270;box-shadow:0 2px 12px #25193b12}
+    /* Hidden by default: the Flutter overlay already shows an equivalent
+       connecting/waiting indicator at the bottom of the screen, so this only
+       needs to surface for the permission-denied/retry state (see live_call.js),
+       where it's unhidden alongside the "Start call" button. */
+    #status{display:none;position:absolute;top:16px;left:16px;padding:8px 12px;border-radius:999px;background:#fff;color:#4b4270;box-shadow:0 2px 12px #25193b12}
     body.assistant-speaking #avatarIllustration{filter:drop-shadow(0 20px 36px #8059e555);transform:scale(1.025)}
     body.assistant-speaking #avatarStage:after{content:"";position:absolute;width:min(68vw,60vh);height:min(68vw,60vh);border:2px solid #8964ef66;border-radius:50%;animation:pulse 1.4s ease-out infinite;pointer-events:none}
     @keyframes float{0%,100%{translate:0 0}50%{translate:0 -8px}}

@@ -16,7 +16,6 @@ class CustomScenarioScreen extends StatefulWidget {
 
 class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
   int _step = 0;
-  String _creationMethod = 'scratch';
   String _selectedGoal = 'Give feedback';
   final TextEditingController _contextController = TextEditingController(
     text:
@@ -52,100 +51,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
     );
   }
 
-  void _submitScenario() {
-    switch (_creationMethod) {
-      case 'template':
-        _useTemplateScenario();
-        break;
-      case 'ai':
-        _generateScenarioWithAi();
-        break;
-      case 'scratch':
-      default:
-        _buildScenarioFromScratch();
-    }
-  }
-
-  // 'Start from scratch': assemble the scenario entirely from the user's own
-  // picks (persona, goal, tensions, optional note) with no network call.
-  void _buildScenarioFromScratch() {
-    final note = _contextController.text.trim();
-    final persona = _getSelectedPersona();
-    final tensionSummary = _selectedTensions.isNotEmpty
-        ? _selectedTensions.join(', ')
-        : 'the situation you described';
-    final goalLower =
-        _selectedGoal.isEmpty
-            ? _selectedGoal
-            : _selectedGoal[0].toLowerCase() + _selectedGoal.substring(1);
-
-    final customScenario = Scenario(
-      id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
-      title: 'Practice: ${persona.name} · $tensionSummary',
-      subtitle: '$_selectedGoal with ${persona.role}',
-      category: 'Custom Practice',
-      difficulty: ScenarioDifficulty.intermediate,
-      persona: persona,
-      userPersona: Scenario.userPersonaFor(persona),
-      contextBrief: note.isNotEmpty
-          ? note
-          : 'You are meeting with ${persona.name} (${persona.role}) to $goalLower regarding '
-                '$tensionSummary, with firm accountability and emotional poise.',
-      userObjectives: [
-        'Acknowledge the perspective directly without defensive hedging.',
-        'Address the core friction ($tensionSummary) calmly with specific examples.',
-        'Establish firm boundaries, committed deliverables, and a next check-in.',
-      ],
-      trapPhrasesToAvoid: [
-        'I know this is awkward, but...',
-        'I guess maybe we can overlook it this time...',
-        "Please don't take this the wrong way...",
-      ],
-    );
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => SessionPrepScreen(scenario: customScenario),
-      ),
-    );
-  }
-
-  // 'Use a template': adapt one of the curated built-in scenarios that best
-  // matches the chosen persona/goal, again with no network call.
-  void _useTemplateScenario() {
-    const categoryByGoal = {
-      'Give feedback': 'Feedback',
-      'Handle conflict': 'Conflict and Alignment',
-      'Set expectations': 'Communication Basics',
-      'Build trust': 'One-to-Ones',
-    };
-    final note = _contextController.text.trim();
-    final wantedCategory = categoryByGoal[_selectedGoal];
-    final templates = Scenario.defaultScenarios;
-
-    final template = templates.firstWhere(
-      (s) => s.persona.id == _selectedPersonaId && s.category == wantedCategory,
-      orElse: () => templates.firstWhere(
-        (s) => s.persona.id == _selectedPersonaId,
-        orElse: () => templates.firstWhere(
-          (s) => s.category == wantedCategory,
-          orElse: () => templates.first,
-        ),
-      ),
-    );
-
-    final adapted = template.copyWith(
-      id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
-      category: 'Custom Practice',
-      contextBrief: note.isNotEmpty
-          ? '${template.contextBrief}\n\nYour note: $note'
-          : template.contextBrief,
-    );
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => SessionPrepScreen(scenario: adapted)),
-    );
-  }
+  void _submitScenario() => _generateScenarioWithAi();
 
   void _generateScenarioWithAi() async {
     final note = _contextController.text.trim();
@@ -232,7 +138,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
   }
 
   void _nextStep() {
-    if (_step < 3) setState(() => _step++);
+    if (_step < 2) setState(() => _step++);
   }
 
   void _previousStep() {
@@ -273,12 +179,12 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
                             ),
                             const SizedBox(height: 8),
                             Row(
-                              children: List.generate(4, (index) {
+                              children: List.generate(3, (index) {
                                 return Expanded(
                                   child: Container(
                                     height: 5,
                                     margin: EdgeInsets.only(
-                                      right: index == 3 ? 0 : 6,
+                                      right: index == 2 ? 0 : 6,
                                     ),
                                     decoration: BoxDecoration(
                                       color: index <= _step
@@ -295,7 +201,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        '${_step + 1}/4',
+                        '${_step + 1}/3',
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -334,7 +240,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
                       ),
                       onPressed: _isGenerating
                           ? null
-                          : _step == 3
+                          : _step == 2
                           ? _submitScenario
                           : _nextStep,
                       child: _isGenerating
@@ -347,8 +253,8 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
                               ),
                             )
                           : Text(
-                              _step == 3
-                                  ? 'Continue to practice setup'
+                              _step == 2
+                                  ? 'Generate with AI'
                                   : 'Continue',
                             ),
                     ),
@@ -365,10 +271,8 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
   Widget _wizardStep(BuildContext context) {
     switch (_step) {
       case 0:
-        return _startMethodStep(context);
-      case 1:
         return _situationStep(context);
-      case 2:
+      case 1:
         return _personaStep(context);
       default:
         return _reviewStep(context);
@@ -399,120 +303,6 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
     ],
   );
 
-  Widget _startMethodStep(BuildContext context) {
-    final options = [
-      (
-        'scratch',
-        'Start from scratch',
-        'Build a scenario step by step.',
-        HardSyncAssets.illusConversationBlueprint,
-        const Color(0xFFF1EDFF),
-      ),
-      (
-        'template',
-        'Use a template',
-        'Adapt a proven workplace situation.',
-        HardSyncAssets.illusLessonCapsule,
-        const Color(0xFFFFF0E3),
-      ),
-      (
-        'ai',
-        'Describe it with AI',
-        'Turn a short description into a rehearsal.',
-        HardSyncAssets.illusAiCoachWhisper,
-        const Color(0xFFEDF2E7),
-      ),
-    ];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _wizardHeading(
-          'Create your own scenario',
-          'Practice the conversation that matters to you.',
-        ),
-        const SizedBox(height: 16),
-        Container(
-          height: 210,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF1EDFF),
-            borderRadius: BorderRadius.circular(28),
-          ),
-          child: const AppIllustration(
-            HardSyncAssets.illusPrivatePracticeSpace,
-          ),
-        ),
-        const SizedBox(height: 16),
-        ...options.map((option) {
-          final selected = _creationMethod == option.$1;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Material(
-              color: option.$5,
-              borderRadius: BorderRadius.circular(20),
-              child: InkWell(
-                onTap: () => setState(() => _creationMethod = option.$1),
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: selected
-                          ? const Color(0xFF7C5CE7)
-                          : const Color(0xFFE2DDE8),
-                      width: selected ? 2 : 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 62,
-                        height: 62,
-                        child: AppIllustration(option.$4),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              option.$2,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              option.$3,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF565B76),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(
-                        selected
-                            ? Icons.check_circle_rounded
-                            : Icons.arrow_forward_ios_rounded,
-                        size: selected ? 23 : 15,
-                        color: selected
-                            ? const Color(0xFF7C5CE7)
-                            : const Color(0xFF565B76),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
-      ],
-    );
-  }
-
   Widget _situationStep(BuildContext context) {
     const goals = [
       'Give feedback',
@@ -525,7 +315,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
       children: [
         _wizardHeading(
           'Define the situation',
-          'Describe what is happening and what you want to practice.',
+          'Describe what is happening, and AI will turn it into a full practice scenario.',
         ),
         const SizedBox(height: 16),
         Container(
@@ -626,21 +416,21 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
           'Conversation partner',
           '${persona.name} · ${persona.role}',
           HardSyncAssets.illusPersonaSelector,
-          () => setState(() => _step = 2),
+          () => setState(() => _step = 1),
         ),
         const SizedBox(height: 10),
         _reviewCard(
           'Your goal',
           _selectedGoal,
           HardSyncAssets.iconTargetBullseye,
-          () => setState(() => _step = 1),
+          () => setState(() => _step = 0),
         ),
         const SizedBox(height: 10),
         _reviewCard(
           'Situation',
           contextText.isEmpty ? _selectedTensions.join(', ') : contextText,
           HardSyncAssets.illusConversationBlueprint,
-          () => setState(() => _step = 1),
+          () => setState(() => _step = 0),
         ),
         const SizedBox(height: 10),
         _reviewCard(
@@ -844,7 +634,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
                 const AppIcon(HardSyncAssets.iconSparkleStarsMagic, size: 14),
                 const SizedBox(width: 6),
                 Text(
-                  'Custom Rehearsal',
+                  'Custom Scenario',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -1123,7 +913,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
                     const AppIcon(HardSyncAssets.iconRocketLaunch, size: 20),
                     const SizedBox(width: 10),
                     Text(
-                      'Generate Rehearsal',
+                      'Generate Scenario',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,

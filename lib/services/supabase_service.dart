@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:math';
+
 import '../models/scenario.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/env_config.dart';
 import '../models/debrief_report.dart';
@@ -136,6 +141,29 @@ class SupabaseService extends ChangeNotifier {
         .toSet();
   }
 
+  /// Flags an AI-generated response for review. Ownership of [sessionId] (if
+  /// given) is verified server-side by report_ai_response, not trusted here.
+  Future<void> reportAiResponse({
+    String? sessionId,
+    required String reportedText,
+    String? speaker,
+    String? note,
+  }) async {
+    final userId = currentUserId;
+    if (client == null || userId == null) {
+      throw StateError('Sign in to report a response.');
+    }
+    await client!.rpc(
+      'report_ai_response',
+      params: {
+        'p_session_id': sessionId,
+        'p_reported_text': reportedText,
+        'p_speaker': speaker,
+        'p_note': note,
+      },
+    );
+  }
+
   Future<void> completeLesson(
     String courseId,
     int lessonPosition, {
@@ -252,6 +280,68 @@ class SupabaseService extends ChangeNotifier {
         'Supabase client could not connect. Please ensure internet access and that your Supabase credentials are valid.',
       );
     }
+  }
+
+  /// Uses Apple's native Sign in with Apple sheet on iOS/macOS (required by
+  /// App Store guideline 4.8 since the app also offers Google sign-in), and
+  /// falls back to the browser OAuth flow on platforms where the native
+  /// credential isn't available (web, Android).
+  Future<bool> signInWithApple() async {
+    final isApplePlatform =
+        !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.macOS);
+    if (!isApplePlatform) {
+      return signInWithOAuth(OAuthProvider.apple);
+    }
+
+    if (!_isInitialized || client == null) {
+      await init();
+    }
+    if (!_isInitialized || client == null) {
+      throw Exception(
+        'Supabase client could not connect. Please ensure internet access and that your Supabase credentials are valid.',
+      );
+    }
+
+    try {
+      final rawNonce = _generateNonce();
+      final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: hashedNonce,
+      );
+
+      final idToken = credential.identityToken;
+      if (idToken == null) {
+        throw Exception('Apple sign-in did not return an identity token.');
+      }
+
+      final response = await client!.auth.signInWithIdToken(
+        provider: OAuthProvider.apple,
+        idToken: idToken,
+        nonce: rawNonce,
+      );
+      notifyListeners();
+      return response.session != null;
+    } catch (e) {
+      debugPrint('[SupabaseService] Native Apple sign-in failed: $e');
+      rethrow;
+    }
+  }
+
+  String _generateNonce([int length = 32]) {
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
   }
 
   Future<void> signOut() async {

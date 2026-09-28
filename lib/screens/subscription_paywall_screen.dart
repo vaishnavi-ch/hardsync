@@ -981,8 +981,8 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                         const SizedBox(width: 8),
                         Text(
                           isUltra
-                              ? 'Start Rehearsing Now'
-                              : 'Start Voice Rehearsal Now',
+                              ? 'Start Practicing Now'
+                              : 'Start Voice Scenario Now',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 15.5,
                             fontWeight: FontWeight.w600,
@@ -1148,7 +1148,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                       popular: false,
                       illustration: HardSyncAssets.illusRechargeRitual,
                       benefits: const [
-                        'Interactive text rehearsals',
+                        'Interactive text scenarios',
                         'Complete scenario catalog',
                         '10 complimentary practice credits',
                       ],
@@ -1168,7 +1168,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                       illustration: HardSyncAssets.illusLeadershipCompass,
                       benefits: const [
                         '250 Monthly Practice Credits',
-                        'Live Voice Rehearsal Calls (1 cr/min)',
+                        'Live Voice Scenario Calls (1 cr/min)',
                         'HD Video Calls (6 cr/min)',
                         'Live speaking feedback as you talk',
                       ],
@@ -1188,7 +1188,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                       illustration: HardSyncAssets.illusSafeVideoRoleplay,
                       benefits: const [
                         '600 Monthly Practice Credits',
-                        'HD Video & Live Voice Rehearsals',
+                        'HD Video & Live Voice Scenarios',
                         'Priority Access for Faster Calls',
                         'Full Presence Check-Up',
                       ],
@@ -1524,7 +1524,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
           _buildMatrixRow('Text Practice', free: true, pro: true, ultra: true),
           const Divider(height: 14, color: Color(0xFFF0EBE3)),
           _buildMatrixRow(
-            'Live Voice Rehearsals',
+            'Live Voice Scenarios',
             free: false,
             pro: true,
             ultra: true,

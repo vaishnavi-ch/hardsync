@@ -2,12 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../models/scenario.dart';
 import '../services/practice_stats.dart';
 import '../services/session_history.dart';
 import '../services/supabase_service.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
 import 'scenario_hub_screen.dart';
+import 'session_prep_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.onOpenPractice});
@@ -120,7 +122,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: HardSyncAssets.gamifyPracticeStreakFlame,
                   value: '${stats?.dayStreak ?? 0}',
                   label: 'Day streak',
-                  tint: HardSyncColors.coralMist,
                 ),
               ),
               const SizedBox(width: 10),
@@ -129,7 +130,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: HardSyncAssets.iconBookOpen,
                   value: '${stats?.sessionCount ?? 0}',
                   label: 'Sessions done',
-                  tint: HardSyncColors.lilacMist,
                 ),
               ),
               const SizedBox(width: 10),
@@ -140,7 +140,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ? '0h'
                       : '${(stats.totalMinutes / 60).toStringAsFixed(1)}h',
                   label: 'Time spent',
-                  tint: HardSyncColors.sunMist,
                 ),
               ),
             ],
@@ -150,29 +149,12 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   );
 
-  Widget _buildActionColumn(BuildContext context) => FutureBuilder<PracticeStats>(
-    future: _stats,
-    builder: (context, snapshot) {
-      final stats = snapshot.data;
-      return Column(
-        children: [
-          _SectionTitle(
-            title: 'Continue practicing',
-            action: 'See all',
-            onTap: onOpenPractice,
-          ),
-          const SizedBox(height: 10),
-          _ContinueCard(
-            badge: stats?.nextBadge,
-            onTap:
-                onOpenPractice ??
-                () => _open(context, const ScenarioHubScreen()),
-          ),
-          const SizedBox(height: 14),
-          const _Encouragement(),
-        ],
-      );
-    },
+  Widget _buildActionColumn(BuildContext context) => Column(
+    children: [
+      _QuickPracticeCard(scenario: Scenario.defaultScenarios.first),
+      const SizedBox(height: 14),
+      const _Encouragement(),
+    ],
   );
 
   static void _open(BuildContext context, Widget screen) {
@@ -276,19 +258,17 @@ class _Metric extends StatelessWidget {
     required this.icon,
     required this.value,
     required this.label,
-    required this.tint,
   });
   final String icon;
   final String value;
   final String label;
-  final Color tint;
   @override
   Widget build(BuildContext context) => Container(
-    height: 170,
-    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 14),
+    height: 118,
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
     decoration: BoxDecoration(
       color: HardSyncColors.surface,
-      borderRadius: BorderRadius.circular(22),
+      borderRadius: BorderRadius.circular(18),
       boxShadow: [
         BoxShadow(
           color: Colors.black.withValues(alpha: .05),
@@ -300,14 +280,8 @@ class _Metric extends StatelessWidget {
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          width: 70,
-          height: 70,
-          decoration: BoxDecoration(color: tint, shape: BoxShape.circle),
-          padding: const EdgeInsets.all(12),
-          child: AppIcon(icon, size: 44),
-        ),
-        const SizedBox(height: 8),
+        AppIcon(icon, size: 56),
+        const SizedBox(height: 6),
         Text(
           value,
           style: Theme.of(
@@ -326,115 +300,82 @@ class _Metric extends StatelessWidget {
   );
 }
 
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle({required this.title, required this.action, this.onTap});
-  final String title;
-  final String action;
-  final VoidCallback? onTap;
+class _QuickPracticeCard extends StatelessWidget {
+  const _QuickPracticeCard({required this.scenario});
+  final Scenario scenario;
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Expanded(
-        child: Text(
-          title,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-        ),
-      ),
-      TextButton(onPressed: onTap, child: Text(action)),
-    ],
-  );
-}
-
-class _ContinueCard extends StatelessWidget {
-  const _ContinueCard({required this.onTap, required this.badge});
-  final VoidCallback onTap;
-  final EarnedBadge? badge;
-  @override
-  Widget build(BuildContext context) {
-    final title = badge?.label ?? 'Keep practicing';
-    final subtitle = badge == null
-        ? 'All rehearsal badges earned'
-        : '${badge!.count} / ${badge!.target} rehearsals';
-    final fraction = badge == null
-        ? 1.0
-        : (badge!.count / badge!.target).clamp(0.0, 1.0);
-    return Material(
-      color: HardSyncColors.surface,
+  Widget build(BuildContext context) => Container(
+    constraints: const BoxConstraints(minHeight: 172),
+    clipBehavior: Clip.antiAlias,
+    decoration: BoxDecoration(
+      color: HardSyncColors.lilacMist,
       borderRadius: BorderRadius.circular(22),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(22),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: .05),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 68,
-                height: 68,
-                decoration: const BoxDecoration(
-                  color: HardSyncColors.lilacMist,
-                  shape: BoxShape.circle,
+    ),
+    child: Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(17, 14, 4, 14),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'TRY A QUICK PRACTICE',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.1,
+                    color: HardSyncColors.violet,
+                  ),
                 ),
-                child: const Icon(
-                  CupertinoIcons.book_fill,
-                  color: HardSyncColors.violet,
-                  size: 34,
+                const SizedBox(height: 6),
+                Text(
+                  scenario.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.newsreader(
+                    fontSize: 21,
+                    height: 1.02,
+                    fontWeight: FontWeight.w700,
+                    color: HardSyncColors.ink,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w800),
+                const SizedBox(height: 4),
+                Text(
+                  'Practice a real 1:1 before it happens.',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(0, 40),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => SessionPrepScreen(scenario: scenario),
                     ),
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(999),
-                      child: LinearProgressIndicator(
-                        value: fraction,
-                        minHeight: 6,
-                        backgroundColor: HardSyncColors.lilacMist,
-                        valueColor: const AlwaysStoppedAnimation(
-                          HardSyncColors.violet,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
-                  ],
+                  ),
+                  icon: const Icon(Icons.play_arrow_rounded, size: 17),
+                  label: const Text('Start'),
                 ),
-              ),
-              const SizedBox(width: 6),
-              const Icon(
-                CupertinoIcons.chevron_right,
-                size: 19,
-                color: HardSyncColors.inkMuted,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+        const SizedBox(
+          width: 126,
+          height: 158,
+          child: AppIllustration(HardSyncAssets.illusSafeRehearsalRoom),
+        ),
+      ],
+    ),
+  );
 }
 
 class _Encouragement extends StatelessWidget {

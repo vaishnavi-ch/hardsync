@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'profile_screen.dart';
 import 'home_screen.dart';
-import 'progress_screen.dart';
 import 'scenario_hub_screen.dart';
 import 'session_replay_screen.dart';
 import '../theme/hardsync_theme.dart';
@@ -26,7 +25,7 @@ class _AppShellState extends State<AppShell> {
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
-    _screens = List<Widget?>.filled(5, null);
+    _screens = List<Widget?>.filled(4, null);
     _screens[_currentIndex] = _createScreen(_currentIndex);
   }
 
@@ -34,8 +33,7 @@ class _AppShellState extends State<AppShell> {
     0 => HomeScreen(onOpenPractice: () => _selectTab(1)),
     1 => const ScenarioHubScreen(isEmbedded: true),
     2 => const SessionReplayScreen(),
-    3 => const ProgressScreen(),
-    4 => const ProfileScreen(),
+    3 => const ProfileScreen(),
     _ => const SizedBox.shrink(),
   };
 
@@ -116,17 +114,15 @@ class _AppShellState extends State<AppShell> {
       CupertinoIcons.house,
       CupertinoIcons.mic,
       CupertinoIcons.clock,
-      CupertinoIcons.chart_bar,
       CupertinoIcons.person,
     ];
     const selectedIcons = [
       CupertinoIcons.house_fill,
       CupertinoIcons.mic_fill,
       CupertinoIcons.clock_fill,
-      CupertinoIcons.chart_bar_fill,
       CupertinoIcons.person_fill,
     ];
-    const labels = ['Home', 'Practice', 'History', 'Performance', 'You'];
+    const labels = ['Home', 'Practice', 'History', 'You'];
 
     return NavigationRail(
       extended: extended,
@@ -237,12 +233,6 @@ class _AppShellState extends State<AppShell> {
               ),
               _buildNavItem(
                 index: 3,
-                icon: CupertinoIcons.chart_bar,
-                selectedIcon: CupertinoIcons.chart_bar_fill,
-                label: 'Performance',
-              ),
-              _buildNavItem(
-                index: 4,
                 icon: CupertinoIcons.person,
                 selectedIcon: CupertinoIcons.person_fill,
                 label: 'You',

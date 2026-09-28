@@ -123,7 +123,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final email = SupabaseService.instance.currentUserEmail;
     final streak = (_profile?['streak_days'] as num?)?.toInt() ?? 1;
     final credits = (_profile?['credits'] as num?)?.toInt() ?? 0;
-    final userId = SupabaseService.instance.currentUserId ?? '';
     final avatarAsset = _profile?['avatar_url'] as String? ??
         SupabaseService.instance.cachedAvatarUrl ??
         HardSyncAssets.avatarCurrentUser;
@@ -237,27 +236,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // --- SECTION 1: ACCOUNT & PROFILE ---
-                      _buildSectionHeader('Profile Details'),
-                      _buildCard([
-                        _buildActionTile(
-                          icon: Icons.badge_outlined,
-                          title: 'Edit Your Profile',
-                          subtitle: '$fullName • $role',
-                          trailingIcon: Icons.arrow_forward_ios_rounded,
-                          onTap: () => _showEditProfileModal(fullName, role),
-                        ),
-                        _buildDivider(),
-                        _buildActionTile(
-                          icon: Icons.track_changes_outlined,
-                          title: 'Coaching Focus Goals',
-                          subtitle: 'Hard conversations, staying confident',
-                          trailingIcon: Icons.arrow_forward_ios_rounded,
-                          onTap: _showFocusGoalsModal,
-                        ),
-                      ]),
-                      const SizedBox(height: 20),
-
                       // --- SECTION 2: SUBSCRIPTION & BILLING ---
                       _buildSectionHeader('Membership & Credits'),
                       _buildCard([
@@ -323,29 +301,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           subtitle: 'Update your account access passphrase',
                           trailingIcon: Icons.arrow_forward_ios_rounded,
                           onTap: _showChangePasswordModal,
-                        ),
-                        _buildDivider(),
-                        _buildActionTile(
-                          icon: Icons.fingerprint,
-                          title: 'Account ID (UUID)',
-                          subtitle: userId.isNotEmpty
-                              ? '${userId.substring(0, 8)}...${userId.substring(userId.length - 8)}'
-                              : 'Unavailable',
-                          trailingIcon: Icons.copy_rounded,
-                          onTap: () {
-                            if (userId.isNotEmpty) {
-                              Clipboard.setData(ClipboardData(text: userId));
-                              _showNotice('Account ID copied to clipboard!', isSuccess: true);
-                            }
-                          },
-                        ),
-                        _buildDivider(),
-                        _buildActionTile(
-                          icon: Icons.mark_email_read_outlined,
-                          title: 'Registered Email',
-                          subtitle: email,
-                          trailingBadge: 'VERIFIED',
-                          onTap: () => _showNotice('Your email is securely authenticated with Supabase.'),
                         ),
                       ]),
                       const SizedBox(height: 20),
@@ -1072,119 +1027,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  // --- MODAL: FOCUS GOALS ---
-  void _showFocusGoalsModal() {
-    final goals = [
-      {'title': 'High-Stakes Conflict', 'desc': 'Calm down heated team arguments and pushback'},
-      {'title': 'Speaking with Confidence', 'desc': 'Cut hedging words and lead the room'},
-      {'title': 'Direct Feedback', 'desc': 'Give clear, honest feedback without softening it'},
-      {'title': 'Salary & Promo Defense', 'desc': 'Negotiate team budgets, headcount & raises'},
-      {'title': 'Presenting to Leaders', 'desc': 'Give short, confident updates to senior leaders'},
-    ];
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: HardSyncColors.cream,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 20, 24, 30),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: HardSyncColors.lilacBorder,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Coaching Focus Areas',
-              style: GoogleFonts.newsreader(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: HardSyncColors.ink,
-              ),
-            ),
-            Text(
-              'Pick what you want to practice most this week.',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 12.5,
-                color: HardSyncColors.inkMuted,
-              ),
-            ),
-            const SizedBox(height: 18),
-            ...goals.map((g) => Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: HardSyncColors.lilacBorder),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.check_circle, color: HardSyncColors.violet, size: 20),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              g['title']!,
-                              style: GoogleFonts.plusJakartaSans(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13,
-                              ),
-                            ),
-                            Text(
-                              g['desc']!,
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 11,
-                                color: HardSyncColors.inkMuted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: FilledButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  _showNotice('Coaching focus areas synced!', isSuccess: true);
-                },
-                style: FilledButton.styleFrom(
-                  backgroundColor: HardSyncColors.violet,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: Text(
-                  'Confirm Focus Areas',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );

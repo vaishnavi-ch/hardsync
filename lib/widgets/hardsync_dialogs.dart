@@ -389,7 +389,7 @@ class _SignInBottomSheetState extends State<SignInBottomSheet> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Sign In to Save Your Rehearsals',
+            'Sign In to Save Your Scenarios',
             style: GoogleFonts.newsreader(
               fontSize: 18,
               fontWeight: FontWeight.w600,

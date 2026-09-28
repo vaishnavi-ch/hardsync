@@ -21,9 +21,9 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // The app is being backgrounded or closed. A live rehearsal can't
+    // The app is being backgrounded or closed. A live scenario can't
     // meaningfully continue off-screen, and leaving it "active" server-side
-    // blocks the next attempt with "an earlier rehearsal is still open"
+    // blocks the next attempt with "an earlier scenario is still open"
     // until the 11-minute stale-session expiry catches up. Cut it now.
     if (state == AppLifecycleState.paused &&
         (_state == CallState.connecting || _state == CallState.inCall)) {
@@ -196,7 +196,7 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
           }
         } catch (e) {
           // Recording is a best-effort extra; a failure here shouldn't block
-          // the rehearsal itself from starting.
+          // the scenario itself from starting.
           debugPrint('[SimulationProvider] Replay upload URL fetch failed: $e');
         }
       }
@@ -245,7 +245,7 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
       // user's recording consent.
       await startCall(_scenario!, mode: _mode, wantsReplay: _wantsReplay);
     } catch (e) {
-      error = 'Could not close the earlier rehearsal: $e';
+      error = 'Could not close the earlier scenario: $e';
     } finally {
       _recovering = false;
       notifyListeners();
@@ -312,7 +312,7 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
         break;
       case 'left':
         if (_state == CallState.connecting) {
-          error ??= 'Gemini Live disconnected before the rehearsal connected.';
+          error ??= 'Gemini Live disconnected before the scenario connected.';
           unawaited(_abortCall());
         } else {
           unawaited(endCall());
@@ -439,40 +439,50 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
           }
         } catch (_) {}
       }
-      // Tavus (not our own bridge) runs speech-to-text for video calls, so
-      // the transcript only exists on their side. Pull it in before ending
-      // the conversation, which is what releases it server-side.
-      if (realtimeProvider == 'tavus' && _turns.isEmpty && _sid != null) {
-        try {
-          final result = await BackendService.request(
-            '/api/sessions/tavus-transcript',
-            {'sessionId': _sid},
-          );
-          final turns = result['transcript'];
-          if (turns is List) {
-            for (final entry in turns) {
-              if (entry is! Map) continue;
-              final text = entry['text']?.toString().trim() ?? '';
-              if (text.isEmpty) continue;
-              final isUser = entry['role'] == 'user';
-              _turns.add(DialogueTurn(
-                id: 'turn_${_turns.length}',
-                speaker: isUser ? DialogueSpeaker.user : DialogueSpeaker.avatar,
-                speakerName: isUser ? 'You' : activeCounterpart.name,
-                text: text,
-                timestamp: Duration(
-                  seconds: (num.tryParse('${entry['seconds']}') ?? 0).round(),
-                ),
-                tone: ConversationalTone.neutral,
-              ));
-            }
-          }
-        } catch (_) {}
-      }
       _state = CallState.ended;
       notifyListeners();
       if (_sid != null) {
         await BackendService.request('/api/sessions/end', {'sessionId': _sid});
+      }
+      // Tavus (not our own bridge) runs speech-to-text for video calls, so
+      // the transcript only exists on their side, and Tavus only finalizes
+      // its `application.transcription_ready` event after the conversation
+      // has ended above — fetching it any earlier reliably comes back empty.
+      // Even after ending, that event can lag a few seconds, so retry a
+      // couple of times before giving up.
+      if (realtimeProvider == 'tavus' && _turns.isEmpty && _sid != null) {
+        for (var attempt = 0; attempt < 3 && _turns.isEmpty; attempt++) {
+          if (attempt > 0) {
+            await Future.delayed(const Duration(seconds: 2));
+          }
+          try {
+            final result = await BackendService.request(
+              '/api/sessions/tavus-transcript',
+              {'sessionId': _sid},
+            );
+            final turns = result['transcript'];
+            if (turns is List) {
+              for (final entry in turns) {
+                if (entry is! Map) continue;
+                final text = entry['text']?.toString().trim() ?? '';
+                if (text.isEmpty) continue;
+                final isUser = entry['role'] == 'user';
+                _turns.add(DialogueTurn(
+                  id: 'turn_${_turns.length}',
+                  speaker: isUser ? DialogueSpeaker.user : DialogueSpeaker.avatar,
+                  speakerName: isUser ? 'You' : activeCounterpart.name,
+                  text: text,
+                  timestamp: Duration(
+                    seconds: (num.tryParse('${entry['seconds']}') ?? 0).round(),
+                  ),
+                  tone: ConversationalTone.neutral,
+                ));
+              }
+            }
+          } catch (e) {
+            debugPrint('[SimulationProvider] Tavus transcript fetch failed: $e');
+          }
+        }
       }
       if (_scenario != null && _sid != null) {
         final completedAt = DateTime.now().toIso8601String();

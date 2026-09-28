@@ -31,7 +31,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
         final scenario = r['scenarios'] is Map ? r['scenarios'] as Map : {};
         return {
           'id': r['id'],
-          'title': scenario['title'] ?? 'Rehearsal',
+          'title': scenario['title'] ?? 'Scenario',
           'completedAt': r['created_at'],
           'durationSeconds': r['duration_seconds'],
           'mode': 'video',
@@ -98,7 +98,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
         title: Text(
           widget.report != null
               ? 'Transcript Inspection'
-              : 'Flight Logs & Rehearsals',
+              : 'Scenarios',
           style: GoogleFonts.newsreader(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -300,8 +300,10 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          SessionDetailScreen(sessionId: report['id']),
+                      builder: (_) => SessionDetailScreen(
+                        sessionId: report['id'],
+                        autoAnalyze: true,
+                      ),
                     ),
                   ),
                   borderRadius: BorderRadius.circular(18),
@@ -325,7 +327,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                report['title'] ?? 'Leadership Rehearsal',
+                                report['title'] ?? 'Leadership Scenario',
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,

@@ -164,28 +164,36 @@ class _ProviderState extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      AppIcon(asset, size: 25),
-      const SizedBox(width: 10),
-      Expanded(
-        child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-      ),
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: ready ? HardSyncColors.oliveMist : HardSyncColors.apricotMist,
-          borderRadius: BorderRadius.circular(99),
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+    decoration: BoxDecoration(
+      color: HardSyncColors.surface,
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(color: HardSyncColors.border),
+    ),
+    child: Row(
+      children: [
+        AppIcon(asset, size: 25),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
         ),
-        child: Text(
-          ready ? 'Ready' : 'Unavailable',
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: ready ? HardSyncColors.olive : HardSyncColors.apricot,
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: ready ? HardSyncColors.oliveMist : HardSyncColors.apricotMist,
+            borderRadius: BorderRadius.circular(99),
+          ),
+          child: Text(
+            ready ? 'Ready' : 'Unavailable',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: ready ? HardSyncColors.olive : HardSyncColors.apricot,
+            ),
           ),
         ),
-      ),
-    ],
+      ],
+    ),
   );
 }

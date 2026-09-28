@@ -509,6 +509,7 @@ async function joinTavus() {
   } catch (error) {
     started = false;
     $('status').textContent = 'Allow microphone/camera access, then tap to start.';
+    $('status').style.display = 'block';
     $('join').textContent = 'Start call';
     $('join').hidden = false;
     send('user-action-required', { message: error.message });
@@ -598,6 +599,7 @@ async function join() {
   } catch (error) {
     started = false;
     $('status').textContent = 'Allow microphone access, then tap to start.';
+    $('status').style.display = 'block';
     $('join').textContent = config?.mode === 'video' ? 'Start call' : 'Start audio call';
     $('join').hidden = false;
     send('user-action-required', { message: error.message });

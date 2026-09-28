@@ -70,7 +70,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
               'title':
                   cloudSession['scenarios']?['title'] ??
                   rep['title'] ??
-                  'Rehearsal',
+                  'Scenario',
               'completedAt': cloudSession['created_at'],
               'durationSeconds': cloudSession['duration_seconds'],
               'mode': rep['mode'] ?? 'video',
@@ -322,6 +322,15 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                   ),
                   const Spacer(),
                   Text(_time(t['seconds'])),
+                  if (t['role'] != 'user' && t['speaker'] != 'You') ...[
+                    const SizedBox(width: 4),
+                    IconButton(
+                      tooltip: 'Report this response',
+                      icon: const Icon(Icons.flag_outlined, size: 18),
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () => _reportTurn(t),
+                    ),
+                  ],
                 ],
               ),
               const SizedBox(height: 10),
@@ -333,6 +342,66 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
               : null,
         ),
     ];
+  }
+
+  Future<void> _reportTurn(Map<String, dynamic> turn) async {
+    final noteController = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Report this response'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'This flags the response for our team to review. Add any context that would help (optional).',
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: noteController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                hintText: 'What was wrong with this response?',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Report'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await SupabaseService.instance.reportAiResponse(
+        sessionId: widget.sessionId,
+        reportedText: '${turn['text']}',
+        speaker: '${turn['speaker']}',
+        note: noteController.text.trim().isEmpty
+            ? null
+            : noteController.text.trim(),
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Thanks — we\'ll review this response.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not submit report: $e')));
+      }
+    }
   }
 
   List<Widget> _recording() {
@@ -423,7 +492,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                   padding: const EdgeInsets.all(24),
                   children: [
                     Text(
-                      report['title'] ?? 'Rehearsal',
+                      report['title'] ?? 'Scenario',
                       style: Theme.of(context).textTheme.displayMedium,
                     ),
                     const SizedBox(height: 8),
