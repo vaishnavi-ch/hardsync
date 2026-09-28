@@ -9,6 +9,7 @@ import UIKit
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
+    configureAudioSession()
     if let controller = window?.rootViewController as? FlutterViewController {
       let channel = FlutterMethodChannel(
         name: "hardsync/media_permissions",
@@ -55,5 +56,23 @@ import UIKit
       }
     }
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  // Rehearsal calls run inside a WKWebView using getUserMedia for the mic.
+  // Without an explicit category, iOS activates the audio session in a mode
+  // that routes call audio to the earpiece receiver instead of the speaker,
+  // so the AI counterpart's reply is effectively inaudible unless the device
+  // is held up to your ear like a phone call.
+  private func configureAudioSession() {
+    let session = AVAudioSession.sharedInstance()
+    do {
+      try session.setCategory(
+        .playAndRecord,
+        options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP]
+      )
+      try session.setActive(true)
+    } catch {
+      print("Failed to configure AVAudioSession: \(error)")
+    }
   }
 }

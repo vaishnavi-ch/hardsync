@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4'
+import { revokeAppleRefreshToken } from '../_shared/apple.ts'
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
   status,
@@ -19,11 +20,28 @@ Deno.serve(async (request) => {
   if (userError || !user) return json({ error: 'Invalid or expired session' }, 401)
 
   const admin = createClient(url, serviceKey, { auth: { persistSession: false } })
+
+  // Apple requires revoking the Sign in with Apple grant when a linked
+  // account is deleted (App Store guideline 5.1.1(v)). Best-effort: a
+  // revocation failure must never block the user from deleting their account.
+  const { data: appleToken } = await admin
+    .from('apple_oauth_tokens')
+    .select('refresh_token')
+    .eq('user_id', user.id)
+    .maybeSingle()
+  if (appleToken?.refresh_token) {
+    try {
+      await revokeAppleRefreshToken(appleToken.refresh_token)
+    } catch (e) {
+      console.error('[delete-account] Apple token revocation failed', e)
+    }
+  }
+
   // Custom scenarios use ON DELETE SET NULL, so remove them explicitly.
   const { error: scenarioError } = await admin.from('scenarios').delete().eq('created_by', user.id)
   if (scenarioError) return json({ error: 'Could not delete account data' }, 500)
 
-  // All remaining user-owned rows cascade from profiles/auth.users.
+  // All remaining user-owned rows cascade from profiles/auth.users, including apple_oauth_tokens.
   const { error: deleteError } = await admin.auth.admin.deleteUser(user.id)
   if (deleteError) return json({ error: 'Could not delete account' }, 500)
   return json({ deleted: true })

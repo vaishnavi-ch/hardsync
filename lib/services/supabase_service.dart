@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -326,11 +327,27 @@ class SupabaseService extends ChangeNotifier {
         idToken: idToken,
         nonce: rawNonce,
       );
+      // Fire-and-forget: exchanges the one-time authorization code for an
+      // Apple refresh token stored server-side, so account deletion can
+      // later revoke the Sign in with Apple grant (guideline 5.1.1(v)).
+      // Never blocks or fails the sign-in that already succeeded above.
+      unawaited(_linkAppleToken(credential.authorizationCode));
       notifyListeners();
       return response.session != null;
     } catch (e) {
       debugPrint('[SupabaseService] Native Apple sign-in failed: $e');
       rethrow;
+    }
+  }
+
+  Future<void> _linkAppleToken(String authorizationCode) async {
+    try {
+      await client!.functions.invoke(
+        'apple-link-token',
+        body: {'authorization_code': authorizationCode},
+      );
+    } catch (e) {
+      debugPrint('[SupabaseService] Apple token linking failed: $e');
     }
   }
 

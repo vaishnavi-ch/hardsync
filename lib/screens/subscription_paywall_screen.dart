@@ -52,22 +52,37 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
     if (mounted) setState(() => _offerings = offerings);
   }
 
+  Package? _packageByKeyword(List<String> keywords) {
+    final packages =
+        _offerings?.current?.availablePackages ?? const <Package>[];
+    for (final package in packages) {
+      final id = package.identifier.toLowerCase();
+      if (keywords.any(id.contains)) return package;
+    }
+    return null;
+  }
+
+  // Never resolves Ultra to the same Package as Pro: if the current
+  // RevenueCat offering only has one package (Ultra not configured/attached
+  // yet), returning that package for Ultra too would silently display Pro's
+  // price under the Ultra tier and, worse, charge the user for Pro when they
+  // believe they're buying Ultra.
   Package? _packageFor(SubscriptionTier tier) {
     final packages =
         _offerings?.current?.availablePackages ?? const <Package>[];
     if (packages.isEmpty) return null;
-    if (tier == SubscriptionTier.ultra) {
-      for (final package in packages) {
-        final id = package.identifier.toLowerCase();
-        if (id.contains('ultra') || id.contains('annual')) return package;
-      }
-      return packages.length > 1 ? packages[1] : packages.first;
-    }
-    for (final package in packages) {
-      final id = package.identifier.toLowerCase();
-      if (id.contains('pro') || id.contains('monthly')) return package;
-    }
-    return packages.first;
+    final proPackage = _packageByKeyword(['pro', 'monthly']) ?? packages.first;
+    if (tier != SubscriptionTier.ultra) return proPackage;
+
+    final ultraPackage = _packageByKeyword(['ultra', 'annual']);
+    if (ultraPackage != null) return ultraPackage;
+    final distinctSecond = packages.firstWhere(
+      (p) => p.identifier != proPackage.identifier,
+      orElse: () => proPackage,
+    );
+    return distinctSecond.identifier == proPackage.identifier
+        ? null
+        : distinctSecond;
   }
 
   String _storePrice(SubscriptionTier tier) =>
@@ -87,22 +102,19 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
     } else {
       content = _buildPlanPickerView(context, subProvider, activeTier);
     }
-    final canUseWidePlanLayout =
-        !_isProcessing && (!isSubscribed || _showPlanPicker);
 
     return Scaffold(
       backgroundColor: HardSyncColors.cream,
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) => Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: constraints.maxWidth >= 820 && canUseWidePlanLayout
-                    ? 1040
-                    : 480,
-              ),
-              child: content,
-            ),
+        // Every card, table, and footer below is laid out for a phone-width
+        // column (fixed ~22-24px padding, no per-breakpoint reflow), so on a
+        // wide iPad screen it must stay capped at that same width and
+        // centered rather than stretched edge to edge, which is what made
+        // everything look sparse and the fine print look tiny at the sides.
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: content,
           ),
         ),
       ),
@@ -1855,22 +1867,23 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
         return;
       }
 
-      final packages = offerings.current!.availablePackages;
-      Package? packageToBuy;
-      if (_selectedTier == SubscriptionTier.ultra) {
-        packageToBuy = packages.firstWhere(
-          (p) =>
-              p.identifier.toLowerCase().contains('ultra') ||
-              p.identifier.toLowerCase().contains('annual'),
-          orElse: () => packages.length > 1 ? packages[1] : packages.first,
-        );
-      } else {
-        packageToBuy = packages.firstWhere(
-          (p) =>
-              p.identifier.toLowerCase().contains('pro') ||
-              p.identifier.toLowerCase().contains('monthly'),
-          orElse: () => packages.first,
-        );
+      // Reuse the same resolver the plan picker's price labels use, so what
+      // gets purchased always matches what was shown and priced on screen.
+      _offerings = offerings;
+      final packageToBuy = _packageFor(_selectedTier);
+      if (packageToBuy == null) {
+        if (mounted) {
+          setState(() => _isProcessing = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'The ${_selectedTier.displayName} plan is not available right now. Please try again later.',
+              ),
+              duration: const Duration(seconds: 6),
+            ),
+          );
+        }
+        return;
       }
 
       final success = await RevenueCatService.instance.purchasePackage(

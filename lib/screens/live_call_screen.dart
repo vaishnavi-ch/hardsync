@@ -1,6 +1,5 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../config/env_config.dart';
@@ -120,14 +119,16 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
             ),
           ),
         ),
+        // The Flutter avatar/name/status overlay below is the entire visual
+        // for an audio call — there's no video track for this WebView to
+        // show, so it stays invisible and non-interactive throughout rather
+        // than being exposed (with its own tiny local-camera thumbnail and
+        // no Flutter chrome) while connecting.
         if (sim.geminiLiveUrl != null && !ended)
           Positioned.fill(
             child: IgnorePointer(
-              ignoring: kIsWeb || sim.callState != CallState.connecting,
               child: Opacity(
-                opacity: !kIsWeb && sim.callState == CallState.connecting
-                    ? 1
-                    : 0,
+                opacity: 0,
                 child: GeminiLiveEmbedView(
                   conversationUrl: sim.geminiLiveUrl!,
                   sessionId: sim.currentSessionId ?? '',
@@ -152,166 +153,164 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
               ),
             ),
           ),
-        if (kIsWeb || sim.callState != CallState.connecting)
-          SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => _finish(sim, returnToPrevious: true),
-                        icon: const Icon(Icons.arrow_back_rounded),
-                        tooltip: 'End call and go back',
+        SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => _finish(sim, returnToPrevious: true),
+                      icon: const Icon(Icons.arrow_back_rounded),
+                      tooltip: 'End call and go back',
+                    ),
+                    Expanded(
+                      child: Text(
+                        sim.isLowOnCredits
+                            ? 'Ending in ${sim.secondsRemaining}s — out of credits'
+                            : 'Voice call',
+                        textAlign: TextAlign.center,
+                        style: sim.isLowOnCredits
+                            ? const TextStyle(color: Color(0xFFC75438))
+                            : null,
                       ),
-                      Expanded(
-                        child: Text(
-                          sim.isLowOnCredits
-                              ? 'Ending in ${sim.secondsRemaining}s — out of credits'
-                              : 'Voice call',
-                          textAlign: TextAlign.center,
-                          style: sim.isLowOnCredits
-                              ? const TextStyle(color: Color(0xFFC75438))
-                              : null,
-                        ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 11,
+                        vertical: 7,
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 11,
-                          vertical: 7,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: .75),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(sim.formattedTimer),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: .75),
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                    ],
-                  ),
+                      child: Text(sim.formattedTimer),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 8),
-                      Container(
-                        width: 150,
-                        height: 150,
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: HardSyncColors.lilacMist,
-                          boxShadow: [
-                            BoxShadow(
-                              color: HardSyncColors.violet.withValues(
-                                alpha: .16,
-                              ),
-                              blurRadius: 38,
-                              spreadRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: AppAvatar(
-                          sim.activeCounterpart.avatarAsset,
-                          size: 134,
-                          backgroundColor: Colors.white,
-                          borderColor: Colors.white,
-                          borderWidth: 4,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        sim.activeCounterpart.name,
-                        style: GoogleFonts.newsreader(
-                          color: HardSyncColors.ink,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      if (_needsAudioTap) ...[
-                        const SizedBox(height: 14),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: Text(
-                            'Tap below to allow microphone access and start the call.',
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: HardSyncColors.inkMuted,
-                              fontSize: 13,
-                            ),
+              ),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 150,
+                      height: 150,
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: HardSyncColors.lilacMist,
+                        boxShadow: [
+                          BoxShadow(
+                            color: HardSyncColors.violet.withValues(alpha: .16),
+                            blurRadius: 38,
+                            spreadRadius: 5,
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        FilledButton(
-                          onPressed: _callController.joinAudio,
-                          child: const Text('Start audio call'),
-                        ),
-                      ],
-                      const SizedBox(height: 4),
-                      Text(
-                        sim.callState == CallState.connecting
-                            ? 'Connecting…'
-                            : sim.callState == CallState.inCall
-                            ? 'Listening…'
-                            : 'Call ended',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: HardSyncColors.inkMuted,
-                          fontSize: 14,
-                        ),
+                        ],
                       ),
+                      child: AppAvatar(
+                        sim.activeCounterpart.avatarAsset,
+                        size: 134,
+                        backgroundColor: Colors.white,
+                        borderColor: Colors.white,
+                        borderWidth: 4,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      sim.activeCounterpart.name,
+                      style: GoogleFonts.newsreader(
+                        color: HardSyncColors.ink,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    if (_needsAudioTap) ...[
                       const SizedBox(height: 14),
-                      _AudioWaveform(active: sim.isBusy),
-                      if (sim.callState == CallState.inCall) ...[
-                        const SizedBox(height: 10),
-                        _buildSpeechCoachPill(sim),
-                      ],
-                      const SizedBox(height: 10),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: _buildLiveTranscriptPanel(
-                            sim,
-                            height: double.infinity,
-                            bubbleColor: Colors.white,
-                            borderColor: const Color(0xFFE5DFD5),
-                            userLabelColor: HardSyncColors.violet,
-                            avatarLabelColor: const Color(0xFF224838),
-                            textColor: HardSyncColors.ink,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: Text(
+                          'Tap below to allow microphone access and start the call.',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.plusJakartaSans(
+                            color: HardSyncColors.inkMuted,
+                            fontSize: 13,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildAudioAction(
-                        icon: _isMuted ? Icons.mic_off : Icons.mic,
-                        label: _isMuted ? 'Unmute' : 'Mute',
-                        onTap: () {
-                          setState(() => _isMuted = !_isMuted);
-                          _callController.toggleMic?.call();
-                        },
-                      ),
-                      const SizedBox(width: 42),
-                      _buildAudioAction(
-                        icon: Icons.call_end_rounded,
-                        label: 'End call',
-                        destructive: true,
-                        onTap: sim.isGeneratingDebrief
-                            ? null
-                            : () => _finish(sim),
+                      const SizedBox(height: 10),
+                      FilledButton(
+                        onPressed: _callController.joinAudio,
+                        child: const Text('Start audio call'),
                       ),
                     ],
-                  ),
+                    const SizedBox(height: 4),
+                    Text(
+                      sim.callState == CallState.connecting
+                          ? 'Waiting for ${sim.activeCounterpart.name} to join…'
+                          : sim.callState == CallState.inCall
+                          ? 'Listening…'
+                          : 'Call ended',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: HardSyncColors.inkMuted,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    _AudioWaveform(active: sim.isBusy),
+                    if (sim.callState == CallState.inCall) ...[
+                      const SizedBox(height: 10),
+                      _buildSpeechCoachPill(sim),
+                    ],
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: _buildLiveTranscriptPanel(
+                          sim,
+                          height: double.infinity,
+                          bubbleColor: Colors.white,
+                          borderColor: const Color(0xFFE5DFD5),
+                          userLabelColor: HardSyncColors.violet,
+                          avatarLabelColor: const Color(0xFF224838),
+                          textColor: HardSyncColors.ink,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildAudioAction(
+                      icon: _isMuted ? Icons.mic_off : Icons.mic,
+                      label: _isMuted ? 'Unmute' : 'Mute',
+                      onTap: () {
+                        setState(() => _isMuted = !_isMuted);
+                        _callController.toggleMic?.call();
+                      },
+                    ),
+                    const SizedBox(width: 42),
+                    _buildAudioAction(
+                      icon: Icons.call_end_rounded,
+                      label: 'End call',
+                      destructive: true,
+                      onTap: sim.isGeneratingDebrief
+                          ? null
+                          : () => _finish(sim),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
+        ),
       ],
     );
   }
@@ -342,10 +341,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
             padding: const EdgeInsets.only(top: 6),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: bubbleColor,
                 borderRadius: BorderRadius.circular(14),
@@ -543,6 +539,12 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                         ],
                       ),
                     )
+                  // Audio-only calls get their own dedicated avatar overlay
+                  // below (the `sim.isAudioOnly` Positioned block); rendering
+                  // this placeholder too showed two avatars stacked on top of
+                  // each other while the call was still connecting.
+                  : sim.isAudioOnly
+                  ? const SizedBox.shrink()
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

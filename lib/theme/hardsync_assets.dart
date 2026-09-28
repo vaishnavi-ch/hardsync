@@ -16,6 +16,11 @@ class HardSyncAssets {
   static const String avatarMarcus = '$_avatarBase/avatar_24.png';
   static const String avatarPriya = '$_avatarBase/avatar_03.png';
   static const String avatarElena = '$_avatarBase/avatar_17.png';
+  static const String avatarSam = '$_avatarBase/avatar_08.png';
+  static const String avatarGrace = '$_avatarBase/avatar_36.png';
+  static const String avatarOmar = '$_avatarBase/avatar_41.png';
+  static const String avatarNina = '$_avatarBase/avatar_50.png';
+  static const String avatarDavid = '$_avatarBase/avatar_33.png';
 
   // Curated picker options offered during account setup. Deliberately
   // distinct from the persona avatars above so a user's own picture never
