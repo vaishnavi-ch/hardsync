@@ -11,16 +11,12 @@ import re
 import threading
 import time
 import traceback
-import uuid
 from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 from urllib.parse import quote, urlencode, urlsplit, urlunsplit
-
-import boto3
-from botocore.client import Config as BotoConfig
 
 ROOT = Path(__file__).resolve().parents[1]
 def environment():
@@ -556,110 +552,6 @@ showing how they push back or deflect during the conversation,
 ANALYSIS_LOCK = threading.Lock()
 ANALYSIS_JOBS = {}
 
-def r2_client():
-    account_id = ENV.get('CLOUDFLARE_R2_ACCOUNT_ID', '')
-    key_id = ENV.get('CLOUDFLARE_R2_ACCESS_KEY_ID', '')
-    secret = ENV.get('CLOUDFLARE_R2_SECRET_ACCESS_KEY', '')
-    if not (account_id and key_id and secret):
-        raise ApiError('Replay storage is not configured.', 503)
-    return boto3.client(
-        's3', endpoint_url=f'https://{account_id}.r2.cloudflarestorage.com',
-        aws_access_key_id=key_id, aws_secret_access_key=secret,
-        region_name='auto', config=BotoConfig(signature_version='s3v4'))
-
-def replay_bucket():
-    bucket = ENV.get('CLOUDFLARE_R2_BUCKET_NAME', '')
-    if not bucket:
-        raise ApiError('Replay storage is not configured.', 503)
-    return bucket
-
-def replay_upload_url(owner, sid, access_token):
-    """Issue a short-lived presigned PUT so the call's own camera/mic recording
-    uploads straight from the device to Cloudflare R2 - this process never
-    sees the recording bytes. Only called when the user opts in per session."""
-    row = session_for(owner, sid, access_token)
-    if row['mode'] == 'text':
-        raise ApiError('Replays are only available for audio and video calls.')
-    key = f'replays/{owner}/{sid}-{uuid.uuid4().hex[:8]}.webm'
-    url = r2_client().generate_presigned_url(
-        'put_object', Params={'Bucket': replay_bucket(), 'Key': key}, ExpiresIn=1800)
-    return {'uploadUrl': url, 'key': key}
-
-def replay_complete(owner, data, access_token):
-    sid = str(data.get('sessionId', ''))
-    key = str(data.get('key', ''))[:300]
-    mime_type = str(data.get('mimeType', 'video/webm'))[:64]
-    try:
-        duration = max(0, int(data.get('durationSeconds', 0)))
-    except (TypeError, ValueError):
-        duration = 0
-    if not sid or not key:
-        raise ApiError('sessionId and key are required.')
-    if not key.startswith(f'replays/{owner}/'):
-        raise ApiError('Invalid replay key.', 403)
-    result = supabase_rpc('save_practice_replay', {
-        'p_session_id': sid, 'p_r2_key': key, 'p_mime_type': mime_type,
-        'p_duration_seconds': duration,
-    }, access_token)
-    row = result[0] if isinstance(result, list) else result
-    return {'saved': True, 'id': row.get('id') if isinstance(row, dict) else None}
-
-def cleanup_expired_replays(access_token):
-    """Lazily sweeps the caller's own overdue replays (mirrors
-    expire_stale_practice_sessions) and deletes the matching R2 objects."""
-    try:
-        keys = supabase_rpc('expire_stale_practice_replays', {}, access_token)
-    except ApiError:
-        return
-    if not isinstance(keys, list) or not keys:
-        return
-    try:
-        bucket = replay_bucket()
-        client = r2_client()
-    except ApiError:
-        return
-    for key in keys:
-        if isinstance(key, str) and key:
-            try:
-                client.delete_object(Bucket=bucket, Key=key)
-            except Exception:
-                pass  # An orphaned R2 object isn't worth failing this request over.
-
-def list_replays(access_token):
-    cleanup_expired_replays(access_token)
-    rows = supabase_rest(
-        'practice_replays?select=id,session_id,mime_type,duration_seconds,created_at'
-        '&order=created_at.desc&limit=50', access_token)
-    return {'replays': rows if isinstance(rows, list) else []}
-
-def replay_playback_url(data, access_token):
-    sid = str(data.get('sessionId', ''))
-    cleanup_expired_replays(access_token)
-    rows = supabase_rest(
-        'practice_replays?select=r2_key,mime_type&session_id=eq.' + quote(sid, safe='') + '&limit=1',
-        access_token)
-    if not isinstance(rows, list) or not rows:
-        raise ApiError('No replay saved for this session.', 404)
-    url = r2_client().generate_presigned_url(
-        'get_object', Params={'Bucket': replay_bucket(), 'Key': rows[0]['r2_key']}, ExpiresIn=600)
-    return {'playbackUrl': url, 'mimeType': rows[0].get('mime_type', 'video/webm')}
-
-def delete_replay(data, access_token):
-    sid = str(data.get('sessionId', ''))
-    rows = supabase_rest(
-        'practice_replays?select=id,r2_key&session_id=eq.' + quote(sid, safe='') + '&limit=1',
-        access_token)
-    if isinstance(rows, list) and rows:
-        try:
-            r2_client().delete_object(Bucket=replay_bucket(), Key=rows[0]['r2_key'])
-        except ApiError:
-            pass
-        except Exception:
-            pass
-        supabase_rest('practice_replays?id=eq.' + quote(str(rows[0]['id']), safe=''),
-                      access_token, method='DELETE')
-    return {'deleted': True}
-
 def session_detail(owner, sid, access_token):
     row = session_for(owner,sid,access_token)
     if not row['report']: raise ApiError('The session report is not saved yet.',409)
@@ -796,15 +688,6 @@ class Handler(SimpleHTTPRequestHandler):
         from urllib.parse import urlparse
         parsed = urlparse(origin)
         if parsed.hostname in ('127.0.0.1','localhost'): return True
-        # The live_call.html/js WebView client is served BY this same server
-        # and calls back to its own relative paths (e.g. the replay upload
-        # proxy). Browsers send an Origin header on those same-origin POSTs
-        # too, and it points at this server's own host - which ALLOWED_ORIGINS
-        # (meant for the separately-hosted web frontend) doesn't include, so
-        # without this check same-origin calls from our own pages get 403'd.
-        own_host = self.headers.get('Host', '').split(':')[0].lower()
-        if own_host and parsed.hostname and parsed.hostname.lower() == own_host:
-            return True
         allowed = {v.strip().rstrip('/') for v in ENV.get('ALLOWED_ORIGINS','').split(',') if v.strip()}
         return '*' in allowed or origin.rstrip('/') in allowed
 
@@ -857,8 +740,6 @@ class Handler(SimpleHTTPRequestHandler):
                 owner = self.owner()
                 if self.path == '/api/account':
                     return self.respond(account(owner, self.access_token))
-                if self.path == '/api/replays':
-                    return self.respond(list_replays(self.access_token))
                 if self.path == '/api/history':
                     rows = supabase_rest(
                         'practice_sessions?select=report&report=not.is.null&order=created_at.desc&limit=100',
@@ -889,28 +770,6 @@ class Handler(SimpleHTTPRequestHandler):
         try:
             if not self.valid_host():
                 raise ApiError('Invalid host.', 403)
-            if self.path == '/api/replays/upload-proxy':
-                origin = self.headers.get('Origin')
-                if origin and not self.valid_origin(origin):
-                    raise ApiError('Invalid origin.', 403)
-                target_url = self.headers.get('X-Target-Url', '').strip()
-                content_type = self.headers.get('Content-Type', 'video/webm').strip()
-                account_id = ENV.get('CLOUDFLARE_R2_ACCOUNT_ID', '')
-                if not target_url or not account_id or f'{account_id}.r2.cloudflarestorage.com' not in target_url:
-                    raise ApiError('Invalid target URL.', 400)
-                length = int(self.headers.get('Content-Length', '0'))
-                if length <= 0 or length > 100 * 1024 * 1024:
-                    raise ApiError('Invalid file size.', 413)
-                blob = self.rfile.read(length)
-                req = urllib.request.Request(target_url, data=blob, headers={'Content-Type': content_type}, method='PUT')
-                try:
-                    with urllib.request.urlopen(req) as resp:
-                        if resp.status in (200, 201, 204):
-                            return self.respond({'uploaded': True})
-                        raise ApiError(f'Storage returned status {resp.status}', 502)
-                except Exception as e:
-                    raise ApiError(f'Failed to upload to storage: {str(e)}', 502)
-
             length = int(self.headers.get('Content-Length', '0'))
             if length < 0 or length > 200000: raise ApiError('Request too large.', 413)
             raw_body = self.rfile.read(length)
@@ -940,15 +799,6 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.respond(generate(owner, data, self.access_token))
             if self.path == '/api/scenarios/generate':
                 return self.respond(generate_scenario(owner, data, self.access_token))
-            if self.path == '/api/replays/upload-url':
-                return self.respond(replay_upload_url(
-                    owner, str(data.get('sessionId', '')), self.access_token))
-            if self.path == '/api/replays/complete':
-                return self.respond(replay_complete(owner, data, self.access_token))
-            if self.path == '/api/replays/playback-url':
-                return self.respond(replay_playback_url(data, self.access_token))
-            if self.path == '/api/replays/delete':
-                return self.respond(delete_replay(data, self.access_token))
             sid = str(data.get('sessionId', ''))
             row = session_for(owner, sid, self.access_token)
             if self.path == '/api/sessions/detail':

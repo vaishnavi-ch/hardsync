@@ -5,6 +5,7 @@ import 'profile_screen.dart';
 import 'home_screen.dart';
 import 'scenario_hub_screen.dart';
 import 'session_replay_screen.dart';
+import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
 
 class AppShell extends StatefulWidget {
@@ -139,8 +140,8 @@ class _AppShellState extends State<AppShell> {
         child: Container(
           width: 48,
           height: 48,
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            color: HardSyncColors.violet,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -150,12 +151,7 @@ class _AppShellState extends State<AppShell> {
               ),
             ],
           ),
-          alignment: Alignment.center,
-          child: const Icon(
-            CupertinoIcons.bubble_left_bubble_right_fill,
-            color: Colors.white,
-            size: 24,
-          ),
+          child: Image.asset(HardSyncAssets.appIcon, fit: BoxFit.cover),
         ),
       ),
       selectedIconTheme: const IconThemeData(

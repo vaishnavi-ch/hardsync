@@ -100,7 +100,7 @@ class LegalDocumentScreen extends StatelessWidget {
 const _privacySections = <(String, String)>[
   (
     'What HardSync collects',
-    'We process account details, profile choices, course progress, practice text and transcripts, session results, subscription status, and technical diagnostics. During a live voice or video practice, your microphone or camera stream is sent to the call provider so the session can work. If you choose to save a replay of a session, that recording is uploaded to our cloud storage and kept until it expires or you delete it. Session transcripts and reports may be saved to your account.',
+    'We process account details, profile choices, course progress, practice text and transcripts, session results, subscription status, and technical diagnostics. During a live voice or video practice, your microphone or camera stream is sent to the call provider so the session can work. That stream is never recorded or stored. Session transcripts and reports may be saved to your account.',
   ),
   (
     'How information is used',
@@ -111,8 +111,8 @@ const _privacySections = <(String, String)>[
     'HardSync uses Supabase for authentication and application data, Google Gemini for text practice, live voice, and analysis, Tavus (running on Daily) for live video avatar calls, and RevenueCat for subscriptions. Live call media is processed by Google Gemini or Tavus/Daily, depending on the mode you choose, under their own terms and privacy policies.',
   ),
   (
-    'Microphone, camera, and recordings',
-    'Microphone and camera access is requested only when you start a voice or video feature. Audio and video are streamed live to the call provider. By default HardSync does not keep a copy of that stream. Some sessions offer an opt-in "save replay" option; if you turn it on for a session, the recording is uploaded directly from your device to our cloud storage (Cloudflare R2), stored under your account, and automatically deleted after it expires or when you remove it from your session history. Your transcript and session report may be saved to your account regardless of whether you save a replay.',
+    'Microphone and camera',
+    'Microphone and camera access is requested only when you start a voice or video feature. Audio and video are streamed live to the call provider and are never recorded or stored by HardSync. Your transcript and session report may still be saved to your account.',
   ),
   (
     'Purchases',

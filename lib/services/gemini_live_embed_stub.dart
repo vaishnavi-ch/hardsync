@@ -11,7 +11,6 @@ class GeminiLiveEmbedView extends StatelessWidget {
   final bool cameraEnabled;
   final String personaId;
   final String personaName;
-  final String? replayUploadUrl;
   final ValueChanged<Map<String, dynamic>>? onEvent;
   final VoidCallback? onLoaded;
   const GeminiLiveEmbedView({
@@ -25,7 +24,6 @@ class GeminiLiveEmbedView extends StatelessWidget {
     this.cameraEnabled = true,
     this.personaId = '',
     this.personaName = '',
-    this.replayUploadUrl,
     this.onEvent,
     this.onLoaded,
   });

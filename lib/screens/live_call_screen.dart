@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../config/env_config.dart';
+import '../models/telemetry.dart';
 import '../providers/settings_provider.dart';
 import '../providers/simulation_provider.dart';
 import '../services/call_controller.dart';
@@ -34,7 +35,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
     super.didChangeDependencies();
     _simulation ??= context.read<SimulationProvider>();
     _simulation!.finishMedia = () async {
-      return await _callController.finish?.call();
+      await _callController.finish?.call();
     };
   }
 
@@ -106,7 +107,6 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
     SettingsProvider settings,
     bool ended,
   ) {
-    final lastUtterance = sim.transcript.isEmpty ? null : sim.transcript.last;
     return Stack(
       children: [
         const Positioned.fill(
@@ -138,7 +138,6 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                   cameraEnabled: false,
                   personaId: sim.activeCounterpart.id,
                   personaName: sim.activeCounterpart.name,
-                  replayUploadUrl: sim.replayUploadUrl,
                   onEvent: (event) {
                     if (event['type'] == 'user-action-required') {
                       if (mounted) setState(() => _needsAudioTap = true);
@@ -193,12 +192,13 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                 ),
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      const SizedBox(height: 8),
                       Container(
-                        width: 236,
-                        height: 236,
-                        padding: const EdgeInsets.all(12),
+                        width: 150,
+                        height: 150,
+                        padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: HardSyncColors.lilacMist,
@@ -214,18 +214,18 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                         ),
                         child: AppAvatar(
                           sim.activeCounterpart.avatarAsset,
-                          size: 212,
+                          size: 134,
                           backgroundColor: Colors.white,
                           borderColor: Colors.white,
                           borderWidth: 4,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 12),
                       Text(
                         sim.activeCounterpart.name,
                         style: GoogleFonts.newsreader(
                           color: HardSyncColors.ink,
-                          fontSize: 28,
+                          fontSize: 24,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -260,36 +260,27 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                           fontSize: 14,
                         ),
                       ),
-                      if (sim.callState == CallState.inCall) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          sim.isRecording
-                              ? 'Recording this session for playback later'
-                              : 'Live call only · audio and video are not saved',
-                          style: GoogleFonts.plusJakartaSans(
-                            color: HardSyncColors.inkMuted,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 22),
+                      const SizedBox(height: 14),
                       _AudioWaveform(active: sim.isBusy),
-                      if (lastUtterance != null) ...[
-                        const SizedBox(height: 22),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 28),
-                          child: Text(
-                            '${lastUtterance.speakerName}: ${lastUtterance.text}',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: HardSyncColors.ink,
-                              fontSize: 14,
-                            ),
+                      if (sim.callState == CallState.inCall) ...[
+                        const SizedBox(height: 10),
+                        _buildSpeechCoachPill(sim),
+                      ],
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: _buildLiveTranscriptPanel(
+                            sim,
+                            height: double.infinity,
+                            bubbleColor: Colors.white,
+                            borderColor: const Color(0xFFE5DFD5),
+                            userLabelColor: HardSyncColors.violet,
+                            avatarLabelColor: const Color(0xFF224838),
+                            textColor: HardSyncColors.ink,
                           ),
                         ),
-                      ],
+                      ),
                     ],
                   ),
                 ),
@@ -322,6 +313,111 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
             ),
           ),
       ],
+    );
+  }
+
+  /// Scrollable, live-updating transcript of both speakers so far. Newest
+  /// turn is anchored at the bottom, matching a normal chat/subtitle feed.
+  Widget _buildLiveTranscriptPanel(
+    SimulationProvider sim, {
+    required double height,
+    required Color bubbleColor,
+    required Color borderColor,
+    required Color userLabelColor,
+    required Color avatarLabelColor,
+    required Color textColor,
+  }) {
+    final turns = sim.transcript;
+    if (turns.isEmpty) return const SizedBox.shrink();
+    return SizedBox(
+      height: height,
+      child: ListView.builder(
+        reverse: true,
+        padding: EdgeInsets.zero,
+        itemCount: turns.length,
+        itemBuilder: (context, index) {
+          final turn = turns[turns.length - 1 - index];
+          final isUser = turn.speaker == DialogueSpeaker.user;
+          return Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 8,
+              ),
+              decoration: BoxDecoration(
+                color: bubbleColor,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: borderColor),
+              ),
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '${turn.speakerName}: ',
+                      style: GoogleFonts.plusJakartaSans(
+                        color: isUser ? userLabelColor : avatarLabelColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    TextSpan(
+                      text: turn.text,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: textColor,
+                        fontSize: 12,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// Live "how you're speaking" read-out for audio calls, where there's no
+  /// camera frame to run the visual confidence analysis on -- reuses the
+  /// filler-word/hedging detector that already runs on every user turn.
+  Widget _buildSpeechCoachPill(SimulationProvider sim) {
+    final metrics = sim.telemetryEngine.speechMetrics;
+    if (metrics.wordsSpoken == 0) return const SizedBox.shrink();
+    final clear = metrics.fillerCount == 0 && metrics.hedgingCount == 0;
+    final label = StringBuffer(
+      metrics.fillerCount == 0
+          ? 'No filler words yet'
+          : '${metrics.fillerCount} filler word${metrics.fillerCount == 1 ? '' : 's'}',
+    );
+    if (metrics.hedgingCount > 0) label.write(' · hedging detected');
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: clear ? const Color(0xFFE8F1EC) : const Color(0xFFFDEDEA),
+        borderRadius: BorderRadius.circular(9999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            clear ? Icons.check_circle_outline : Icons.info_outline,
+            size: 14,
+            color: clear ? const Color(0xFF224838) : const Color(0xFFC75438),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label.toString(),
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: clear ? const Color(0xFF224838) : const Color(0xFFC75438),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -362,9 +458,6 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
   ) {
     final counterpartName = sim.activeCounterpart.name;
     final scenarioTitle = sim.activeScenario?.title ?? 'Managing Former Peer';
-    final lastUtterance = sim.transcript.isNotEmpty
-        ? sim.transcript.last
-        : null;
 
     return Stack(
       fit: StackFit.expand,
@@ -382,7 +475,6 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
               cameraEnabled: sim.isVideoActive && settings.cameraEnabled,
               personaId: sim.activeCounterpart.id,
               personaName: sim.activeCounterpart.name,
-              replayUploadUrl: sim.replayUploadUrl,
               onEvent: sim.providerEvent,
             ),
           )
@@ -744,41 +836,6 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                             ],
                           ),
                         ),
-                        if (sim.isRecording) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFC75438).withOpacity(0.85),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 7,
-                                  height: 7,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Recording',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: Colors.white,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                         if (sim.isLowOnCredits) ...[
                           const SizedBox(width: 8),
                           Container(
@@ -946,37 +1003,24 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
               ),
               const SizedBox(height: 10),
 
-              // Live Subtitle Transcript Bubble
-              if (lastUtterance != null)
+              // Live Transcript Panel
+              if (sim.transcript.isNotEmpty)
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.65),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: Colors.white.withOpacity(0.1)),
                   ),
-                  child: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: '${lastUtterance.speakerName}: ',
-                          style: GoogleFonts.plusJakartaSans(
-                            color: const Color(0xFF76D8A2),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        TextSpan(
-                          text: lastUtterance.text,
-                          style: GoogleFonts.plusJakartaSans(
-                            color: const Color(0xFFE2EBE5),
-                            fontSize: 12,
-                            height: 1.35,
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: _buildLiveTranscriptPanel(
+                    sim,
+                    height: 180,
+                    bubbleColor: Colors.transparent,
+                    borderColor: Colors.transparent,
+                    userLabelColor: const Color(0xFF76D8A2),
+                    avatarLabelColor: const Color(0xFF76D8A2),
+                    textColor: const Color(0xFFE2EBE5),
                   ),
                 ),
             ],

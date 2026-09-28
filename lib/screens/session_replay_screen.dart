@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/debrief_report.dart';
+import '../models/scenario.dart';
 import '../services/session_history.dart';
 import '../services/supabase_service.dart';
 import '../theme/hardsync_assets.dart';
@@ -31,6 +32,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
         final scenario = r['scenarios'] is Map ? r['scenarios'] as Map : {};
         return {
           'id': r['id'],
+          'scenarioId': r['scenario_id'],
           'title': scenario['title'] ?? 'Scenario',
           'completedAt': r['created_at'],
           'durationSeconds': r['duration_seconds'],
@@ -281,6 +283,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
             ...reports.map((report) {
               final mode = report['mode']?.toString() ?? 'video';
               final score = report['overallScore'];
+              final scenarioId = report['scenarioId']?.toString();
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
@@ -314,12 +317,20 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
                         Container(
                           width: 44,
                           height: 44,
+                          clipBehavior: Clip.antiAlias,
                           decoration: BoxDecoration(
                             color: const Color(0xFFF3ECE0),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           alignment: Alignment.center,
-                          child: AppIcon(_getModeIcon(mode), size: 20),
+                          child: (scenarioId == null || scenarioId.isEmpty)
+                              ? AppIcon(_getModeIcon(mode), size: 20)
+                              : AppIllustration(
+                                  Scenario.illustrationFor(scenarioId),
+                                  width: 44,
+                                  height: 44,
+                                  fit: BoxFit.cover,
+                                ),
                         ),
                         const SizedBox(width: 14),
                         Expanded(

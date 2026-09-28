@@ -47,7 +47,7 @@ dependencies:
   webview_flutter_wkwebview: ^3.25.0
   purchases_flutter: ^10.13.1
   purchases_ui_flutter: ^10.13.1
-  video_player: ^2.9.2
+  speech_to_text: ^7.0.0
   device_preview: 1.2.0
 
 dev_dependencies:

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import '../models/persona.dart';
 import '../models/scenario.dart';
 import '../services/backend_service.dart';
 import '../theme/hardsync_assets.dart';
-import '../theme/hardsync_theme.dart';
 import 'session_prep_screen.dart';
 
 class CustomScenarioScreen extends StatefulWidget {
@@ -17,14 +17,13 @@ class CustomScenarioScreen extends StatefulWidget {
 class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
   int _step = 0;
   String _selectedGoal = 'Give feedback';
-  final TextEditingController _contextController = TextEditingController(
-    text:
-        'Alex was my former peer. He missed two deadlines this week and gets defensive in 1-on-1s.',
-  );
+  final TextEditingController _contextController = TextEditingController();
   bool _isGenerating = false;
 
-  // Selected Counterpart Archetype
-  String _selectedPersonaId = 'alex';
+  final SpeechToText _speech = SpeechToText();
+  bool _speechAvailable = false;
+  bool _isListening = false;
+  String _dictationBase = '';
 
   // Selected Tensions
   final Set<String> _selectedTensions = {'Missed Deadlines', 'Defensiveness'};
@@ -41,13 +40,55 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
   @override
   void dispose() {
     _contextController.dispose();
+    if (_isListening) _speech.stop();
     super.dispose();
   }
 
-  Persona _getSelectedPersona() {
-    return Persona.defaultPersonas.firstWhere(
-      (p) => p.id == _selectedPersonaId,
-      orElse: () => Persona.defaultPersonas.first,
+  Future<void> _toggleDictation() async {
+    if (_isListening) {
+      await _speech.stop();
+      if (mounted) setState(() => _isListening = false);
+      return;
+    }
+    _speechAvailable = await _speech.initialize(
+      onStatus: (status) {
+        if (status == 'done' || status == 'notListening') {
+          if (mounted) setState(() => _isListening = false);
+        }
+      },
+      onError: (_) {
+        if (mounted) setState(() => _isListening = false);
+      },
+    );
+    if (!_speechAvailable) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Speech recognition is not available. Check microphone and speech permissions in Settings.',
+          ),
+        ),
+      );
+      return;
+    }
+    _dictationBase = _contextController.text;
+    setState(() => _isListening = true);
+    await _speech.listen(
+      onResult: (result) {
+        final words = result.recognizedWords;
+        final combined = _dictationBase.isEmpty
+            ? words
+            : '$_dictationBase $words';
+        _contextController.value = TextEditingValue(
+          text: combined,
+          selection: TextSelection.collapsed(offset: combined.length),
+        );
+      },
+      listenOptions: SpeechListenOptions(
+        listenMode: ListenMode.dictation,
+        listenFor: const Duration(minutes: 2),
+        pauseFor: const Duration(seconds: 4),
+      ),
     );
   }
 
@@ -62,7 +103,6 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
         'description': note,
         'goal': _selectedGoal,
         'tensions': _selectedTensions.toList(),
-        'personaHint': _selectedPersonaId,
       });
 
       final difficulty = switch (result['difficulty']) {
@@ -138,7 +178,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
   }
 
   void _nextStep() {
-    if (_step < 2) setState(() => _step++);
+    if (_step < 1) setState(() => _step++);
   }
 
   void _previousStep() {
@@ -179,12 +219,12 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
                             ),
                             const SizedBox(height: 8),
                             Row(
-                              children: List.generate(3, (index) {
+                              children: List.generate(2, (index) {
                                 return Expanded(
                                   child: Container(
                                     height: 5,
                                     margin: EdgeInsets.only(
-                                      right: index == 2 ? 0 : 6,
+                                      right: index == 1 ? 0 : 6,
                                     ),
                                     decoration: BoxDecoration(
                                       color: index <= _step
@@ -201,7 +241,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        '${_step + 1}/3',
+                        '${_step + 1}/2',
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -240,7 +280,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
                       ),
                       onPressed: _isGenerating
                           ? null
-                          : _step == 2
+                          : _step == 1
                           ? _submitScenario
                           : _nextStep,
                       child: _isGenerating
@@ -253,7 +293,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
                               ),
                             )
                           : Text(
-                              _step == 2
+                              _step == 1
                                   ? 'Generate with AI'
                                   : 'Continue',
                             ),
@@ -272,8 +312,6 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
     switch (_step) {
       case 0:
         return _situationStep(context);
-      case 1:
-        return _personaStep(context);
       default:
         return _reviewStep(context);
     }
@@ -367,32 +405,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
     );
   }
 
-  Widget _personaStep(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      _wizardHeading(
-        'Choose your conversation partner (optional)',
-        'Pick who best matches the real conversation, or leave this and AI will choose based on your description.',
-      ),
-      const SizedBox(height: 16),
-      Container(
-        height: 210,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: const Color(0xFFF1EDFF),
-          borderRadius: BorderRadius.circular(28),
-        ),
-        child: const AppIllustration(HardSyncAssets.illusPersonaSelector),
-      ),
-      const SizedBox(height: 18),
-      _buildCounterpartArchetypes(),
-      const SizedBox(height: 18),
-      _buildInsightCard(),
-    ],
-  );
-
   Widget _reviewStep(BuildContext context) {
-    final persona = _getSelectedPersona();
     final contextText = _contextController.text.trim();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -412,13 +425,8 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
           child: const AppIllustration(HardSyncAssets.illusSafeRehearsalRoom),
         ),
         const SizedBox(height: 14),
-        _reviewCard(
-          'Conversation partner',
-          '${persona.name} · ${persona.role}',
-          HardSyncAssets.illusPersonaSelector,
-          () => setState(() => _step = 1),
-        ),
-        const SizedBox(height: 10),
+        _buildInsightCard(),
+        const SizedBox(height: 14),
         _reviewCard(
           'Your goal',
           _selectedGoal,
@@ -502,258 +510,6 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
   @override
   Widget build(BuildContext context) => _buildWizard(context);
 
-  // Kept temporarily while the guided builder replaces the original dense form.
-  // ignore: unused_element
-  Widget _legacyBuild(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F2),
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 440),
-            child: Column(
-              children: [
-                // Top Navigation
-                _buildTopNav(context),
-
-                // Main Scrollable Area
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Header
-                        Text(
-                          'Configure Scenario',
-                          style: GoogleFonts.newsreader(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF1B1715),
-                            letterSpacing: -0.4,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Choose your counterpart relationship and the tension you want to practice.',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 13,
-                            color: const Color(0xFF7A726C),
-                            height: 1.4,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Section 1: Who are you meeting with?
-                        Text(
-                          '1. WHO ARE YOU MEETING WITH?',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.8,
-                            color: const Color(0xFF1B1715),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        _buildCounterpartArchetypes(),
-                        const SizedBox(height: 22),
-
-                        // Section 2: Core friction
-                        Text(
-                          '2. WHAT IS THE CORE FRICTION?',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.8,
-                            color: const Color(0xFF1B1715),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        _buildFrictionChips(),
-                        const SizedBox(height: 22),
-
-                        // Section 3: Context Note
-                        Text(
-                          '3. KEY CONTEXT (OPTIONAL)',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.8,
-                            color: const Color(0xFF1B1715),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        _buildContextInput(),
-                        const SizedBox(height: 20),
-
-                        // Briefing Insight Card
-                        _buildInsightCard(),
-                        const SizedBox(height: 24),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Bottom Action CTA
-                _buildBottomCTA(),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTopNav(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              size: 18,
-              color: Color(0xFF1B1715),
-            ),
-            tooltip: 'Go back',
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEBE5DB),
-              borderRadius: BorderRadius.circular(9999),
-            ),
-            child: Row(
-              children: [
-                const AppIcon(HardSyncAssets.iconSparkleStarsMagic, size: 14),
-                const SizedBox(width: 6),
-                Text(
-                  'Custom Scenario',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF224838),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCounterpartArchetypes() {
-    final archetypes = [
-      {
-        'id': 'marcus',
-        'name': 'Marcus',
-        'role': 'Direct Report',
-        'avatar': HardSyncAssets.avatarMarcus,
-        'bg': const Color(0xFFEBF2EE),
-      },
-      {
-        'id': 'alex',
-        'name': 'Alex',
-        'role': 'Former Peer',
-        'avatar': HardSyncAssets.avatarAlex,
-        'bg': const Color(0xFFF3ECE0),
-      },
-      {
-        'id': 'jordan',
-        'name': 'Jordan',
-        'role': 'VP Exec',
-        'avatar': HardSyncAssets.avatarJordan,
-        'bg': const Color(0xFFF5EDE4),
-      },
-    ];
-
-    return Row(
-      children: archetypes.map((arch) {
-        final id = arch['id'] as String;
-        final isSelected = _selectedPersonaId == id;
-
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: InkWell(
-              onTap: () => setState(() => _selectedPersonaId = id),
-              borderRadius: BorderRadius.circular(18),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected ? HardSyncColors.lilacMist : Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: isSelected
-                        ? HardSyncColors.violet
-                        : const Color(0xFFE5DFD5),
-                    width: isSelected ? 2 : 1,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(
-                        alpha: isSelected ? 0.05 : 0.02,
-                      ),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    AppAvatar(
-                      arch['avatar'] as String,
-                      size: 54,
-                      backgroundColor: arch['bg'] as Color,
-                      borderColor: isSelected
-                          ? HardSyncColors.violet
-                          : HardSyncColors.lilacBorder,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      arch['name'] as String,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: isSelected
-                            ? HardSyncColors.violet
-                            : const Color(0xFF1B1715),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      arch['role'] as String,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10.5,
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.w500,
-                        color: isSelected
-                            ? HardSyncColors.violet.withValues(alpha: 0.8)
-                            : const Color(0xFF7A726C),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
   Widget _buildFrictionChips() {
     return Wrap(
       spacing: 8,
@@ -811,7 +567,12 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE5DFD5)),
+        border: Border.all(
+          color: _isListening
+              ? const Color(0xFF7C5CE7)
+              : const Color(0xFFE5DFD5),
+          width: _isListening ? 1.5 : 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -820,23 +581,69 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
           ),
         ],
       ),
-      child: TextField(
-        controller: _contextController,
-        maxLines: 3,
-        style: GoogleFonts.plusJakartaSans(
-          fontSize: 13.5,
-          color: const Color(0xFF1B1715),
-          height: 1.45,
-        ),
-        decoration: InputDecoration(
-          hintText: 'Add specific nuance, past history, or talking points...',
-          hintStyle: GoogleFonts.plusJakartaSans(
-            fontSize: 13,
-            color: const Color(0xFF9E968D),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            controller: _contextController,
+            maxLines: 3,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 13.5,
+              color: const Color(0xFF1B1715),
+              height: 1.45,
+            ),
+            decoration: InputDecoration(
+              hintText:
+                  'Describe what happened, who\'s involved, and what you want to say...',
+              hintStyle: GoogleFonts.plusJakartaSans(
+                fontSize: 13,
+                color: const Color(0xFF9E968D),
+              ),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
           ),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.zero,
-        ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              if (_isListening)
+                Expanded(
+                  child: Text(
+                    'Listening…',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF7C5CE7),
+                    ),
+                  ),
+                )
+              else
+                const Spacer(),
+              InkWell(
+                onTap: _toggleDictation,
+                borderRadius: BorderRadius.circular(9999),
+                child: Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: _isListening
+                        ? const Color(0xFF7C5CE7)
+                        : const Color(0xFFF1EDFF),
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    _isListening ? Icons.stop_rounded : Icons.mic_none_rounded,
+                    size: 18,
+                    color: _isListening
+                        ? Colors.white
+                        : const Color(0xFF7C5CE7),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -865,7 +672,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'HardSync calibrates the counterpart’s baseline defensiveness and pushback style based on your selected relationship dynamics.',
+              'AI will invent your conversation partner — name, role, and personality — based on what you described, and assign them a matching avatar.',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 12,
                 color: const Color(0xFF5A524A),
@@ -878,52 +685,4 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
     );
   }
 
-  Widget _buildBottomCTA() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
-      decoration: const BoxDecoration(
-        color: Color(0xFFFAF7F2),
-        border: Border(top: BorderSide(color: Color(0xFFEDE8DE))),
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        height: 52,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF224838),
-            foregroundColor: Colors.white,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          onPressed: _isGenerating ? null : _generateScenarioWithAi,
-          child: _isGenerating
-              ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: Colors.white,
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const AppIcon(HardSyncAssets.iconRocketLaunch, size: 20),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Generate Scenario',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-                  ],
-                ),
-        ),
-      ),
-    );
-  }
 }

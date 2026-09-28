@@ -30,7 +30,6 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
   CallMode _selectedCallMode = CallMode.text;
   bool _initializedRoles = false;
   bool _starting = false;
-  bool _saveReplay = false;
   int? _creditBalance;
 
   Future<void> _loadCreditBalance() async {
@@ -843,10 +842,6 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
               },
             ),
           ),
-          if (_selectedCallMode != CallMode.text) ...[
-            const SizedBox(height: 10),
-            _buildReplayConsentRow(),
-          ],
           const SizedBox(height: 10),
 
           // Transparent credit rate disclosure
@@ -953,7 +948,6 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                       await simulation.startCall(
                         widget.scenario,
                         mode: _selectedCallMode,
-                        wantsReplay: _saveReplay,
                       );
                       // Auto-retry once on session conflict (closes the stale session)
                       if (simulation.hasSessionConflict ||
@@ -1058,47 +1052,6 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                 decoration: TextDecoration.underline,
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReplayConsentRow() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFAF7F2),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFEBE5DA)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Save a recording for playback',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1E2522),
-                  ),
-                ),
-                Text(
-                  'Off by default. Only you can view it; auto-deleted after 30 days.',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 10.5,
-                    color: HardSyncColors.inkMuted,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: _saveReplay,
-            onChanged: (value) => setState(() => _saveReplay = value),
           ),
         ],
       ),

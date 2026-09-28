@@ -62,6 +62,8 @@
 	<string>HardSync requires camera access for AI roleplay video rehearsal sessions.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>HardSync requires microphone access to practice speaking with your executive AI counterpart.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>HardSync uses speech recognition to let you describe your situation by voice instead of typing.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>

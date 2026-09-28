@@ -102,13 +102,6 @@ void main() {
 
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
-    expect(
-      find.text('Choose your conversation partner (optional)'),
-      findsOneWidget,
-    );
-
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
     expect(find.text('Review your scenario'), findsOneWidget);
     expect(find.text('Generate with AI'), findsOneWidget);
     expect(tester.takeException(), isNull);

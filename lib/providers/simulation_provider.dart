@@ -24,10 +24,44 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
     // The app is being backgrounded or closed. A live scenario can't
     // meaningfully continue off-screen, and leaving it "active" server-side
     // blocks the next attempt with "an earlier scenario is still open"
-    // until the 11-minute stale-session expiry catches up. Cut it now.
+    // until the stale-session expiry catches up. Cut it now -- using the
+    // fast path below, not endCall()/_abortCall(), since those wait up to
+    // 4 seconds on finishMedia() first and iOS can suspend the process
+    // before that wait (and the actual end-session request) completes.
     if (state == AppLifecycleState.paused &&
         (_state == CallState.connecting || _state == CallState.inCall)) {
-      unawaited(endCall());
+      unawaited(_endForBackground());
+    }
+  }
+
+  /// Ends the session immediately on app backgrounding, skipping media
+  /// finalization entirely -- there's nothing on screen to save a replay of
+  /// once the app isn't visible, and every millisecond here is borrowed
+  /// against the OS suspending the process before this request lands.
+  Future<void> _endForBackground() async {
+    if (_ending || _state == CallState.ended) return;
+    _connectWatchdog?.cancel();
+    _connectWatchdog = null;
+    ++_generation;
+    _timer?.cancel();
+    _busy = false;
+    _ending = true;
+    final sid = _sid;
+    try {
+      if (sid != null) {
+        try {
+          await BackendService.request('/api/sessions/end', {
+            'sessionId': sid,
+          });
+        } catch (_) {}
+      }
+      _sid = null;
+      BackendService.sessionId = null;
+      savedSessionId = null;
+      _state = CallState.ended;
+    } finally {
+      _ending = false;
+      notifyListeners();
     }
   }
 
@@ -45,17 +79,7 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
   String? _sid;
   String? savedSessionId;
   String? get currentSessionId => _sid;
-  Future<Map<String, dynamic>?> Function()? finishMedia;
-  bool _wantsReplay = false;
-  String? _replayKey;
-  String? replayUploadUrl;
-  bool replaySaved = false;
-  bool get wantsReplay => _wantsReplay;
-  // Distinct from wantsReplay: this reflects whether a recording will
-  // actually happen (the upload URL request succeeded), not just whether
-  // the user opted in — so the UI never claims to be recording when the
-  // upload URL fetch silently failed.
-  bool get isRecording => _wantsReplay && replayUploadUrl != null;
+  Future<void> Function()? finishMedia;
   String? _conflictingSessionId;
   bool _recovering = false;
   bool get hasSessionConflict => _conflictingSessionId != null;
@@ -112,7 +136,6 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
   Future<void> startCall(
     Scenario scenario, {
     CallMode mode = CallMode.text,
-    bool wantsReplay = false,
   }) async {
     if (_state == CallState.connecting ||
         _state == CallState.inCall ||
@@ -136,10 +159,6 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
     rateCreditsPerMinute = 0;
     maxSeconds = null;
     ranOutOfCredits = false;
-    _wantsReplay = wantsReplay && mode != CallMode.text;
-    _replayKey = null;
-    replayUploadUrl = null;
-    replaySaved = false;
     liveConfidenceScore = null;
     liveExpression = null;
     liveEyeContact = null;
@@ -147,6 +166,9 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
     liveCoachTip = null;
     _sid = null;
     _state = CallState.connecting;
+    telemetryEngine.startSimulation(
+      initialDefensiveness: scenario.persona.baselineDefensiveness,
+    );
     notifyListeners();
     try {
       final result = await BackendService.request('/api/sessions', {
@@ -184,22 +206,6 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
       maxSeconds = result['maxSeconds'] is int
           ? result['maxSeconds'] as int
           : null;
-      if (_wantsReplay) {
-        try {
-          final upload = await BackendService.request(
-            '/api/replays/upload-url',
-            {'sessionId': _sid},
-          );
-          if (generation == _generation) {
-            replayUploadUrl = upload['uploadUrl'] as String?;
-            _replayKey = upload['key'] as String?;
-          }
-        } catch (e) {
-          // Recording is a best-effort extra; a failure here shouldn't block
-          // the scenario itself from starting.
-          debugPrint('[SimulationProvider] Replay upload URL fetch failed: $e');
-        }
-      }
       if (isTextOnly) {
         await connected();
         _append(false, activeCounterpart.pushbackPhrases.first);
@@ -239,11 +245,7 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
           'sessionId': _conflictingSessionId,
         });
       }
-      // startCall resets _wantsReplay from its parameter, so the current
-      // value (set by the original startCall that's being retried) must be
-      // threaded through explicitly or a retried call silently drops the
-      // user's recording consent.
-      await startCall(_scenario!, mode: _mode, wantsReplay: _wantsReplay);
+      await startCall(_scenario!, mode: _mode);
     } catch (e) {
       error = 'Could not close the earlier scenario: $e';
     } finally {
@@ -333,18 +335,33 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
     }
   }
 
-  void _append(bool user, String text) => _turns.add(
-    DialogueTurn(
-      id: 'turn_${_turns.length}',
-      speaker: user ? DialogueSpeaker.user : DialogueSpeaker.avatar,
-      speakerName: user ? 'You' : activeCounterpart.name,
-      text: text,
-      timestamp: _duration,
-      tone: ConversationalTone.neutral,
-      wpmAtTurn: 0,
-      eyeContactAtTurn: 0,
-    ),
-  );
+  void _append(bool user, String text) {
+    if (user) {
+      // No real per-turn timing is available from the live transcript event,
+      // so estimate speaking duration from word count at a typical pace --
+      // fillerCount/hedgingCount (the signals actually surfaced to the user)
+      // are pure text-pattern matches and don't depend on this being exact.
+      final wordCount = text.trim().isEmpty
+          ? 0
+          : text.trim().split(RegExp(r'\s+')).length;
+      telemetryEngine.processUserUtterance(
+        text,
+        Duration(milliseconds: (wordCount / 2.5 * 1000).round()),
+      );
+    }
+    _turns.add(
+      DialogueTurn(
+        id: 'turn_${_turns.length}',
+        speaker: user ? DialogueSpeaker.user : DialogueSpeaker.avatar,
+        speakerName: user ? 'You' : activeCounterpart.name,
+        text: text,
+        timestamp: _duration,
+        tone: ConversationalTone.neutral,
+        wpmAtTurn: 0,
+        eyeContactAtTurn: 0,
+      ),
+    );
+  }
 
   Future<void> handleUserUtterance(
     String text, {
@@ -423,20 +440,7 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
     try {
       if (!isTextOnly && finishMedia != null) {
         try {
-          final mediaResult = await finishMedia!();
-          if (mediaResult?['replaySaved'] == true &&
-              _replayKey != null &&
-              _sid != null) {
-            try {
-              await BackendService.request('/api/replays/complete', {
-                'sessionId': _sid,
-                'key': _replayKey,
-                'mimeType': mediaResult?['mimeType'] ?? 'video/webm',
-                'durationSeconds': _duration.inSeconds,
-              });
-              replaySaved = true;
-            } catch (_) {}
-          }
+          await finishMedia!();
         } catch (_) {}
       }
       _state = CallState.ended;
@@ -520,18 +524,17 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
           try {
             final client = SupabaseService.instance.client;
             if (client != null) {
-              await client.from('session_attempts').upsert({
-                'id': _sid,
-                'user_id': SupabaseService.instance.currentUserId,
-                'scenario_id': _scenario!.id,
-                'duration_seconds': _duration.inSeconds,
-                'overall_score': 85,
-                'clarity_score': 88,
-                'boundary_score': 82,
-                'composure_score': 86,
-                'empathy_score': 84,
-                'executive_tier': 'On Track',
-                'report': reportPayload,
+              await client.rpc('record_practice_attempt', params: {
+                'p_session_id': _sid,
+                'p_scenario_id': _scenario!.id,
+                'p_duration_seconds': _duration.inSeconds,
+                'p_overall_score': 85,
+                'p_clarity_score': 88,
+                'p_boundary_score': 82,
+                'p_composure_score': 86,
+                'p_empathy_score': 84,
+                'p_executive_tier': 'On Track',
+                'p_report': reportPayload,
               });
 
               if (_turns.isNotEmpty) {

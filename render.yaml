@@ -31,14 +31,6 @@ services:
         sync: false
       - key: TAVUS_API_KEY
         sync: false
-      - key: CLOUDFLARE_R2_ACCOUNT_ID
-        sync: false
-      - key: CLOUDFLARE_R2_ACCESS_KEY_ID
-        sync: false
-      - key: CLOUDFLARE_R2_SECRET_ACCESS_KEY
-        sync: false
-      - key: CLOUDFLARE_R2_BUCKET_NAME
-        sync: false
   - type: web
     name: hardsync-live
     runtime: python
