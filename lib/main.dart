@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' show Platform;
 
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
@@ -22,11 +21,9 @@ import 'theme/hardsync_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   WidgetsBinding.instance.ensureSemantics();
-  final isMobileDevice =
-      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode && !isMobileDevice,
+      enabled: !kReleaseMode,
       builder: (context) => const HardSyncApp(),
     ),
   );
