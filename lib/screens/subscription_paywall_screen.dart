@@ -11,6 +11,7 @@ import '../services/credit_service.dart';
 import '../services/revenuecat_service.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
+import '../widgets/hardsync_dialogs.dart';
 import 'legal_document_screen.dart';
 import 'session_prep_screen.dart';
 import 'web_viewer_screen.dart';
@@ -71,18 +72,16 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
     final packages =
         _offerings?.current?.availablePackages ?? const <Package>[];
     if (packages.isEmpty) return null;
-    final proPackage = _packageByKeyword(['pro', 'monthly']) ?? packages.first;
-    if (tier != SubscriptionTier.ultra) return proPackage;
 
-    final ultraPackage = _packageByKeyword(['ultra', 'annual']);
-    if (ultraPackage != null) return ultraPackage;
-    final distinctSecond = packages.firstWhere(
-      (p) => p.identifier != proPackage.identifier,
-      orElse: () => proPackage,
-    );
-    return distinctSecond.identifier == proPackage.identifier
-        ? null
-        : distinctSecond;
+    // No blind "packages.first" fallback for either tier: guessing is how a
+    // package for a completely different product (wrong price) ends up
+    // silently displayed under the Pro or Ultra label. If nothing in the
+    // current offering is identifiable as this tier, show "See store price"
+    // instead of a confidently wrong number.
+    if (tier == SubscriptionTier.ultra) {
+      return _packageByKeyword(['ultra', 'annual']);
+    }
+    return _packageByKeyword(['pro', 'monthly']);
   }
 
   String _storePrice(SubscriptionTier tier) =>
@@ -1985,7 +1984,15 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
       // this purchase, not by this client -- a client-authored balance
       // change must never be trusted.
       await RevenueCatService.instance.purchasePackage(packageToBuy);
-      _showPurchaseSnack('Purchase complete! Your credits will appear shortly.');
+      if (mounted) {
+        showDialog<void>(
+          context: context,
+          builder: (_) => CreditPurchaseSuccessDialog(
+            packTitle: pack.title,
+            credits: pack.credits,
+          ),
+        );
+      }
     } catch (_) {
       _showPurchaseSnack('The purchase could not be completed. Please try again.');
     } finally {

@@ -46,12 +46,28 @@ class SubscriptionProvider with ChangeNotifier {
       }
 
       // 2. Cross-reference with backend (production path only)
-      final data = await BackendService.request('/api/account');
-      if (!_disposed && request == _request) {
-        final serverTier = SubscriptionTier.values.firstWhere(
+      var data = await BackendService.request('/api/account');
+      var serverTier = SubscriptionTier.values.firstWhere(
+        (t) => t.name == data['tier'],
+        orElse: () => SubscriptionTier.free,
+      );
+      // A non-subscription purchase (e.g. a credit pack) also notifies this
+      // provider, since it shares RevenueCat's customer-info listener with
+      // subscriptions. That purchase never touches the pro/ultra entitlement,
+      // so if the server suddenly reports a lower tier than what RevenueCat's
+      // own local entitlements still show, re-check once after a beat before
+      // accepting it — a real expiry/cancellation still confirms on the
+      // second look, but a transient sync gap after a purchase self-corrects.
+      if (serverTier.index < verifiedTier.index) {
+        await Future<void>.delayed(const Duration(milliseconds: 1500));
+        if (_disposed || request != _request) return;
+        data = await BackendService.request('/api/account');
+        serverTier = SubscriptionTier.values.firstWhere(
           (t) => t.name == data['tier'],
           orElse: () => SubscriptionTier.free,
         );
+      }
+      if (!_disposed && request == _request) {
         // The server performs its own RevenueCat lookup and is authoritative,
         // including subscription expiry (tier can move downward).
         _tier = serverTier;
