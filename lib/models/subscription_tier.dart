@@ -82,10 +82,9 @@ enum SubscriptionTier {
     }
   }
 
-  // Audio and video are credit-metered for every tier, including Free — a
-  // user's credit balance is the real gate (see CreditService), not tier.
-  bool get canUseAudioCalls => true;
-  bool get canUseVideoCalls => true;
+  bool get canUseAudioCalls =>
+      this == SubscriptionTier.pro || this == SubscriptionTier.ultra;
+  bool get canUseVideoCalls => this == SubscriptionTier.ultra;
   bool get canUseLiveFaceAnalysis => this == SubscriptionTier.ultra;
 
   List<String> get features {
@@ -102,7 +101,6 @@ enum SubscriptionTier {
           '⚡ 250 Monthly Practice Credits',
           '💬 Unlimited Text Practice',
           '🎙️ Live Voice Practice Calls (1 credit/min)',
-          '📹 Photorealistic HD Video Calls (6 credits/min)',
           '📊 Live Speaking Feedback (Speed, Fillers, Hedging)',
           '🎯 50+ Workplace Scenarios',
           '🛠️ Custom Scenario Creator',
@@ -110,7 +108,7 @@ enum SubscriptionTier {
       case SubscriptionTier.ultra:
         return const [
           '⚡ 600 Monthly Practice Credits (~2.5x more practice time)',
-          '📹 Photorealistic HD Video & Live Voice Calls',
+          '📹 Video Calls with AI',
           '🚀 Priority Access for instant video response',
           '🛠️ Unlimited Custom Meeting Scenarios',
           '🏆 Full Presence Check-Up',

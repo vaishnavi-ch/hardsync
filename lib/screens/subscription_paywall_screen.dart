@@ -1180,7 +1180,6 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                       benefits: const [
                         '250 Monthly Practice Credits',
                         'Live Voice Scenario Calls (1 cr/min)',
-                        'HD Video Calls (6 cr/min)',
                         'Live speaking feedback as you talk',
                       ],
                       onTap: () =>
@@ -1199,7 +1198,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                       illustration: HardSyncAssets.illusSafeVideoRoleplay,
                       benefits: const [
                         '600 Monthly Practice Credits',
-                        'HD Video & Live Voice Scenarios',
+                        'Video Calls with AI',
                         'Priority Access for Faster Calls',
                         'Full Presence Check-Up',
                       ],
@@ -1542,9 +1541,9 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
           ),
           const Divider(height: 14, color: Color(0xFFF0EBE3)),
           _buildMatrixRow(
-            'HD Video Avatar Calls',
+            'Video Calls with AI',
             free: false,
-            pro: true,
+            pro: false,
             ultra: true,
           ),
           const Divider(height: 14, color: Color(0xFFF0EBE3)),

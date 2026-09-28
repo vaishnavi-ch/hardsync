@@ -829,7 +829,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                           badge: '1 CR/M',
                         ),
                         _buildModeTab(
-                          label: 'HD Video',
+                          label: 'Video',
                           mode: CallMode.video,
                           iconAsset: HardSyncAssets.iconLaptopComputer,
                           isLocked: !sub.canUseVideoCalls,
@@ -925,7 +925,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                       }
                       if (_selectedCallMode == CallMode.video &&
                           !sub.canUseVideoCalls) {
-                        _showUpgradeSheet(context, SubscriptionTier.pro);
+                        _showUpgradeSheet(context, SubscriptionTier.ultra);
                         return;
                       }
                       final balance = _creditBalance;

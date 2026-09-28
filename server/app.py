@@ -286,10 +286,20 @@ def reserve(owner, mode, provider='gemini_live', context='', scenario_id='', acc
     if mode not in VALID_MODES:
         raise ApiError('Unknown call mode.')
     expire_sessions(owner, access_token)
-    # Audio and video are credit-metered for every tier, including Free.
-    # reserve_practice_session (Postgres) is the real gate: it checks the
-    # caller's credit balance and raises 'Insufficient credits' if it can't
-    # cover at least one minute at that mode's rate, regardless of tier.
+    # When the RevenueCat Test Store is active (local/dev builds only), skip the
+    # tier gate so all call modes can be tested without real purchases. Text has
+    # no tier restriction at all. Only hit RevenueCat when its result can
+    # actually change the outcome, so an unrelated billing/provider hiccup
+    # can't block session creation for a mode it was never gating.
+    use_test_store = ENV.get('REVENUECAT_USE_TEST_STORE', '').lower() == 'true'
+    if not use_test_store and mode in ('audio', 'video'):
+        acc = account(owner, access_token)
+        # Audio requires an active Pro or Ultra subscription; video is an
+        # Ultra-exclusive perk even for Pro subscribers.
+        if acc['tier'] == 'free':
+            raise ApiError('An active subscription is required for this call mode.', 403)
+        if mode == 'video' and acc['tier'] != 'ultra':
+            raise ApiError('Video calls require HardSync Ultra.', 403)
     result = supabase_rpc('reserve_practice_session', {
         'p_scenario_id': scenario_id, 'p_mode': mode, 'p_provider': provider,
         'p_context': context[:6000], 'p_voice_name': voice_name[:64], 'p_avatar_name': avatar_name[:64],
