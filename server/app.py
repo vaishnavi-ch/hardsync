@@ -35,6 +35,8 @@ ENV.setdefault('SUPABASE_URL', ENV.get('NEXT_PUBLIC_SUPABASE_URL', ''))
 ENV.setdefault('SUPABASE_ANON_KEY', ENV.get('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY') or ENV.get('SUPABASE_PUBLISHABLE_KEY') or ENV.get('NEXT_PUBLIC_SUPABASE_ANON_KEY', ''))
 LOCK = threading.RLock()
 VALID_MODES = {'text', 'audio', 'video'}
+# Must match the rate_per_minute cases in reserve_practice_session (SQL).
+RATE_PER_MINUTE = {'audio': 1, 'video': 6}
 # Relationship-dynamic hints offered in the custom-scenario wizard. These no
 # longer pin the generated counterpart to one of the 5 curated personas --
 # they just bias tone/defensiveness in the generation prompt below.
@@ -205,8 +207,9 @@ def first_row(value, missing='Record not found.'):
 
 def account(owner, access_token):
     row = first_row(supabase_rest(
-        'profiles?select=id&id=eq.' + quote(owner, safe=''), access_token),
+        'profiles?select=id,credits&id=eq.' + quote(owner, safe=''), access_token),
         'Profile not found. Sign out and create your account again.')
+    credits = row.get('credits') or 0
     tier = 'free'
     # Entitlements come from RevenueCat's server API, never client preferences.
     if ENV.get('REVENUECAT_SECRET_KEY'):
@@ -226,7 +229,7 @@ def account(owner, access_token):
                 if expiry is None or datetime.fromisoformat(expiry.replace('Z', '+00:00')) > datetime.now(timezone.utc):
                     tier = entitlement_tier
                     break
-    return {'tier': tier, 'testCalls': False}
+    return {'tier': tier, 'credits': credits, 'testCalls': False}
 
 def apply_revenuecat_webhook(data, authorization):
     """Grant practice credits from RevenueCat Virtual Currency transactions.
@@ -295,11 +298,15 @@ def reserve(owner, mode, provider='gemini_live', context='', scenario_id='', acc
     if not use_test_store and mode in ('audio', 'video'):
         acc = account(owner, access_token)
         # Audio requires an active Pro or Ultra subscription; video is an
-        # Ultra-exclusive perk even for Pro subscribers.
-        if acc['tier'] == 'free':
-            raise ApiError('An active subscription is required for this call mode.', 403)
-        if mode == 'video' and acc['tier'] != 'ultra':
-            raise ApiError('Video calls require HardSync Ultra.', 403)
+        # Ultra-exclusive perk even for Pro subscribers. Either gate can also
+        # be paid past with a purchased credit pack: if the balance covers at
+        # least one minute at this mode's rate, let reserve_practice_session
+        # (Postgres) meter it from there instead of blocking on tier alone.
+        tier_ok = acc['tier'] == 'ultra' or (mode == 'audio' and acc['tier'] == 'pro')
+        if not tier_ok and acc['credits'] < RATE_PER_MINUTE[mode]:
+            if mode == 'video':
+                raise ApiError('Video calls require HardSync Ultra, or a credit pack to pay per minute.', 403)
+            raise ApiError('An active subscription or a credit pack is required for this call mode.', 403)
     result = supabase_rpc('reserve_practice_session', {
         'p_scenario_id': scenario_id, 'p_mode': mode, 'p_provider': provider,
         'p_context': context[:6000], 'p_voice_name': voice_name[:64], 'p_avatar_name': avatar_name[:64],

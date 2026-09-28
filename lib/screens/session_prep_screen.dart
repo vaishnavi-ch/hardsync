@@ -32,6 +32,17 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
   bool _starting = false;
   int? _creditBalance;
 
+  // A purchased credit pack also unlocks audio/video for users whose tier
+  // alone wouldn't qualify — tier just decides who gets it bundled "free" as
+  // part of their subscription. `reserve_practice_session` metering server-side
+  // is the actual source of truth; this mirrors it for the lock icon/upsell.
+  bool _hasCreditsFor(CallMode mode) {
+    final balance = _creditBalance;
+    if (balance == null) return false;
+    final affordable = CreditService.affordableMinutes(balance, mode);
+    return affordable != null && affordable >= 1;
+  }
+
   Future<void> _loadCreditBalance() async {
     if (!SupabaseService.instance.isAuthenticated) return;
     try {
@@ -769,6 +780,8 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
   Widget _buildBottomControls(BuildContext context) {
     final sub = Provider.of<SubscriptionProvider>(context);
     final simulation = context.watch<SimulationProvider>();
+    final canUseAudio = sub.canUseAudioCalls || _hasCreditsFor(CallMode.audio);
+    final canUseVideo = sub.canUseVideoCalls || _hasCreditsFor(CallMode.video);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
@@ -825,14 +838,14 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                           label: 'Voice Audio',
                           mode: CallMode.audio,
                           iconAsset: HardSyncAssets.iconHeartbeatPulseHealth,
-                          isLocked: !sub.canUseAudioCalls,
+                          isLocked: !canUseAudio,
                           badge: '1 CR/M',
                         ),
                         _buildModeTab(
                           label: 'Video',
                           mode: CallMode.video,
                           iconAsset: HardSyncAssets.iconLaptopComputer,
-                          isLocked: !sub.canUseVideoCalls,
+                          isLocked: !canUseVideo,
                           badge: '6 CR/M',
                         ),
                       ],
@@ -919,12 +932,12 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                   ? null
                   : () async {
                       if (_selectedCallMode == CallMode.audio &&
-                          !sub.canUseAudioCalls) {
+                          !canUseAudio) {
                         _showUpgradeSheet(context, SubscriptionTier.pro);
                         return;
                       }
                       if (_selectedCallMode == CallMode.video &&
-                          !sub.canUseVideoCalls) {
+                          !canUseVideo) {
                         _showUpgradeSheet(context, SubscriptionTier.ultra);
                         return;
                       }
@@ -1161,8 +1174,8 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                 const SizedBox(height: 6),
                 Text(
                   requiredTier == SubscriptionTier.ultra
-                      ? 'Conversational video calls are exclusive to HardSync Ultra subscribers.'
-                      : 'Conversational audio calls are exclusive to HardSync Pro subscribers.',
+                      ? 'Video calls come with HardSync Ultra, or pay per minute with a credit pack.'
+                      : 'Audio calls come with HardSync Pro, or pay per minute with a credit pack.',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,

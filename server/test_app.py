@@ -17,6 +17,10 @@ class OnlineBackendTests(unittest.TestCase):
             'GEMINI_API_KEY': 'gemini',
             'GEMINI_LIVE_BRIDGE_URL': 'wss://live.example/api/gemini-live',
             'GEMINI_LIVE_SHARED_SECRET': 'shared',
+            # Pin explicitly so a developer's local .env (which may have this
+            # true for manual testing) can't silently skip the tier/credit
+            # gate tests below.
+            'REVENUECAT_USE_TEST_STORE': 'false',
         })
         self.env.start()
 
@@ -24,9 +28,9 @@ class OnlineBackendTests(unittest.TestCase):
         self.env.stop()
 
     def test_account_reads_supabase_and_never_local_storage(self):
-        with patch.object(app, 'supabase_rest', return_value=[{'id': 'user'}]) as rest:
+        with patch.object(app, 'supabase_rest', return_value=[{'id': 'user', 'credits': 25}]) as rest:
             result = app.account('00000000-0000-0000-0000-000000000001', 'jwt')
-        self.assertEqual(result, {'tier': 'free', 'testCalls': False})
+        self.assertEqual(result, {'tier': 'free', 'credits': 25, 'testCalls': False})
         self.assertIn('profiles?select=id', rest.call_args.args[0])
 
     def test_reservation_uses_atomic_rpc(self):
@@ -40,33 +44,37 @@ class OnlineBackendTests(unittest.TestCase):
 
     def test_paid_modes_require_verified_entitlement(self):
         with patch.object(app, 'expire_sessions'), patch.object(
-            app, 'account', return_value={'tier': 'free'}
+            app, 'account', return_value={'tier': 'free', 'credits': 0}
         ), patch.object(app, 'supabase_rpc') as rpc:
             with self.assertRaises(app.ApiError) as error:
                 app.reserve('user', 'audio', 'gemini_live', access_token='jwt')
         self.assertEqual(error.exception.status, 403)
         rpc.assert_not_called()
 
-    def test_pro_allows_audio_and_video(self):
+    def test_pro_allows_audio(self):
         with patch.object(app, 'expire_sessions'), patch.object(
-            app, 'account', return_value={'tier': 'pro'}
-        ), patch.object(app, 'supabase_rpc', side_effect=[
-            [{'id': 'audio-session', 'rate_per_minute': 1, 'max_seconds': 600}],
-            [{'id': 'video-session', 'rate_per_minute': 6, 'max_seconds': 300}],
+            app, 'account', return_value={'tier': 'pro', 'credits': 0}
+        ), patch.object(app, 'supabase_rpc', return_value=[
+            {'id': 'audio-session', 'rate_per_minute': 1, 'max_seconds': 600},
         ]) as rpc:
             self.assertEqual(
                 app.reserve('user', 'audio', 'gemini_live', access_token='jwt')['id'],
                 'audio-session',
             )
-            self.assertEqual(
-                app.reserve('user', 'video', 'gemini_live', access_token='jwt')['id'],
-                'video-session',
-            )
-        self.assertEqual(rpc.call_count, 2)
+        rpc.assert_called_once()
+
+    def test_pro_video_blocked_without_credits(self):
+        with patch.object(app, 'expire_sessions'), patch.object(
+            app, 'account', return_value={'tier': 'pro', 'credits': 0}
+        ), patch.object(app, 'supabase_rpc') as rpc:
+            with self.assertRaises(app.ApiError) as error:
+                app.reserve('user', 'video', 'gemini_live', access_token='jwt')
+        self.assertEqual(error.exception.status, 403)
+        rpc.assert_not_called()
 
     def test_ultra_allows_audio_and_video(self):
         with patch.object(app, 'expire_sessions'), patch.object(
-            app, 'account', return_value={'tier': 'ultra'}
+            app, 'account', return_value={'tier': 'ultra', 'credits': 0}
         ), patch.object(app, 'supabase_rpc', side_effect=[
             [{'id': 'audio-session', 'rate_per_minute': 1, 'max_seconds': 600}],
             [{'id': 'video-session', 'rate_per_minute': 6, 'max_seconds': 300}],
@@ -81,9 +89,35 @@ class OnlineBackendTests(unittest.TestCase):
             )
         self.assertEqual(rpc.call_count, 2)
 
+    def test_credit_pack_unlocks_audio_and_video_on_free_tier(self):
+        with patch.object(app, 'expire_sessions'), patch.object(
+            app, 'account', return_value={'tier': 'free', 'credits': 6}
+        ), patch.object(app, 'supabase_rpc', side_effect=[
+            [{'id': 'audio-session', 'rate_per_minute': 1, 'max_seconds': 360}],
+            [{'id': 'video-session', 'rate_per_minute': 6, 'max_seconds': 60}],
+        ]) as rpc:
+            self.assertEqual(
+                app.reserve('user', 'audio', 'gemini_live', access_token='jwt')['id'],
+                'audio-session',
+            )
+            self.assertEqual(
+                app.reserve('user', 'video', 'gemini_live', access_token='jwt')['id'],
+                'video-session',
+            )
+        self.assertEqual(rpc.call_count, 2)
+
+    def test_credit_pack_below_one_minute_still_blocked(self):
+        with patch.object(app, 'expire_sessions'), patch.object(
+            app, 'account', return_value={'tier': 'free', 'credits': 5}
+        ), patch.object(app, 'supabase_rpc') as rpc:
+            with self.assertRaises(app.ApiError) as error:
+                app.reserve('user', 'video', 'gemini_live', access_token='jwt')
+        self.assertEqual(error.exception.status, 403)
+        rpc.assert_not_called()
+
     def test_insufficient_credits_surfaces_as_payment_required(self):
         with patch.object(app, 'expire_sessions'), patch.object(
-            app, 'account', return_value={'tier': 'pro'}
+            app, 'account', return_value={'tier': 'pro', 'credits': 0}
         ), patch.object(app, 'supabase_rest', side_effect=app.ApiError(
             'Not enough practice credits for this call. Buy more credits or upgrade your plan.', 402,
         )):
