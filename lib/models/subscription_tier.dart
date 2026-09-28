@@ -82,10 +82,10 @@ enum SubscriptionTier {
     }
   }
 
-  bool get canUseAudioCalls =>
-      this == SubscriptionTier.pro || this == SubscriptionTier.ultra;
-  bool get canUseVideoCalls =>
-      this == SubscriptionTier.pro || this == SubscriptionTier.ultra;
+  // Audio and video are credit-metered for every tier, including Free — a
+  // user's credit balance is the real gate (see CreditService), not tier.
+  bool get canUseAudioCalls => true;
+  bool get canUseVideoCalls => true;
   bool get canUseLiveFaceAnalysis => this == SubscriptionTier.ultra;
 
   List<String> get features {
