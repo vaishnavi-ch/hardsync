@@ -148,8 +148,41 @@ function feedAvatarVideo(mime, base64) {
   });
 }
 
+// WebKit's Web Audio API has its own autoplay-unlock rule, separate from
+// (and stricter than) the WKWebViewConfiguration.mediaTypesRequiringUserAction
+// override the host already clears for us: an AudioContext often stays
+// 'suspended' until this *page* itself receives a real, trusted touch/click,
+// no matter how the page was opened. Since the Flutter "Begin Call" tap
+// happens outside this WebView, it doesn't count. This listener grabs the
+// very first genuine touch anywhere on the page (whatever the user taps
+// next - mute, end call, or just the screen) and uses it to retry resume().
+let audioUnlockReported = false;
+function tryResumeContextFromGesture() {
+  if (context && context.state !== 'running') {
+    context.resume().catch(() => {});
+  }
+}
+document.addEventListener('pointerdown', tryResumeContextFromGesture);
+document.addEventListener('touchstart', tryResumeContextFromGesture, {
+  passive: true,
+});
+
 function play(data) {
-  if (!context || context.state !== 'running') return;
+  if (!context) return;
+  if (context.state !== 'running') {
+    // Surface this once for diagnosability. Deliberately NOT sent as
+    // 'error' - the host treats that type as fatal and can abort a
+    // still-connecting call, but this is a recoverable, self-healing state
+    // (the next tap-anywhere resumes it), not a broken call.
+    if (!audioUnlockReported) {
+      audioUnlockReported = true;
+      send('audio-blocked', {
+        message: `Audio is connected but blocked from playing (AudioContext state: ${context.state}).`,
+      });
+    }
+    context.resume().catch(() => {});
+    return;
+  }
   const raw = Uint8Array.from(atob(data), (char) => char.charCodeAt(0));
   const pcm = new Int16Array(raw.buffer);
   const buffer = context.createBuffer(1, pcm.length, 24000);

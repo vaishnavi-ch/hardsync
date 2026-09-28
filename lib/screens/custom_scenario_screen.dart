@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -23,6 +25,7 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
   final SpeechToText _speech = SpeechToText();
   bool _speechAvailable = false;
   bool _isListening = false;
+  bool _stopRequested = false;
   String _dictationBase = '';
 
   // Selected Tensions
@@ -40,21 +43,34 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
   @override
   void dispose() {
     _contextController.dispose();
-    if (_isListening) _speech.stop();
+    if (_isListening) {
+      _stopRequested = true;
+      _speech.stop();
+    }
     super.dispose();
   }
 
   Future<void> _toggleDictation() async {
     if (_isListening) {
+      _stopRequested = true;
       await _speech.stop();
       if (mounted) setState(() => _isListening = false);
       return;
     }
     _speechAvailable = await _speech.initialize(
       onStatus: (status) {
-        if (status == 'done' || status == 'notListening') {
+        if (status != 'done' && status != 'notListening') return;
+        // The platform can end a listen session on its own - a thinking
+        // pause past pauseFor, or an OS session-length cap - even though the
+        // user never tapped the mic to stop. Unless they explicitly did,
+        // keep taking input by restarting from the transcript so far, so a
+        // pause never cuts the user off mid-thought.
+        if (_stopRequested || !mounted) {
           if (mounted) setState(() => _isListening = false);
+          return;
         }
+        _dictationBase = _contextController.text;
+        unawaited(_startListening());
       },
       onError: (_) {
         if (mounted) setState(() => _isListening = false);
@@ -71,26 +87,32 @@ class _CustomScenarioScreenState extends State<CustomScenarioScreen> {
       );
       return;
     }
+    _stopRequested = false;
     _dictationBase = _contextController.text;
     setState(() => _isListening = true);
-    await _speech.listen(
-      onResult: (result) {
-        final words = result.recognizedWords;
-        final combined = _dictationBase.isEmpty
-            ? words
-            : '$_dictationBase $words';
-        _contextController.value = TextEditingValue(
-          text: combined,
-          selection: TextSelection.collapsed(offset: combined.length),
-        );
-      },
-      listenOptions: SpeechListenOptions(
-        listenMode: ListenMode.dictation,
-        listenFor: const Duration(minutes: 2),
-        pauseFor: const Duration(seconds: 4),
-      ),
-    );
+    await _startListening();
   }
+
+  Future<void> _startListening() => _speech.listen(
+    onResult: (result) {
+      final words = result.recognizedWords;
+      final combined = _dictationBase.isEmpty
+          ? words
+          : '$_dictationBase $words';
+      _contextController.value = TextEditingValue(
+        text: combined,
+        selection: TextSelection.collapsed(offset: combined.length),
+      );
+    },
+    listenOptions: SpeechListenOptions(
+      listenMode: ListenMode.dictation,
+      // These are just a smoothness buffer, not the actual stop mechanism -
+      // the onStatus handler above restarts the session regardless of these
+      // limits, so the only way to actually stop is the explicit mic tap.
+      listenFor: const Duration(minutes: 10),
+      pauseFor: const Duration(seconds: 30),
+    ),
+  );
 
   void _submitScenario() => _generateScenarioWithAi();
 

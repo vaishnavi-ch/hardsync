@@ -120,36 +120,37 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
           ),
         ),
         // The Flutter avatar/name/status overlay below is the entire visual
-        // for an audio call — there's no video track for this WebView to
-        // show, so it stays invisible and non-interactive throughout rather
-        // than being exposed (with its own tiny local-camera thumbnail and
-        // no Flutter chrome) while connecting.
+        // for an audio call, so this WebView stays invisible. It must stay
+        // TAPPABLE though (not IgnorePointer'd): the Gemini Live audio path
+        // plays the AI's voice through the raw Web Audio API, which WebKit
+        // only unlocks after a genuine touch lands inside this page itself —
+        // a Flutter button tap elsewhere doesn't count. Any tap that isn't
+        // claimed by a control in the overlay above (avatar, blank space,
+        // etc.) falls through to here and satisfies that requirement.
         if (sim.geminiLiveUrl != null && !ended)
           Positioned.fill(
-            child: IgnorePointer(
-              child: Opacity(
-                opacity: 0,
-                child: GeminiLiveEmbedView(
-                  conversationUrl: sim.geminiLiveUrl!,
-                  sessionId: sim.currentSessionId ?? '',
-                  mode: sim.callMode.name,
-                  controller: _callController,
-                  realtimeProvider: sim.realtimeProvider,
-                  microphoneEnabled: settings.micEnabled,
-                  cameraEnabled: false,
-                  personaId: sim.activeCounterpart.id,
-                  personaName: sim.activeCounterpart.name,
-                  onEvent: (event) {
-                    if (event['type'] == 'user-action-required') {
-                      if (mounted) setState(() => _needsAudioTap = true);
-                    } else {
-                      if (event['type'] == 'connected' && _needsAudioTap) {
-                        setState(() => _needsAudioTap = false);
-                      }
-                      sim.providerEvent(event);
+            child: Opacity(
+              opacity: 0,
+              child: GeminiLiveEmbedView(
+                conversationUrl: sim.geminiLiveUrl!,
+                sessionId: sim.currentSessionId ?? '',
+                mode: sim.callMode.name,
+                controller: _callController,
+                realtimeProvider: sim.realtimeProvider,
+                microphoneEnabled: settings.micEnabled,
+                cameraEnabled: false,
+                personaId: sim.activeCounterpart.id,
+                personaName: sim.activeCounterpart.name,
+                onEvent: (event) {
+                  if (event['type'] == 'user-action-required') {
+                    if (mounted) setState(() => _needsAudioTap = true);
+                  } else {
+                    if (event['type'] == 'connected' && _needsAudioTap) {
+                      setState(() => _needsAudioTap = false);
                     }
-                  },
-                ),
+                    sim.providerEvent(event);
+                  }
+                },
               ),
             ),
           ),
