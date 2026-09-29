@@ -268,8 +268,25 @@ class _AuthFormScreenState extends State<AuthFormScreen> {
       _hiddenConfirm = true,
       _remember = true,
       _loading = false;
+
+  // Apple/Google sign-in succeed without going through _submit, so close this
+  // pushed form as soon as a session exists and let the launch gate show the
+  // avatar picker.
+  void _closeWhenSignedIn() {
+    if (mounted && !_loading && SupabaseService.instance.isAuthenticated) {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    SupabaseService.instance.addListener(_closeWhenSignedIn);
+  }
+
   @override
   void dispose() {
+    SupabaseService.instance.removeListener(_closeWhenSignedIn);
     _name.dispose();
     _email.dispose();
     _password.dispose();
