@@ -99,17 +99,25 @@ class _GeminiLiveEmbedViewState extends State<GeminiLiveEmbedView> {
       return;
     }
 
-    final granted = await _permissionChannel.invokeMethod<bool>('request', {
-      'microphone': hasMic,
-      'camera': hasCamera,
-    });
+    // A thrown channel error (e.g. a request already in flight) must still
+    // resolve the WebView's request, or getUserMedia hangs with no prompt.
+    bool? granted;
+    try {
+      granted = await _permissionChannel.invokeMethod<bool>('request', {
+        'microphone': hasMic,
+        'camera': hasCamera,
+      });
+    } catch (_) {
+      granted = false;
+    }
     if (granted == true) {
       await request.grant();
     } else {
       await request.deny();
       widget.onEvent?.call({
         'type': 'user-action-required',
-        'message': 'Allow microphone and camera access to join the call.',
+        'message':
+            'Allow microphone${hasCamera ? ' and camera' : ''} access in Settings to join the call.',
       });
     }
   }

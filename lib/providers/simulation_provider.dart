@@ -212,11 +212,13 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
         await connected();
         _append(false, activeCounterpart.pushbackPhrases.first);
       } else {
-        // Audio/video: start a 20-second watchdog so the call doesn't stay
-        // stuck at 'Connecting...' forever if the bridge never responds.
+        // Audio/video: start a watchdog so the call doesn't stay stuck at
+        // 'Connecting...' forever if the bridge never responds. 60s, not 20s:
+        // the Render-hosted bridge sleeps when idle and a cold start was
+        // measured at ~33s, which the old 20s limit reported as a failure.
         _connectWatchdog?.cancel();
         final watchdogGen = generation;
-        _connectWatchdog = Timer(const Duration(seconds: 20), () {
+        _connectWatchdog = Timer(const Duration(seconds: 60), () {
           if (_generation == watchdogGen && _state == CallState.connecting) {
             error = 'Could not reach Gemini Live. Check your internet and try again.';
             _state = CallState.ended;

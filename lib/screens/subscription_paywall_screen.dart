@@ -51,12 +51,20 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
     if (mounted) setState(() => _offerings = offerings);
   }
 
-  Package? _packageByKeyword(List<String> keywords) {
+  // Matches on both the package id and the store product id, by tier name
+  // only (never generic words like "monthly"/"annual", which every tier's
+  // package can contain and which made Pro resolve to the Ultra package).
+  Package? _packageByKeyword(List<String> keywords, {String? exclude}) {
     final packages =
         _offerings?.current?.availablePackages ?? const <Package>[];
-    for (final package in packages) {
-      final id = package.identifier.toLowerCase();
-      if (keywords.any(id.contains)) return package;
+    for (final keyword in keywords) {
+      for (final package in packages) {
+        final id =
+            '${package.identifier} ${package.storeProduct.identifier}'
+                .toLowerCase();
+        if (exclude != null && id.contains(exclude)) continue;
+        if (id.contains(keyword)) return package;
+      }
     }
     return null;
   }
@@ -77,9 +85,9 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
     // current offering is identifiable as this tier, show "See store price"
     // instead of a confidently wrong number.
     if (tier == SubscriptionTier.ultra) {
-      return _packageByKeyword(['ultra', 'annual']);
+      return _packageByKeyword(['ultra']);
     }
-    return _packageByKeyword(['pro', 'monthly']);
+    return _packageByKeyword(['pro'], exclude: 'ultra');
   }
 
   String _storePrice(SubscriptionTier tier) =>
@@ -1736,10 +1744,20 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
       final success = await RevenueCatService.instance.purchasePackage(
         packageToBuy,
       );
-      if (success) {
-        // The server verifies the RevenueCat entitlement. A client-authored
-        // tier mutation must never unlock paid access.
+      // A fresh purchase (especially a Pro -> Ultra upgrade in the same
+      // subscription group) can take a few seconds to show up as an active
+      // entitlement in RevenueCat and on the server, so re-check a few times
+      // before reporting a missing entitlement. The server still decides the
+      // tier; a client-authored change must never unlock paid access.
+      await subProvider.refresh();
+      for (var attempt = 0;
+          attempt < 4 && subProvider.currentTier.index < _selectedTier.index;
+          attempt++) {
+        await Future<void>.delayed(const Duration(seconds: 2));
+        await RevenueCatService.instance.refreshCustomerInfo();
         await subProvider.refresh();
+      }
+      if (success || subProvider.currentTier.index >= _selectedTier.index) {
         if (mounted) {
           setState(() {
             _isProcessing = false;
