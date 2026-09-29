@@ -365,7 +365,12 @@ def generate(owner, data, access_token):
                                    'maxOutputTokens': min(int(generation_config.get('maxOutputTokens', 512)), 1024)}
     primary = ENV.get('GEMINI_TEXT_MODEL', 'gemini-3.1-flash-lite')
     fallback = ENV.get('GEMINI_TEXT_FALLBACK_MODEL', 'gemini-3.6-flash')
-    result, _ = gemini_generate(payload, key, (primary, fallback), timeout=20, attempts=1)
+    # Gemini 3.x models intermittently return 503 ("high demand"); keep a
+    # stable "-latest" alias last so a spike on one model never blocks text.
+    result, _ = gemini_generate(
+        payload, key,
+        (primary, fallback, 'gemini-flash-lite-latest', 'gemini-3.5-flash-lite'),
+        timeout=20, attempts=2)
     return result
 
 
@@ -420,7 +425,8 @@ Summary and takeaway must be grounded in the cited passages. No numeric performa
                  'contents':[{'role':'user','parts':[{'text':json.dumps({'title':report.get('title'),'goals':report.get('goals',[]),'transcript':turns})}]}],
                  'generationConfig':{'responseMimeType':'application/json','maxOutputTokens':4096,'temperature':0.2}}
         analysis_models=(ENV.get('GEMINI_ANALYSIS_MODEL','gemini-3.6-flash'),
-                         ENV.get('GEMINI_ANALYSIS_FALLBACK_MODEL','gemini-3.1-flash-lite'))
+                         ENV.get('GEMINI_ANALYSIS_FALLBACK_MODEL','gemini-3.1-flash-lite'),
+                         'gemini-flash-lite-latest')
         result, model=gemini_generate(payload,key,analysis_models,timeout=90,attempts=3)
         try:
             value=json.loads(''.join(p.get('text','') for p in result['candidates'][0]['content']['parts'] if not p.get('thought')))
