@@ -1071,8 +1071,6 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                     ),
                     const SizedBox(height: 18),
                     _buildComparisonMatrix(),
-                    const SizedBox(height: 18),
-                    _buildTestimonialCard(),
                   ],
                 ),
               ),
@@ -1446,59 +1444,6 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildTestimonialCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.85),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFECE7DE)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(22),
-            child: Image.asset(
-              'assets/avatars/split/flutter_256/avatar_01.png',
-              width: 44,
-              height: 44,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-                  const CircleAvatar(radius: 22, child: Icon(Icons.person)),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '\u201cPracticing on video calls with Ultra made my real conversations feel much easier.\u201d',
-                  style: GoogleFonts.newsreader(
-                    fontSize: 13,
-                    fontStyle: FontStyle.italic,
-                    color: HardSyncColors.ink,
-                    height: 1.35,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '\u2014 Priya S. \u2022 Engineering Director',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: HardSyncColors.ink,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 

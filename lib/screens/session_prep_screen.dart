@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/scenario.dart';
 import '../models/subscription_tier.dart';
 import '../models/user_persona.dart';
@@ -21,6 +22,50 @@ class SessionPrepScreen extends StatefulWidget {
 }
 
 class _SessionPrepScreenState extends State<SessionPrepScreen> {
+  static const _aiConsentKey = 'ai_data_consent_v1';
+
+  /// Guideline 5.1.1 / 5.1.2(i): tell the user who receives their data and get
+  /// permission before the first session. The choice is remembered.
+  Future<bool> _confirmAiDataConsent(BuildContext context) async {
+    SharedPreferences? prefs;
+    try {
+      prefs = await SharedPreferences.getInstance();
+      if (prefs.getBool(_aiConsentKey) == true) return true;
+    } catch (_) {}
+    if (!context.mounted) return false;
+    final agreed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Share your voice and video?'),
+        content: const Text(
+          'To power the AI counterpart, your session audio, video (video '
+          'calls only) and typed messages are sent to Google Gemini (text '
+          'and voice) or Tavus and Daily (video avatar), third-party AI '
+          'providers. HardSync does not store call audio or video. See our Privacy Policy for details.\n\n'
+          'Do you agree to share this data with these providers?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Agree & Continue'),
+          ),
+        ],
+      ),
+    );
+    if (agreed == true) {
+      try {
+        await prefs?.setBool(_aiConsentKey, true);
+      } catch (_) {}
+      return true;
+    }
+    return false;
+  }
+
   late List<bool> _talkingPointsChecked;
   late List<String> _talkingPoints;
 
@@ -868,6 +913,9 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                         _showUpgradeSheet(context, SubscriptionTier.ultra);
                         return;
                       }
+
+                      if (!await _confirmAiDataConsent(context)) return;
+                      if (!context.mounted) return;
 
                       setState(() => _starting = true);
                       await simulation.startCall(

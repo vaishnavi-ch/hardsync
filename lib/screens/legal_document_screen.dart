@@ -100,7 +100,7 @@ class LegalDocumentScreen extends StatelessWidget {
 const _privacySections = <(String, String)>[
   (
     'What HardSync collects',
-    'We process account details, profile choices, course progress, practice text and transcripts, session results, subscription status, and technical diagnostics. During a live voice or video practice, your microphone or camera stream is sent to the call provider so the session can work. That stream is never recorded or stored. Session transcripts and reports may be saved to your account.',
+    'We process account details, profile choices, course progress, practice text and transcripts, session results, subscription status, and technical diagnostics. During a live voice or video practice, your microphone or camera stream is sent to the call provider so the session can work. HardSync never records or stores that stream. Session transcripts and reports may be saved to your account.',
   ),
   (
     'How information is used',
@@ -108,7 +108,7 @@ const _privacySections = <(String, String)>[
   ),
   (
     'Service providers',
-    'HardSync uses Supabase for authentication and application data, Google Gemini for text practice, live voice, and analysis, Tavus (running on Daily) for live video avatar calls, and RevenueCat for subscriptions. Live call media is processed by Google Gemini or Tavus/Daily, depending on the mode you choose, under their own terms and privacy policies.',
+    'HardSync uses Supabase for authentication and application data, Google Gemini for text practice, live voice, and analysis, Tavus (running on Daily) for live video avatar calls, and RevenueCat for subscriptions. Live call media is processed by Google Gemini or Tavus/Daily, depending on the mode you choose, under their own terms and privacy policies. HardSync asks for your permission before your first session shares data with these providers. Tavus, which runs speech recognition for video calls, may keep a call transcript under its own policy.',
   ),
   (
     'Microphone and camera',
