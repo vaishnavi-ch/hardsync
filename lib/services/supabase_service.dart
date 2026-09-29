@@ -332,6 +332,26 @@ class SupabaseService extends ChangeNotifier {
       // later revoke the Sign in with Apple grant (guideline 5.1.1(v)).
       // Never blocks or fails the sign-in that already succeeded above.
       unawaited(_linkAppleToken(credential.authorizationCode));
+      // Apple only returns the user's name on the very first authorization
+      // (and never inside the identity token), so save it now or the account
+      // is shown as "Guest".
+      final appleName = [credential.givenName, credential.familyName]
+          .whereType<String>()
+          .map((part) => part.trim())
+          .where((part) => part.isNotEmpty)
+          .join(' ');
+      final hasName =
+          (client!.auth.currentUser?.userMetadata?['full_name'] as String?)
+              ?.trim()
+              .isNotEmpty ??
+          false;
+      if (appleName.isNotEmpty && !hasName) {
+        try {
+          await updateOwnProfile({'full_name': appleName});
+        } catch (e) {
+          debugPrint('[SupabaseService] Saving Apple name failed: $e');
+        }
+      }
       notifyListeners();
       return response.session != null;
     } catch (e) {
