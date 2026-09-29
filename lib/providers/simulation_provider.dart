@@ -89,12 +89,11 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
       _state == CallState.ended && _sid == null && _scenario != null;
   String? geminiLiveUrl;
   String realtimeProvider = 'gemini_live';
-  int rateCreditsPerMinute = 0;
   int? maxSeconds;
-  bool ranOutOfCredits = false;
+  bool hitTimeLimit = false;
   int? get secondsRemaining =>
       maxSeconds == null ? null : maxSeconds! - _duration.inSeconds;
-  bool get isLowOnCredits {
+  bool get isNearTimeLimit {
     final remaining = secondsRemaining;
     return remaining != null && remaining <= 30 && remaining > 0;
   }
@@ -121,8 +120,15 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
   bool get isTextOnly => _mode == CallMode.text;
   bool get isGeneratingDebrief => _ending;
   bool get isBusy => _busy;
-  String get formattedTimer =>
-      '${_duration.inMinutes.toString().padLeft(2, '0')}:${(_duration.inSeconds % 60).toString().padLeft(2, '0')}';
+  // Audio/video sessions count down from their time limit (10:00); text
+  // sessions have no limit and count up.
+  String get formattedTimer {
+    final remaining = secondsRemaining;
+    final shown = remaining == null
+        ? _duration
+        : Duration(seconds: remaining < 0 ? 0 : remaining);
+    return '${shown.inMinutes.toString().padLeft(2, '0')}:${(shown.inSeconds % 60).toString().padLeft(2, '0')}';
+  }
   void selectScenario(Scenario s) {
     _scenario = s;
     notifyListeners();
@@ -156,9 +162,8 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
     savedSessionId = null;
     geminiLiveUrl = null;
     realtimeProvider = 'gemini_live';
-    rateCreditsPerMinute = 0;
     maxSeconds = null;
-    ranOutOfCredits = false;
+    hitTimeLimit = false;
     liveConfidenceScore = null;
     liveExpression = null;
     liveEyeContact = null;
@@ -200,9 +205,6 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
       realtimeProvider = result['realtimeProvider'] is String
           ? result['realtimeProvider'] as String
           : 'gemini_live';
-      rateCreditsPerMinute = result['rateCreditsPerMinute'] is int
-          ? result['rateCreditsPerMinute'] as int
-          : 0;
       maxSeconds = result['maxSeconds'] is int
           ? result['maxSeconds'] as int
           : null;
@@ -270,8 +272,8 @@ class SimulationProvider with ChangeNotifier, WidgetsBindingObserver {
         final remaining = secondsRemaining;
         if (remaining != null && remaining <= 0) {
           // endCall() clears `error` on its success path, so the reason this
-          // call ended is tracked separately via ranOutOfCredits for the UI.
-          ranOutOfCredits = true;
+          // call ended is tracked separately via hitTimeLimit for the UI.
+          hitTimeLimit = true;
           unawaited(endCall());
           return;
         }

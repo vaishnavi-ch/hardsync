@@ -168,11 +168,11 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                     ),
                     Expanded(
                       child: Text(
-                        sim.isLowOnCredits
-                            ? 'Ending in ${sim.secondsRemaining}s — out of credits'
+                        sim.isNearTimeLimit
+                            ? 'Ending in ${sim.secondsRemaining}s — 10 min limit'
                             : 'Voice call',
                         textAlign: TextAlign.center,
-                        style: sim.isLowOnCredits
+                        style: sim.isNearTimeLimit
                             ? const TextStyle(color: Color(0xFFC75438))
                             : null,
                       ),
@@ -839,7 +839,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                             ],
                           ),
                         ),
-                        if (sim.isLowOnCredits) ...[
+                        if (sim.isNearTimeLimit) ...[
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -851,7 +851,7 @@ class _LiveCallScreenState extends State<LiveCallScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
-                              'Ending in ${sim.secondsRemaining}s — out of credits',
+                              'Ending in ${sim.secondsRemaining}s — 10 min limit',
                               style: GoogleFonts.plusJakartaSans(
                                 color: Colors.white,
                                 fontSize: 11,

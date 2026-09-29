@@ -51,7 +51,7 @@ class SubscriptionProvider with ChangeNotifier {
         (t) => t.name == data['tier'],
         orElse: () => SubscriptionTier.free,
       );
-      // A non-subscription purchase (e.g. a credit pack) also notifies this
+      // A non-subscription purchase (e.g. a consumable) also notifies this
       // provider, since it shares RevenueCat's customer-info listener with
       // subscriptions. That purchase never touches the pro/ultra entitlement,
       // so if the server suddenly reports a lower tier than what RevenueCat's

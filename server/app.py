@@ -35,8 +35,8 @@ ENV.setdefault('SUPABASE_URL', ENV.get('NEXT_PUBLIC_SUPABASE_URL', ''))
 ENV.setdefault('SUPABASE_ANON_KEY', ENV.get('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY') or ENV.get('SUPABASE_PUBLISHABLE_KEY') or ENV.get('NEXT_PUBLIC_SUPABASE_ANON_KEY', ''))
 LOCK = threading.RLock()
 VALID_MODES = {'text', 'audio', 'video'}
-# Must match the rate_per_minute cases in reserve_practice_session (SQL).
-RATE_PER_MINUTE = {'audio': 1, 'video': 6}
+# Hard cap for audio/video sessions; mirrors reserve_practice_session (SQL).
+MAX_CALL_SECONDS = 600
 # Relationship-dynamic hints offered in the custom-scenario wizard. These no
 # longer pin the generated counterpart to one of the 5 curated personas --
 # they just bias tone/defensiveness in the generation prompt below.
@@ -161,7 +161,6 @@ def supabase_rest(path, access_token=None, data=None, method=None, prefer=None):
             'Session generation limit reached': (429,'Session generation limit reached.'),
             'End the session before saving its report': (409,'End the session before saving its report.'),
             'Saved transcript is immutable': (409,'Saved transcript is immutable.'),
-            'Insufficient credits': (402,'Not enough practice credits for this call. Buy more credits or upgrade your plan.'),
         }
         print(f'[DEBUG] supabase_rest HTTPError url={url}/rest/v1/{path} code={error.code} details={details!r}', flush=True)
         for phrase,(status,message) in known.items():
@@ -177,29 +176,6 @@ def supabase_rpc(name, payload, access_token):
     return supabase_rest('rpc/' + name, access_token, payload, 'POST')
 
 
-def supabase_rpc_service(name, payload):
-    """Call a service-role-only RPC (credit grants). Never reachable with a
-    user's own JWT -- only for server-to-server calls like the billing webhook."""
-    key = ENV.get('SUPABASE_SERVICE_ROLE_KEY', '')
-    url = ENV.get('SUPABASE_URL', '').rstrip('/')
-    if not key or not url:
-        raise ApiError('Supabase service role is not configured.', 503)
-    request = Request(url + '/rest/v1/rpc/' + name,
-        data=json.dumps(payload).encode(),
-        headers={'Content-Type': 'application/json', 'apikey': key, 'Authorization': 'Bearer ' + key},
-        method='POST')
-    try:
-        with urlopen(request, timeout=25) as response:
-            raw = response.read()
-            return json.loads(raw) if raw else None
-    except HTTPError as error:
-        print(f'[DEBUG] supabase_rpc_service HTTPError name={name} code={error.code}', flush=True)
-        raise ApiError('Cloud data service is unavailable. Please retry.', 502, {'retryable': True}) from None
-    except (OSError, ValueError) as e:
-        print(f'[DEBUG] supabase_rpc_service {type(e).__name__}: {e!r}', flush=True)
-        raise ApiError('Cloud data service is unavailable. Please retry.', 502, {'retryable': True}) from None
-
-
 def first_row(value, missing='Record not found.'):
     if not isinstance(value, list) or not value:
         raise ApiError(missing, 404)
@@ -207,9 +183,8 @@ def first_row(value, missing='Record not found.'):
 
 def account(owner, access_token):
     row = first_row(supabase_rest(
-        'profiles?select=id,credits&id=eq.' + quote(owner, safe=''), access_token),
+        'profiles?select=id&id=eq.' + quote(owner, safe=''), access_token),
         'Profile not found. Sign out and create your account again.')
-    credits = row.get('credits') or 0
     tier = 'free'
     # Entitlements come from RevenueCat's server API, never client preferences.
     if ENV.get('REVENUECAT_SECRET_KEY'):
@@ -229,47 +204,7 @@ def account(owner, access_token):
                 if expiry is None or datetime.fromisoformat(expiry.replace('Z', '+00:00')) > datetime.now(timezone.utc):
                     tier = entitlement_tier
                     break
-    return {'tier': tier, 'credits': credits, 'testCalls': False}
-
-def apply_revenuecat_webhook(data, authorization):
-    """Grant practice credits from RevenueCat Virtual Currency transactions.
-
-    Configure a 'CR' virtual currency in the RevenueCat dashboard with the
-    right grant amount per product (monthly Pro/Ultra renewal, each credit
-    pack); this just applies whatever RevenueCat already computed, applied
-    exactly once per event id via apply_credit_event's idempotency check.
-    Any other event type is acknowledged but ignored.
-    """
-    expected = ENV.get('REVENUECAT_WEBHOOK_AUTHORIZATION', '').strip()
-    if not expected or not hmac.compare_digest(authorization or '', expected):
-        raise ApiError('Invalid webhook authorization.', 401)
-    if not isinstance(data, dict) or data.get('api_version') != '1.0':
-        raise ApiError('Invalid RevenueCat webhook.')
-    event = data.get('event')
-    if not isinstance(event, dict) or event.get('type') != 'VIRTUAL_CURRENCY_TRANSACTION':
-        return {'received': True, 'applied': False}
-    event_id = str(event.get('id', '')).strip()
-    owner = str(event.get('app_user_id', '')).strip()
-    adjustments = event.get('adjustments')
-    if not event_id or not owner or not isinstance(adjustments, list):
-        return {'received': True, 'applied': False}
-    amount = 0
-    for adjustment in adjustments:
-        if not isinstance(adjustment, dict):
-            continue
-        if (adjustment.get('currency') or {}).get('code') != 'CR':
-            continue
-        try:
-            amount += int(adjustment.get('amount', 0))
-        except (TypeError, ValueError):
-            continue
-    if amount == 0:
-        return {'received': True, 'applied': False}
-    balance = supabase_rpc_service('apply_credit_event', {
-        'p_user_id': owner, 'p_event_id': event_id, 'p_amount': amount,
-        'p_reason': 'revenuecat_virtual_currency',
-    })
-    return {'received': True, 'applied': True, 'balance': balance}
+    return {'tier': tier, 'testCalls': False}
 
 def session_for(owner, sid, access_token):
     row = first_row(supabase_rest(
@@ -298,15 +233,11 @@ def reserve(owner, mode, provider='gemini_live', context='', scenario_id='', acc
     if not use_test_store and mode in ('audio', 'video'):
         acc = account(owner, access_token)
         # Audio requires an active Pro or Ultra subscription; video is an
-        # Ultra-exclusive perk even for Pro subscribers. Either gate can also
-        # be paid past with a purchased credit pack: if the balance covers at
-        # least one minute at this mode's rate, let reserve_practice_session
-        # (Postgres) meter it from there instead of blocking on tier alone.
-        tier_ok = acc['tier'] == 'ultra' or (mode == 'audio' and acc['tier'] == 'pro')
-        if not tier_ok and acc['credits'] < RATE_PER_MINUTE[mode]:
-            if mode == 'video':
-                raise ApiError('Video calls require HardSync Ultra, or a credit pack to pay per minute.', 403)
-            raise ApiError('An active subscription or a credit pack is required for this call mode.', 403)
+        # Ultra-exclusive perk even for Pro subscribers.
+        if mode == 'video' and acc['tier'] != 'ultra':
+            raise ApiError('Video calls require HardSync Ultra.', 403)
+        if mode == 'audio' and acc['tier'] not in ('pro', 'ultra'):
+            raise ApiError('Audio calls require HardSync Pro or Ultra.', 403)
     result = supabase_rpc('reserve_practice_session', {
         'p_scenario_id': scenario_id, 'p_mode': mode, 'p_provider': provider,
         'p_context': context[:6000], 'p_voice_name': voice_name[:64], 'p_avatar_name': avatar_name[:64],
@@ -316,8 +247,7 @@ def reserve(owner, mode, provider='gemini_live', context='', scenario_id='', acc
         raise ApiError('Could not reserve the session.', 502)
     return {
         'id': str(row['id']),
-        'rateCreditsPerMinute': row.get('rate_per_minute', 0),
-        'maxSeconds': row.get('max_seconds'),
+        'maxSeconds': row.get('max_seconds') or (MAX_CALL_SECONDS if mode != 'text' else None),
     }
 
 def cancel_unconnected_session(owner, sid, access_token):
@@ -441,7 +371,6 @@ def create_session(owner, data, access_token):
     try:
         result = {
             'id': sid, 'mode': mode,
-            'rateCreditsPerMinute': reservation['rateCreditsPerMinute'],
             'maxSeconds': reservation['maxSeconds'],
         }
         if mode == 'video':
@@ -806,9 +735,6 @@ class Handler(SimpleHTTPRequestHandler):
             data = json.loads(raw_body)
             if not isinstance(data, dict):
                 raise ApiError('JSON object required.')
-            if self.path == '/api/webhooks/revenuecat':
-                return self.respond(apply_revenuecat_webhook(
-                    data, self.headers.get('Authorization', '')))
             owner = self.owner()
             if self.path == '/api/account/tier':
                 new_tier = str(data.get('tier', 'free')).lower()

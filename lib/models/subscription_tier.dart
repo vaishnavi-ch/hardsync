@@ -49,17 +49,6 @@ enum SubscriptionTier {
     }
   }
 
-  int get monthlyCredits {
-    switch (this) {
-      case SubscriptionTier.free:
-        return 10;
-      case SubscriptionTier.pro:
-        return 250;
-      case SubscriptionTier.ultra:
-        return 600;
-    }
-  }
-
   Color get primaryColor {
     switch (this) {
       case SubscriptionTier.free:
@@ -93,22 +82,21 @@ enum SubscriptionTier {
         return const [
           'Practice by Text Chat',
           'All Practice Scenarios',
-          '10 Free Practice Credits',
+          'Unlimited Text Practice',
           'Basic Session Report',
         ];
       case SubscriptionTier.pro:
         return const [
-          '⚡ 250 Monthly Practice Credits',
           '💬 Unlimited Text Practice',
-          '🎙️ Live Voice Practice Calls (1 credit/min)',
+          '🎙️ Live Voice Practice Calls (up to 10 min each)',
           '📊 Live Speaking Feedback (Speed, Fillers, Hedging)',
           '🎯 50+ Workplace Scenarios',
           '🛠️ Custom Scenario Creator',
         ];
       case SubscriptionTier.ultra:
         return const [
-          '⚡ 600 Monthly Practice Credits (~2.5x more practice time)',
-          '📹 Video Calls with AI',
+          '🎙️ Live Voice Practice Calls (up to 10 min each)',
+          '📹 Video Calls with AI (up to 10 min each)',
           '🚀 Priority Access for instant video response',
           '🛠️ Unlimited Custom Meeting Scenarios',
           '🏆 Full Presence Check-Up',

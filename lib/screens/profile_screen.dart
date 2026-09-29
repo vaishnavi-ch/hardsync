@@ -122,7 +122,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final role = _profile?['leadership_role'] as String? ?? 'Engineering Leader';
     final email = SupabaseService.instance.currentUserEmail;
     final streak = (_profile?['streak_days'] as num?)?.toInt() ?? 1;
-    final credits = (_profile?['credits'] as num?)?.toInt() ?? 0;
     final avatarAsset = _profile?['avatar_url'] as String? ??
         SupabaseService.instance.cachedAvatarUrl ??
         HardSyncAssets.avatarCurrentUser;
@@ -230,14 +229,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // --- TELEMETRY METRIC GRID ---
                       _buildMetricGrid(
                         streak: streak,
-                        credits: credits,
                         sessionCount: _sessionCount,
                         tier: tier,
                       ),
                       const SizedBox(height: 24),
 
                       // --- SECTION 2: SUBSCRIPTION & BILLING ---
-                      _buildSectionHeader('Membership & Credits'),
+                      _buildSectionHeader('Membership'),
                       _buildCard([
                         _buildActionTile(
                           icon: Icons.workspace_premium_outlined,
@@ -621,7 +619,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // --- TELEMETRY METRIC GRID ---
   Widget _buildMetricGrid({
     required int streak,
-    required int credits,
     required int sessionCount,
     required SubscriptionTier tier,
   }) {
@@ -633,21 +630,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             value: '$streak d',
             label: 'Practice Streak',
             color: const Color(0xFFF97316),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _buildMetricTile(
-            emoji: '⚡',
-            value: '$credits',
-            label: 'AI Credits',
-            color: const Color(0xFFEAB308),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const SubscriptionPaywallScreen(),
-              ),
-            ),
           ),
         ),
         const SizedBox(width: 8),
@@ -1185,8 +1167,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'a': 'Never. Your voice and video are processed live, in the moment, and are never saved or shared.'
       },
       {
-        'q': 'How do practice credits work?',
-        'a': 'Each practice session uses 1 credit. New accounts get some free credits, and Pro/Ultra members get unlimited sessions.'
+        'q': 'How do plans and call limits work?',
+        'a': 'Text practice is free. Pro unlocks live audio calls and Ultra adds video calls. Each audio or video session lasts up to 10 minutes.'
       },
       {
         'q': 'Can I create my own personalized scenarios?',
