@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../config/env_config.dart';
 import '../models/subscription_tier.dart';
 import '../providers/subscription_provider.dart';
-import '../services/revenuecat_service.dart';
 import '../services/supabase_service.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
@@ -258,8 +257,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _buildDivider(),
                         _buildActionTile(
                           icon: Icons.credit_card_outlined,
-                          title: 'Manage Subscription & Store Receipt',
-                          subtitle: 'View active tier, renewal date, or receipts',
+                          title: 'Manage or Cancel Subscription',
+                          subtitle: 'Cancel, view renewal date, or get receipts',
                           trailingIcon: Icons.arrow_forward_ios_rounded,
                           onTap: _manageSubscription,
                         ),
@@ -1386,17 +1385,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // --- MANAGE SUBSCRIPTION ---
   Future<void> _manageSubscription() async {
-    if (!kIsWeb && RevenueCatService.instance.isConfigured) {
+    final isIos = defaultTargetPlatform == TargetPlatform.iOS;
+    final isAndroid = defaultTargetPlatform == TargetPlatform.android;
+    if (!kIsWeb && (isIos || isAndroid)) {
+      final uri = Uri.parse(
+        isIos
+            ? 'https://apps.apple.com/account/subscriptions'
+            : 'https://play.google.com/store/account/subscriptions',
+      );
       try {
-        await RevenueCatUI.presentCustomerCenter();
-        return;
+        if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
       } catch (_) {}
     }
-    final platformStore = defaultTargetPlatform == TargetPlatform.iOS
-        ? 'Apple ID'
-        : (defaultTargetPlatform == TargetPlatform.android ? 'Google Play' : 'account');
     _showNotice(
-      'Subscriptions are managed directly in your $platformStore account settings.',
+      isIos
+          ? 'To cancel: open Settings › [your name] › Subscriptions › HardSync, then tap Cancel Subscription.'
+          : 'To cancel: open Google Play › Profile › Payments & subscriptions › Subscriptions › HardSync, then tap Cancel.',
     );
   }
 
