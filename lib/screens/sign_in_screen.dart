@@ -262,13 +262,18 @@ class AuthFormScreen extends StatefulWidget {
 class _AuthFormScreenState extends State<AuthFormScreen> {
   final _name = TextEditingController(),
       _email = TextEditingController(),
-      _password = TextEditingController();
-  bool _hidden = true, _remember = true, _loading = false;
+      _password = TextEditingController(),
+      _confirm = TextEditingController();
+  bool _hidden = true,
+      _hiddenConfirm = true,
+      _remember = true,
+      _loading = false;
   @override
   void dispose() {
     _name.dispose();
     _email.dispose();
     _password.dispose();
+    _confirm.dispose();
     super.dispose();
   }
 
@@ -339,6 +344,26 @@ class _AuthFormScreenState extends State<AuthFormScreen> {
               ),
             ),
           ),
+          if (widget.signUp) ...[
+            const SizedBox(height: 11),
+            _Field(
+              controller: _confirm,
+              hint: 'Confirm password',
+              icon: Icons.lock_outline,
+              obscure: _hiddenConfirm,
+              suffix: IconButton(
+                onPressed: () =>
+                    setState(() => _hiddenConfirm = !_hiddenConfirm),
+                icon: Icon(
+                  _hiddenConfirm
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  size: 19,
+                  color: const Color(0xFF565C89),
+                ),
+              ),
+            ),
+          ],
           if (!widget.signUp)
             Row(
               children: [
@@ -439,6 +464,16 @@ class _AuthFormScreenState extends State<AuthFormScreen> {
       _showError(context, 'Please complete every field.');
       return;
     }
+    if (widget.signUp) {
+      if (_password.text.length < 8) {
+        _showError(context, 'Password must be at least 8 characters.');
+        return;
+      }
+      if (_password.text != _confirm.text) {
+        _showError(context, 'Passwords do not match. Please re-enter them.');
+        return;
+      }
+    }
     setState(() => _loading = true);
     try {
       if (widget.signUp) {
@@ -447,15 +482,22 @@ class _AuthFormScreenState extends State<AuthFormScreen> {
           _password.text,
           fullName: _name.text.trim(),
         );
+        if (!mounted) return;
         if (SupabaseService.instance.isAuthenticated) {
-          if (mounted) Navigator.popUntil(context, (route) => route.isFirst);
-        } else if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          // Signed in already: the launch gate shows the avatar picker next.
+          final messenger = ScaffoldMessenger.of(context);
+          Navigator.popUntil(context, (route) => route.isFirst);
+          messenger.showSnackBar(
             const SnackBar(
-              content: Text(
-                'Account created. Check your email to confirm it, then sign in.',
-              ),
+              backgroundColor: Color(0xFF1F8A5B),
+              content: Text('Account created successfully. Welcome!'),
             ),
+          );
+        } else {
+          // Email confirmation is required before a session exists.
+          Navigator.pushReplacement(
+            context,
+            _route(SignUpSuccessScreen(email: _email.text.trim())),
           );
         }
       } else {
@@ -487,6 +529,48 @@ class _AuthFormScreenState extends State<AuthFormScreen> {
       if (mounted) _showError(context, e);
     }
   }
+}
+
+class SignUpSuccessScreen extends StatelessWidget {
+  final String email;
+  const SignUpSuccessScreen({super.key, required this.email});
+  @override
+  Widget build(BuildContext context) => _AuthPage(
+    child: Column(
+      children: [
+        const SizedBox(height: 24),
+        const Expanded(
+          child: AppIllustration(HardSyncAssets.aiWhisperCoachAssist),
+        ),
+        const CircleAvatar(
+          radius: 28,
+          backgroundColor: Color(0xFF1F8A5B),
+          child: Icon(Icons.check, color: Colors.white, size: 32),
+        ),
+        const SizedBox(height: 14),
+        Text('Account created!', style: _title(28)),
+        const SizedBox(height: 8),
+        Text(
+          "We've sent a confirmation link to\n$email\nOpen it, then log in to choose your avatar and get started.",
+          textAlign: TextAlign.center,
+          style: _body(size: 13, color: const Color(0xFF555A91)),
+        ),
+        const SizedBox(height: 22),
+        SizedBox(
+          width: double.infinity,
+          height: 49,
+          child: _PrimaryButton(
+            label: 'Go to log in',
+            onPressed: () => Navigator.pushReplacement(
+              context,
+              _route(const AuthFormScreen()),
+            ),
+          ),
+        ),
+        const Spacer(),
+      ],
+    ),
+  );
 }
 
 class ResetPasswordScreen extends StatefulWidget {
