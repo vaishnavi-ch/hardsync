@@ -241,15 +241,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           icon: Icons.workspace_premium_outlined,
                           title: tier == SubscriptionTier.ultra
                               ? 'HardSync Ultra Pass'
-                              : (tier == SubscriptionTier.pro
-                                  ? 'HardSync Pro Pass'
-                                  : 'Free Plan'),
+                              : 'Free Plan',
                           subtitle: tier == SubscriptionTier.free
-                              ? 'Upgrade for unlimited audio & video simulations'
+                              ? 'Upgrade to Ultra for live video simulations'
                               : 'Active subscription • Managed via App Store',
                           trailingBadge: tier == SubscriptionTier.ultra
                               ? 'ULTRA'
-                              : (tier == SubscriptionTier.pro ? 'PRO' : 'FREE'),
+                              : 'FREE',
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -647,7 +645,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             emoji: '👑',
             value: tier == SubscriptionTier.ultra
                 ? 'Ultra'
-                : (tier == SubscriptionTier.pro ? 'Pro' : 'Free'),
+                : 'Free',
             label: 'Plan',
             color: const Color(0xFF8B5CF6),
             onTap: () => Navigator.push(
@@ -1168,11 +1166,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
       {
         'q': 'How do plans and call limits work?',
-        'a': 'Text practice is free. Pro unlocks live audio calls and Ultra adds video calls. Each audio or video session lasts up to 10 minutes.'
-      },
-      {
-        'q': 'Can I create my own personalized scenarios?',
-        'a': 'Yes! Navigate to the Practice Hub and tap "Create Custom Scenario" to configure role, context brief, and AI persona.'
+        'a': 'Text practice is free. Ultra unlocks live video calls. Each video session lasts up to 10 minutes.'
       },
     ];
 

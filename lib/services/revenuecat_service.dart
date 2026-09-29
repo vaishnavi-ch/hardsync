@@ -4,7 +4,6 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import '../config/env_config.dart';
 
 class RevenueCatService {
-  static const proEntitlementId = 'pro';
   static const ultraEntitlementId = 'ultra';
   static final RevenueCatService instance = RevenueCatService._internal();
 
@@ -35,17 +34,6 @@ class RevenueCatService {
         (!kReleaseMode &&
             _isUsingTestStore &&
             active.containsKey('test_ultra'));
-  }
-
-  bool get isProSubscriber {
-    if (!_isConfigured || _customerInfo == null) return false;
-    if (isUltraSubscriber) return true;
-    final active = _customerInfo!.entitlements.active;
-    if (active.isEmpty) return false;
-    return active.containsKey(proEntitlementId) ||
-        (!kReleaseMode &&
-            _isUsingTestStore &&
-            active.containsKey('test_pro'));
   }
 
   Future<void> init({String? appUserId}) async {
@@ -99,7 +87,7 @@ class RevenueCatService {
         _customerInfo = customerInfo;
         _notifyListeners();
         debugPrint(
-          '[RevenueCatService] Customer info updated. Pro active: $isProSubscriber',
+          '[RevenueCatService] Customer info updated. Ultra active: $isUltraSubscriber',
         );
       });
 
@@ -162,7 +150,7 @@ class RevenueCatService {
         PurchaseParams.package(package),
       )).customerInfo;
       _notifyListeners();
-      return isProSubscriber;
+      return isUltraSubscriber;
     } catch (e) {
       debugPrint('[RevenueCatService] Purchase error: $e');
       rethrow;
@@ -179,7 +167,7 @@ class RevenueCatService {
         _customerInfo = (await Purchases.purchase(
           PurchaseParams.package(package),
         )).customerInfo;
-        return isProSubscriber;
+        return isUltraSubscriber;
       }
       return false;
     } catch (e) {
@@ -198,7 +186,7 @@ class RevenueCatService {
         _customerInfo = (await Purchases.purchase(
           PurchaseParams.package(package),
         )).customerInfo;
-        return isProSubscriber;
+        return isUltraSubscriber;
       }
       return false;
     } catch (e) {
@@ -213,13 +201,13 @@ class RevenueCatService {
     // recovered by logging in with the same Supabase UUID and refreshing info.
     if (kIsWeb) {
       await refreshCustomerInfo();
-      return isProSubscriber;
+      return isUltraSubscriber;
     }
 
     try {
       _customerInfo = await Purchases.restorePurchases();
       _notifyListeners();
-      return isProSubscriber;
+      return isUltraSubscriber;
     } catch (e) {
       debugPrint('[RevenueCatService] Restore purchases error: $e');
       return false;

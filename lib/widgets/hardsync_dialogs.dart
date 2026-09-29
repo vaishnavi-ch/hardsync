@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -518,44 +519,46 @@ class _SignInBottomSheetState extends State<SignInBottomSheet> {
           ),
           const SizedBox(height: 10),
 
-          // Google Button
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                backgroundColor: Colors.white,
-                side: const BorderSide(color: Color(0xFFE2DDCF)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+          if (defaultTargetPlatform != TargetPlatform.iOS) ...[
+            // Google Button
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  side: const BorderSide(color: Color(0xFFE2DDCF)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: _isLoading
+                    ? null
+                    : () => _handleOAuth(OAuthProvider.google),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.g_mobiledata,
+                      size: 24,
+                      color: Color(0xFF4285F4),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Continue with Google',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF374151),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              onPressed: _isLoading
-                  ? null
-                  : () => _handleOAuth(OAuthProvider.google),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.g_mobiledata,
-                    size: 24,
-                    color: Color(0xFF4285F4),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Continue with Google',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF374151),
-                    ),
-                  ),
-                ],
-              ),
             ),
-          ),
-          const SizedBox(height: 12),
-
+            const SizedBox(height: 12),
+          ],
+          const SizedBox(height: 0),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();

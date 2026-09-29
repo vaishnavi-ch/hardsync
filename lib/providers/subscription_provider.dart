@@ -15,7 +15,6 @@ class SubscriptionProvider with ChangeNotifier {
   }
   SubscriptionTier get currentTier => _tier;
   bool get isLoaded => _loaded;
-  bool get canUseAudioCalls => _tier.canUseAudioCalls;
   bool get canUseVideoCalls => _tier.canUseVideoCalls;
   bool get canUseLiveFaceAnalysis => _tier == SubscriptionTier.ultra;
 
@@ -26,8 +25,6 @@ class SubscriptionProvider with ChangeNotifier {
       // 1. Check RevenueCat client entitlements first
       if (RevenueCatService.instance.isUltraSubscriber) {
         verifiedTier = SubscriptionTier.ultra;
-      } else if (RevenueCatService.instance.isProSubscriber) {
-        verifiedTier = SubscriptionTier.pro;
       }
 
       // Test Store entitlements are accepted only in debug builds.

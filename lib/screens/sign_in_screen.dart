@@ -18,6 +18,9 @@ const _paper = HardSyncColors.cream;
 const _line = HardSyncColors.lilacBorder;
 const _red = Color(0xFFFF3F46);
 
+// Google sign-in is not offered on iOS.
+bool get _showGoogleSignIn => defaultTargetPlatform != TargetPlatform.iOS;
+
 TextStyle _title(double size) => GoogleFonts.newsreader(
   fontSize: size,
   height: .98,
@@ -136,12 +139,14 @@ class AuthWelcomeScreen extends StatelessWidget {
                   style: _body(size: 15),
                 ),
                 const Spacer(),
-                _SocialButton(
-                  icon: const _GoogleMark(),
-                  label: 'Continue with Google',
-                  onPressed: () => _oauth(context, OAuthProvider.google),
-                ),
-                const SizedBox(height: 9),
+                if (_showGoogleSignIn) ...[
+                  _SocialButton(
+                    icon: const _GoogleMark(),
+                    label: 'Continue with Google',
+                    onPressed: () => _oauth(context, OAuthProvider.google),
+                  ),
+                  const SizedBox(height: 9),
+                ],
                 _SocialButton(
                   icon: const Icon(Icons.apple, color: Colors.black, size: 22),
                   label: 'Continue with Apple',
@@ -382,12 +387,14 @@ class _AuthFormScreenState extends State<AuthFormScreen> {
           const SizedBox(height: 14),
           _OrDivider(label: widget.signUp ? 'or sign up with' : 'or'),
           const SizedBox(height: 14),
-          _SocialButton(
-            icon: const _GoogleMark(),
-            label: widget.signUp ? 'Sign up with Google' : 'Continue with Google',
-            onPressed: () => _oauth(OAuthProvider.google),
-          ),
-          const SizedBox(height: 9),
+          if (_showGoogleSignIn) ...[
+            _SocialButton(
+              icon: const _GoogleMark(),
+              label: widget.signUp ? 'Sign up with Google' : 'Continue with Google',
+              onPressed: () => _oauth(OAuthProvider.google),
+            ),
+            const SizedBox(height: 9),
+          ],
           _SocialButton(
             icon: const Icon(Icons.apple, color: Colors.black, size: 21),
             label: widget.signUp ? 'Sign up with Apple' : 'Continue with Apple',

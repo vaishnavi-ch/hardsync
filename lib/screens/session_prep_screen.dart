@@ -39,8 +39,6 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
 
       if (sub.canUseVideoCalls) {
         _selectedCallMode = CallMode.video;
-      } else if (sub.canUseAudioCalls) {
-        _selectedCallMode = CallMode.audio;
       } else {
         _selectedCallMode = CallMode.text;
       }
@@ -751,7 +749,6 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
   Widget _buildBottomControls(BuildContext context) {
     final sub = Provider.of<SubscriptionProvider>(context);
     final simulation = context.watch<SimulationProvider>();
-    final canUseAudio = sub.canUseAudioCalls;
     final canUseVideo = sub.canUseVideoCalls;
 
     return Container(
@@ -772,13 +769,13 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
             ),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final tabWidth = constraints.maxWidth / 3;
+                final tabWidth = constraints.maxWidth / 2;
                 return Stack(
                   children: [
                     AnimatedPositioned(
                       duration: const Duration(milliseconds: 180),
                       curve: Curves.easeOut,
-                      left: tabWidth * _selectedCallMode.index,
+                      left: _selectedCallMode == CallMode.video ? tabWidth : 0,
                       top: 0,
                       bottom: 0,
                       width: tabWidth,
@@ -804,13 +801,6 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                           iconAsset: HardSyncAssets.iconChatBubbles,
                           isLocked: false,
                           badge: 'FREE',
-                        ),
-                        _buildModeTab(
-                          label: 'Voice Audio',
-                          mode: CallMode.audio,
-                          iconAsset: HardSyncAssets.iconHeartbeatPulseHealth,
-                          isLocked: !canUseAudio,
-                          badge: 'PRO',
                         ),
                         _buildModeTab(
                           label: 'Video',
@@ -844,9 +834,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                   child: Text(
                     _selectedCallMode == CallMode.text
                         ? 'Text practice is included with every plan'
-                        : (_selectedCallMode == CallMode.audio
-                              ? 'Included with Pro & Ultra • 10 min per session'
-                              : 'Included with Ultra • 10 min per session'),
+                        : 'Included with Ultra • 10 min per session',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w600,
@@ -875,11 +863,6 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                   _starting || simulation.callState == CallState.connecting
                   ? null
                   : () async {
-                      if (_selectedCallMode == CallMode.audio &&
-                          !canUseAudio) {
-                        _showUpgradeSheet(context, SubscriptionTier.pro);
-                        return;
-                      }
                       if (_selectedCallMode == CallMode.video &&
                           !canUseVideo) {
                         _showUpgradeSheet(context, SubscriptionTier.ultra);
@@ -960,9 +943,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                           ? 'Preparing scenario…'
                           : _selectedCallMode == CallMode.video
                           ? 'Begin Video Call'
-                          : (_selectedCallMode == CallMode.audio
-                                ? 'Begin Audio Call'
-                                : 'Begin Text Practice'),
+                          : 'Begin Text Practice',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -1102,9 +1083,7 @@ class _SessionPrepScreenState extends State<SessionPrepScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  requiredTier == SubscriptionTier.ultra
-                      ? 'Video calls come with HardSync Ultra.'
-                      : 'Audio calls come with HardSync Pro (and Ultra).',
+                  'Video calls come with HardSync Ultra.',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,

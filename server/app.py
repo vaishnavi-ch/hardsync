@@ -34,53 +34,12 @@ ENV = environment()
 ENV.setdefault('SUPABASE_URL', ENV.get('NEXT_PUBLIC_SUPABASE_URL', ''))
 ENV.setdefault('SUPABASE_ANON_KEY', ENV.get('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY') or ENV.get('SUPABASE_PUBLISHABLE_KEY') or ENV.get('NEXT_PUBLIC_SUPABASE_ANON_KEY', ''))
 LOCK = threading.RLock()
-VALID_MODES = {'text', 'audio', 'video'}
-# Hard cap for audio/video sessions; mirrors reserve_practice_session (SQL).
+VALID_MODES = {'text', 'video'}
+# Hard cap for video sessions; mirrors reserve_practice_session (SQL).
 MAX_CALL_SECONDS = 600
-# Relationship-dynamic hints offered in the custom-scenario wizard. These no
-# longer pin the generated counterpart to one of the 5 curated personas --
-# they just bias tone/defensiveness in the generation prompt below.
-SCENARIO_PERSONA_HINTS = {
-    'alex': 'a former equal-level peer, now informal and slightly defensive',
-    'jordan': 'a senior executive (VP level), urgent and authoritative',
-    'marcus': 'a junior direct report, sensitive and prone to defensiveness',
-    'priya': 'a strategic, protective peer leader',
-    'elena': 'a rigorous, no-nonsense senior operator',
-}
-SCENARIO_DIFFICULTIES = ('beginner', 'intermediate', 'advanced')
 # Stock Tavus replica ("Daniel - Office"): a professional-looking photoreal
 # presenter, used as a fallback when no gender-matched replica is picked.
 DEFAULT_TAVUS_REPLICA_ID = 'rf4703150052'
-# Bundled local avatar art (assets/avatars/split/flutter_256 in the Flutter
-# app) tagged by presented gender, so a freshly generated counterpart gets a
-# varied, plausible face instead of reusing one of 5 fixed identities.
-_AVATAR_BASE = 'assets/avatars/split/flutter_256'
-FEMALE_AVATARS = [f'{_AVATAR_BASE}/avatar_{n:02d}.png' for n in
-    (1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 26, 27, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54)]
-MALE_AVATARS = [f'{_AVATAR_BASE}/avatar_{n:02d}.png' for n in
-    (2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 25, 28, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51, 53, 55)]
-# Stock Tavus replica IDs (from GET /v2/replicas?replica_type=system on this
-# account), tagged by presented gender, for video-mode calls with a freshly
-# generated counterpart. Verify against the live Tavus account before
-# relying on any of these long-term -- stock replicas can be retired.
-FEMALE_TAVUS_REPLICAS = [
-    'r9d30b0e55ac', 'rc2146c13e81', 'r4317e64d25a', 'r6ae5b6efc9d', 'r9c55f9312fb',
-    'r68fe8906e53', 'r67d1c9cac37', 'r9fa0878977a', 'r754557e5758', 'r1af76e94d00',
-    'rd3ba0f30551', 'r38a383b0173', 'r6c4e43b78b1', 'r38e4c3bc562', 'rbe2c395e725',
-    'rb54819da0d5', 'r8086c29d9b7', 'r6ca16dbe104', 'rec4a4153a78', 'r4dcf31b60e1',
-    'rdc96ac37313', 'rb67667672ad', 'ree20a3c764c', 're3a705cf66a', 'rf6b1c8d5e9d',
-    'r3f8decedbd2', 'r991fc9af2be', 'r5791c5ab229', 'r6fb41bf13b4', 'rdf61be0d4e1',
-    'rb43357fb2ee', 'r1e52660d3bf',
-]
-MALE_TAVUS_REPLICAS = [
-    'rf4703150052', 'r1a4e22fa0d9', 'ra066ab28864', 'r18e9aebdc33', 'r044d76f4490',
-    'raa1d440ec4a', 'r92debe21318', 'rca8a38779a8', 'rfe12d8b9597', 'r158ac53345d',
-    'rc2f861e78a7', 'r90a0339d496', 'r5fb46c843a8', 'r31e11adf1d3', 'r873e4707689',
-    'r2a31940a5f0', 'r9458111c64a', 'r24efb3b9bef', 'r3a715eeff8d', 're6220ec0195',
-    'r2a1cea82862', 'rdd4c86e5e1a', 'r4ba1277e4fb', 'r621a6013477', 'rf8f3aa4b33e',
-    'r72f7f7f7c8b', 'r5f0577fc829', 'r987f6e6f73c', 'r1d7cf9edbb4', 'rcea962f9f9b',
-    'rfb0463909e3', 're3fd4adeafd',
-]
 TAVUS_CONVERSATIONS = {}  # sid -> Tavus conversation_id, for ending on hangup
 
 class ApiError(Exception):
@@ -193,9 +152,9 @@ def account(owner, access_token):
         # Test Store entitlements are only used with the non-production SDK
         # key in local/debug configurations. Keep their identifiers aligned
         # with the test product catalog while preserving production names.
-        entitlement_tiers = [('ultra', 'ultra'), ('pro', 'pro')]
+        entitlement_tiers = [('ultra', 'ultra')]
         if ENV.get('REVENUECAT_USE_TEST_STORE', '').lower() == 'true':
-            entitlement_tiers[1:1] = [('test_ultra', 'ultra'), ('test_pro', 'pro')]
+            entitlement_tiers.append(('test_ultra', 'ultra'))
         for name, entitlement_tier in entitlement_tiers:
             ent = result.get('subscriber', {}).get('entitlements', {}).get(name)
             if ent:
@@ -230,14 +189,11 @@ def reserve(owner, mode, provider='gemini_live', context='', scenario_id='', acc
     # actually change the outcome, so an unrelated billing/provider hiccup
     # can't block session creation for a mode it was never gating.
     use_test_store = ENV.get('REVENUECAT_USE_TEST_STORE', '').lower() == 'true'
-    if not use_test_store and mode in ('audio', 'video'):
+    if not use_test_store and mode == 'video':
         acc = account(owner, access_token)
-        # Audio requires an active Pro or Ultra subscription; video is an
-        # Ultra-exclusive perk even for Pro subscribers.
-        if mode == 'video' and acc['tier'] != 'ultra':
+        # Video calls require an active Ultra subscription.
+        if acc['tier'] != 'ultra':
             raise ApiError('Video calls require HardSync Ultra.', 403)
-        if mode == 'audio' and acc['tier'] not in ('pro', 'ultra'):
-            raise ApiError('Audio calls require HardSync Pro or Ultra.', 403)
     result = supabase_rpc('reserve_practice_session', {
         'p_scenario_id': scenario_id, 'p_mode': mode, 'p_provider': provider,
         'p_context': context[:6000], 'p_voice_name': voice_name[:64], 'p_avatar_name': avatar_name[:64],
@@ -355,8 +311,6 @@ def create_session(owner, data, access_token):
     provider = 'tavus' if mode == 'video' else 'gemini_live'
     if mode == 'text' and not ENV.get('GEMINI_API_KEY'):
         raise ApiError('AI dialogue is not configured.', 503)
-    if mode == 'audio' and provider == 'gemini_live' and (not ENV.get('GEMINI_LIVE_BRIDGE_URL') or not ENV.get('GEMINI_LIVE_SHARED_SECRET')):
-        raise ApiError('Gemini Live is not configured.', 503)
     if mode == 'video' and provider == 'tavus' and not ENV.get('TAVUS_API_KEY'):
         raise ApiError('Tavus is not configured.', 503)
     context = str(data.get('context', ''))[:6000]
@@ -375,8 +329,6 @@ def create_session(owner, data, access_token):
         }
         if mode == 'video':
             result.update({'realtimeProvider': 'tavus', 'liveUrl': create_tavus_conversation(sid, context, tavus_replica_id)})
-        elif mode != 'text':
-            result.update({'realtimeProvider': 'gemini_live', 'liveUrl': gemini_live_url(owner, sid)})
         return result
     except Exception:
         cancel_unconnected_session(owner, sid, access_token)
@@ -415,84 +367,6 @@ def generate(owner, data, access_token):
     fallback = ENV.get('GEMINI_TEXT_FALLBACK_MODEL', 'gemini-3.6-flash')
     result, _ = gemini_generate(payload, key, (primary, fallback), timeout=20, attempts=1)
     return result
-
-
-def generate_scenario(owner, data, access_token):
-    """Turn a user's free-text description of a real situation into a full
-    rehearsal scenario with a freshly invented counterpart (name, role,
-    gender, bio, voice, avatar, video replica) - not one of a handful of
-    fixed personas - so the custom-scenario wizard doesn't need the user to
-    fill in every field by hand and every rehearsal gets a distinct partner."""
-    key = ENV.get('GEMINI_API_KEY', '')
-    if not key:
-        raise ApiError('AI scenario generation is not configured.', 503)
-    description = str(data.get('description', '')).strip()[:2000]
-    goal = str(data.get('goal', '')).strip()[:100]
-    tensions_in = data.get('tensions', [])
-    tensions = [str(t)[:60] for t in tensions_in if isinstance(t, str)][:8] if isinstance(tensions_in, list) else []
-    persona_hint = str(data.get('personaHint', '')).strip()
-    hint_description = SCENARIO_PERSONA_HINTS.get(persona_hint, '')
-    if not description and not tensions:
-        raise ApiError('Describe the situation or select at least one tension.')
-    hint_line = (
-        f"Background only, lowest priority: if nothing else identifies the counterpart, "
-        f"you may treat them as {hint_description}."
-        if hint_description else ''
-    )
-    instruction = f"""You design workplace rehearsal scenarios for a leadership communication coaching app.
-Given the user's free-form description of a real situation, identify or invent a single realistic
-counterpart (a person who is NOT the user) and a rehearsal scenario for practicing a conversation
-with them.
-{hint_line}
-STEP 1 (highest priority, do this first): re-read the user's description field below. If it contains
-a proper name for the counterpart (e.g. "my manager Sarah", "a coworker named Alex"), you MUST copy
-that exact name into "name" and set "gender" to match that name - never substitute a different name.
-If the description implies gender without a name (a pronoun like "he"/"she"), set "gender" to match.
-STEP 2: only when the description gives no name and no gender clue at all, invent a plausible new
-name and gender yourself (the low-priority background hint above may inform the role/tone then).
-Return JSON only: {{"name": counterpart's full name, "role": their job title (<=40 chars),
-"company": short team or department name (<=40 chars), "gender": one of ["male","female"],
-"bio": 1-2 sentences of background on this counterpart, written in third person,
-"personalityTraits": comma-separated short personality descriptors (<=80 chars),
-"pushbackPhrases": array of exactly 2 short example lines in the counterpart's own voice,
-showing how they push back or deflect during the conversation,
-"title": short scenario title (<=60 chars), "subtitle": short descriptive line (<=80 chars),
-"contextBrief": 2-4 sentence scene-setting brief written to the user in second person,
-"userObjectives": array of exactly 3 short actionable objectives for the user during the rehearsal,
-"trapPhrasesToAvoid": array of 2-3 short hedging or weak phrases the user should avoid saying,
-"difficulty": one of ["beginner","intermediate","advanced"]}}"""
-    payload = {
-        'systemInstruction': {'parts': [{'text': instruction}]},
-        'contents': [{'role': 'user', 'parts': [{'text': json.dumps(
-            {'description': description, 'goal': goal, 'tensions': tensions}
-        )}]}],
-        'generationConfig': {'responseMimeType': 'application/json', 'maxOutputTokens': 1024, 'temperature': 0.8},
-    }
-    models = (ENV.get('GEMINI_TEXT_MODEL', 'gemini-3.1-flash-lite'), ENV.get('GEMINI_TEXT_FALLBACK_MODEL', 'gemini-3.6-flash'))
-    result, _ = gemini_generate(payload, key, models, timeout=20, attempts=2)
-    try:
-        value = json.loads(''.join(
-            p.get('text', '') for p in result['candidates'][0]['content']['parts'] if not p.get('thought')
-        ))
-        for field in ('name', 'role', 'company', 'bio', 'personalityTraits',
-                      'title', 'subtitle', 'contextBrief', 'difficulty'):
-            if not isinstance(value.get(field), str) or not value[field].strip():
-                raise ValueError()
-        if value['difficulty'] not in SCENARIO_DIFFICULTIES:
-            raise ValueError()
-        if value.get('gender') not in ('male', 'female'):
-            raise ValueError()
-        for field in ('userObjectives', 'trapPhrasesToAvoid', 'pushbackPhrases'):
-            items = value.get(field)
-            if not isinstance(items, list) or not items or not all(isinstance(x, str) and x.strip() for x in items):
-                raise ValueError()
-    except (KeyError, IndexError, TypeError, ValueError):
-        raise ApiError('Scenario generation returned an invalid result. Please retry.', 502) from None
-    is_female = value['gender'] == 'female'
-    value['avatarAsset'] = random.choice(FEMALE_AVATARS if is_female else MALE_AVATARS)
-    value['tavusReplicaId'] = random.choice(FEMALE_TAVUS_REPLICAS if is_female else MALE_TAVUS_REPLICAS)
-    value['geminiVoiceName'] = 'Kore' if is_female else 'Puck'
-    return value
 
 
 ANALYSIS_LOCK = threading.Lock()
@@ -745,8 +619,6 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.respond(create_session(owner, data, self.access_token))
             if self.path == '/api/generate':
                 return self.respond(generate(owner, data, self.access_token))
-            if self.path == '/api/scenarios/generate':
-                return self.respond(generate_scenario(owner, data, self.access_token))
             sid = str(data.get('sessionId', ''))
             row = session_for(owner, sid, self.access_token)
             if self.path == '/api/sessions/detail':

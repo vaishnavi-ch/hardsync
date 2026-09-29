@@ -179,28 +179,17 @@ void main() {
     },
   );
 
-  test(
-    'SubscriptionTier enforces exact feature gating across Free, Pro, and Ultra',
-    () {
-      // 1. Free Tier: Text simulator only, no audio calls, no video calls, no face analysis
-      expect(SubscriptionTier.free.canUseAudioCalls, isFalse);
-      expect(SubscriptionTier.free.canUseVideoCalls, isFalse);
-      expect(SubscriptionTier.free.canUseLiveFaceAnalysis, isFalse);
-      expect(SubscriptionTier.free.badgeLabel, equals('FREE'));
+  test('SubscriptionTier gates video calls to Ultra only', () {
+    // Free: text simulator only, no video calls, no face analysis
+    expect(SubscriptionTier.free.canUseVideoCalls, isFalse);
+    expect(SubscriptionTier.free.canUseLiveFaceAnalysis, isFalse);
+    expect(SubscriptionTier.free.badgeLabel, equals('FREE'));
 
-      // 2. Pro Tier: Audio calls allowed, NO video calls, NO live face analysis
-      expect(SubscriptionTier.pro.canUseAudioCalls, isTrue);
-      expect(SubscriptionTier.pro.canUseVideoCalls, isFalse);
-      expect(SubscriptionTier.pro.canUseLiveFaceAnalysis, isFalse);
-      expect(SubscriptionTier.pro.badgeLabel, equals('PRO'));
-
-      // 3. Ultra Tier: Audio and Gemini Live video calls
-      expect(SubscriptionTier.ultra.canUseAudioCalls, isTrue);
-      expect(SubscriptionTier.ultra.canUseVideoCalls, isTrue);
-      expect(SubscriptionTier.ultra.canUseLiveFaceAnalysis, isTrue);
-      expect(SubscriptionTier.ultra.badgeLabel, equals('ULTRA'));
-    },
-  );
+    // Ultra: live video calls and face analysis
+    expect(SubscriptionTier.ultra.canUseVideoCalls, isTrue);
+    expect(SubscriptionTier.ultra.canUseLiveFaceAnalysis, isTrue);
+    expect(SubscriptionTier.ultra.badgeLabel, equals('ULTRA'));
+  });
 
   test('UserPersona catalog provides 5 executive leadership roles', () {
     final personas = UserPersona.defaultPersonas;
@@ -233,7 +222,6 @@ void main() {
     final provider = SubscriptionProvider();
     await provider.setTier(SubscriptionTier.ultra);
     expect(provider.currentTier, SubscriptionTier.free);
-    expect(provider.canUseAudioCalls, isFalse);
     expect(provider.canUseVideoCalls, isFalse);
     provider.dispose();
   });

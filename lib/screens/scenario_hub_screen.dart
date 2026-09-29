@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/scenario.dart';
 import '../theme/hardsync_assets.dart';
 import '../theme/hardsync_theme.dart';
-import 'custom_scenario_screen.dart';
 import 'session_prep_screen.dart';
 import 'settings_modal.dart';
 
@@ -60,12 +59,6 @@ class _ScenarioHubScreenState extends State<ScenarioHubScreen> {
                     ),
                     SliverToBoxAdapter(child: _buildFilters()),
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 2),
-                      sliver: SliverToBoxAdapter(
-                        child: _buildCustomScenarioCard(context),
-                      ),
-                    ),
-                    SliverPadding(
                       padding: const EdgeInsets.fromLTRB(20, 12, 20, 36),
                       sliver: SliverGrid.builder(
                         itemCount: filtered.length,
@@ -99,85 +92,6 @@ class _ScenarioHubScreenState extends State<ScenarioHubScreen> {
       'Leadership' => category.contains('managing up') || category.contains('change') || category.contains('peer'),
       _ => false,
     };
-  }
-
-  Widget _buildCustomScenarioCard(BuildContext context) {
-    return Material(
-      color: HardSyncColors.surface,
-      borderRadius: BorderRadius.circular(22),
-      child: InkWell(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const CustomScenarioScreen()),
-        ),
-        borderRadius: BorderRadius.circular(22),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 124),
-          padding: const EdgeInsets.fromLTRB(14, 10, 12, 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: HardSyncColors.lilacBorder),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 96,
-                height: 104,
-                decoration: BoxDecoration(
-                  color: HardSyncColors.lilacMist,
-                  borderRadius: BorderRadius.circular(17),
-                ),
-                child: const AppIllustration(
-                  HardSyncAssets.illusConversationBlueprint,
-                ),
-              ),
-              const SizedBox(width: 13),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) => FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: SizedBox(
-                      width: constraints.maxWidth,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _eyebrow('BUILD YOUR OWN'),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Create a custom scenario',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.newsreader(
-                              fontSize: 19,
-                              fontWeight: FontWeight.w700,
-                              color: HardSyncColors.ink,
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            'Shape the situation, goal, and partner.',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 16,
-                color: HardSyncColors.inkMuted,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _buildHeader(BuildContext context) {
@@ -338,16 +252,6 @@ class _ScenarioHubScreenState extends State<ScenarioHubScreen> {
       },
     );
   }
-
-  Widget _eyebrow(String label) => Text(
-    label,
-    style: GoogleFonts.plusJakartaSans(
-      fontSize: 10,
-      fontWeight: FontWeight.w800,
-      letterSpacing: 1.1,
-      color: HardSyncColors.violet,
-    ),
-  );
 
   void _openScenario(BuildContext context, Scenario scenario) {
     Navigator.push(

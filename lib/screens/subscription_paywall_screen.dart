@@ -23,7 +23,7 @@ class SubscriptionPaywallScreen extends StatefulWidget {
 }
 
 class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
-  SubscriptionTier _selectedTier = SubscriptionTier.pro;
+  SubscriptionTier _selectedTier = SubscriptionTier.ultra;
   bool _isProcessing = false;
   bool _showPlanPicker = false;
   Offerings? _offerings;
@@ -32,7 +32,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
   void initState() {
     super.initState();
     _loadOfferings();
-    // Default selected tier to Pro or the user's current tier
+    // Default selected tier to Ultra or the user's current tier
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final current = Provider.of<SubscriptionProvider>(
         context,
@@ -40,7 +40,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
       ).currentTier;
       setState(() {
         _selectedTier = current == SubscriptionTier.free
-            ? SubscriptionTier.pro
+            ? SubscriptionTier.ultra
             : current;
       });
     });
@@ -69,25 +69,12 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
     return null;
   }
 
-  // Never resolves Ultra to the same Package as Pro: if the current
-  // RevenueCat offering only has one package (Ultra not configured/attached
-  // yet), returning that package for Ultra too would silently display Pro's
-  // price under the Ultra tier and, worse, charge the user for Pro when they
-  // believe they're buying Ultra.
+  // Only the Ultra plan is sold. Match its package by identifier and never
+  // fall back to an arbitrary package: guessing is how a package for a
+  // different product (wrong price) ends up displayed under the Ultra label.
   Package? _packageFor(SubscriptionTier tier) {
-    final packages =
-        _offerings?.current?.availablePackages ?? const <Package>[];
-    if (packages.isEmpty) return null;
-
-    // No blind "packages.first" fallback for either tier: guessing is how a
-    // package for a completely different product (wrong price) ends up
-    // silently displayed under the Pro or Ultra label. If nothing in the
-    // current offering is identifiable as this tier, show "See store price"
-    // instead of a confidently wrong number.
-    if (tier == SubscriptionTier.ultra) {
-      return _packageByKeyword(['ultra']);
-    }
-    return _packageByKeyword(['pro'], exclude: 'ultra');
+    if (tier != SubscriptionTier.ultra) return null;
+    return _packageByKeyword(['ultra']);
   }
 
   String _storePrice(SubscriptionTier tier) =>
@@ -447,7 +434,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 6),
-                // Hero Emblem with custom styling for Ultra vs Pro
+                // Hero Emblem
                 Center(
                   child: SizedBox(
                     width: 80,
@@ -592,8 +579,8 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                 const SizedBox(height: 8),
                 Text(
                   isUltra
-                      ? 'Practice with live video and audio calls, any time.'
-                      : 'Practice with live audio calls, any time.',
+                      ? 'Practice with live video calls, any time.'
+                      : 'Upgrade to Ultra to practice with live video calls.',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
@@ -603,7 +590,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Card 1: Active Membership Details (Ultra vs Pro)
+                // Card 1: Active Membership Details
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(18),
@@ -665,7 +652,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        'Active ${isUltra ? 'Ultra' : 'Pro'} subscription • Renewal is managed by your app store',
+                        'Active Ultra subscription • Renewal is managed by your app store',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 11.5,
                           color: HardSyncColors.inkMuted,
@@ -681,15 +668,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                         const SizedBox(height: 9),
                         _buildBenefitBullet('Live camera coaching'),
                         const SizedBox(height: 9),
-                        _buildBenefitBullet('Unlimited voice calls'),
-                        const SizedBox(height: 9),
-                        _buildBenefitBullet('Feedback report after every session'),
-                      ] else ...[
-                        _buildBenefitBullet('Unlimited voice calls'),
-                        const SizedBox(height: 9),
                         _buildBenefitBullet('Real-time speaking feedback'),
-                        const SizedBox(height: 9),
-                        _buildBenefitBullet('All scenarios and characters'),
                         const SizedBox(height: 9),
                         _buildBenefitBullet('Feedback report after every session'),
                       ],
@@ -697,105 +676,6 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Upgrade to Ultra Banner (Shown only for Pro members!)
-                if (!isUltra) ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFFBF8FF), Color(0xFFF3EEFF)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: const Color(0xFFDDD6FE)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFF8B5CF6,
-                                ).withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(
-                                Icons.videocam_rounded,
-                                size: 18,
-                                color: Color(0xFF7C3AED),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Want video practice too?',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF4C1D95),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Upgrade to Ultra for live video calls with camera coaching.',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11.5,
-                            color: const Color(0xFF6D28D9),
-                            height: 1.35,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: const Color(0xFF6D28D9),
-                              side: const BorderSide(color: Color(0xFF8B5CF6)),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _selectedTier = SubscriptionTier.ultra;
-                                _showPlanPicker = true;
-                              });
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const AppIcon(
-                                  HardSyncAssets.iconSparkleStarsMagic,
-                                  size: 14,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Upgrade to Ultra (${_storePrice(SubscriptionTier.ultra)})',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 12.5,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
 
                 // Card 2: Recommended Next Practice
                 Container(
@@ -841,7 +721,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
-                              isUltra ? 'Video Practice' : 'Audio Practice',
+                              'Video Practice',
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
@@ -903,9 +783,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  isUltra
-                                      ? 'Gemini Live Video & Audio ready'
-                                      : 'Gemini Live Audio ready',
+                                  'Live Video ready',
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 11,
                                     color: HardSyncColors.lightMuted,
@@ -997,9 +875,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          isUltra
-                              ? 'Start Practicing Now'
-                              : 'Start Voice Scenario Now',
+                          'Start Practicing Now',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 15.5,
                             fontWeight: FontWeight.w600,
@@ -1174,25 +1050,6 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                     ),
                     const SizedBox(height: 14),
                     _mockPlanCard(
-                      title: 'Pro',
-                      price: _storePrice(SubscriptionTier.pro),
-                      period: _packageFor(SubscriptionTier.pro) == null
-                          ? ''
-                          : '/ billing period',
-                      color: const Color(0xFF9872D5),
-                      selected: _selectedTier == SubscriptionTier.pro,
-                      popular: true,
-                      illustration: HardSyncAssets.illusLeadershipCompass,
-                      benefits: const [
-                        'Live Voice Scenario Calls',
-                        '10 min per voice session',
-                        'Live speaking feedback as you talk',
-                      ],
-                      onTap: () =>
-                          setState(() => _selectedTier = SubscriptionTier.pro),
-                    ),
-                    const SizedBox(height: 14),
-                    _mockPlanCard(
                       title: 'Ultra',
                       price: _storePrice(SubscriptionTier.ultra),
                       period: _packageFor(SubscriptionTier.ultra) == null
@@ -1200,11 +1057,11 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                           : '/ billing period',
                       color: HardSyncColors.violet,
                       selected: _selectedTier == SubscriptionTier.ultra,
-                      popular: false,
+                      popular: true,
                       illustration: HardSyncAssets.illusSafeVideoRoleplay,
                       benefits: const [
-                        'Everything in Pro',
                         'Video Calls with AI (10 min)',
+                        'Live camera & speaking feedback',
                         'Priority Access for Faster Calls',
                         'Full Presence Check-Up',
                       ],
@@ -1535,33 +1392,15 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          _buildMatrixRow('Text Practice', free: true, pro: true, ultra: true),
+          _buildMatrixRow('Text Practice', free: true, ultra: true),
           const Divider(height: 14, color: Color(0xFFF0EBE3)),
-          _buildMatrixRow(
-            'Live Voice Scenarios',
-            free: false,
-            pro: true,
-            ultra: true,
-          ),
+          _buildMatrixRow('Video Calls with AI', free: false, ultra: true),
           const Divider(height: 14, color: Color(0xFFF0EBE3)),
-          _buildMatrixRow(
-            'Video Calls with AI',
-            free: false,
-            pro: false,
-            ultra: true,
-          ),
-          const Divider(height: 14, color: Color(0xFFF0EBE3)),
-          _buildMatrixRow(
-            'Live Speaking Feedback',
-            free: false,
-            pro: true,
-            ultra: true,
-          ),
+          _buildMatrixRow('Live Speaking Feedback', free: false, ultra: true),
           const Divider(height: 14, color: Color(0xFFF0EBE3)),
           _buildMatrixRow(
             'VIP Priority GPU Pipeline',
             free: false,
-            pro: false,
             ultra: true,
           ),
         ],
@@ -1572,7 +1411,6 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
   Widget _buildMatrixRow(
     String feature, {
     required bool free,
-    required bool pro,
     required bool ultra,
   }) {
     return Row(
@@ -1594,16 +1432,6 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
               free ? Icons.check : Icons.close,
               size: 15,
               color: free ? HardSyncColors.violetDark : Colors.black26,
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Center(
-            child: Icon(
-              pro ? Icons.check : Icons.close,
-              size: 15,
-              color: pro ? HardSyncColors.violetDark : Colors.black26,
             ),
           ),
         ),
@@ -1649,7 +1477,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '\u201cSwitching to Pro audio calls gave me raw practice without the camera pressure. Ultra adds Gemini Live video practice.\u201d',
+                  '\u201cPracticing on video calls with Ultra made my real conversations feel much easier.\u201d',
                   style: GoogleFonts.newsreader(
                     fontSize: 13,
                     fontStyle: FontStyle.italic,
@@ -1744,8 +1572,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
       final success = await RevenueCatService.instance.purchasePackage(
         packageToBuy,
       );
-      // A fresh purchase (especially a Pro -> Ultra upgrade in the same
-      // subscription group) can take a few seconds to show up as an active
+      // A fresh purchase can take a few seconds to show up as an active
       // entitlement in RevenueCat and on the server, so re-check a few times
       // before reporting a missing entitlement. The server still decides the
       // tier; a client-authored change must never unlock paid access.
