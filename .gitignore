@@ -84,3 +84,9 @@ tools/__pycache__/
 *.ico
 *.svg
 *.heic
+
+# ...except images used by the README and the GitHub Pages / Vercel website
+!/.github/readme/**
+!/docs/**
+!/site/public/**
+/docs/*.png
