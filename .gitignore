@@ -72,3 +72,15 @@ tools/__pycache__/
 !/README.md
 .stitch/
 .tmp_screens/
+
+# Images are kept locally only, not committed
+*.png
+*.PNG
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.bmp
+*.ico
+*.svg
+*.heic
