@@ -336,9 +336,9 @@ class Persona {
       voiceStyle: 'Even-toned, deliberate, quietly confident',
       geminiVoiceName: 'Puck',
       geminiAvatarName: 'Ravi',
-      // Verify against the live Tavus account before relying on this
-      // long-term — stock replicas can be retired.
-      tavusReplicaId: 'r18e9aebdc33',
+      // "Nathan - Bookshelf": casual shirt in front of shelves, reads as a
+      // Staff Engineer. Replaces "Raj - Doctor" (clinic backdrop).
+      tavusReplicaId: 'rfe12d8b9597',
     ),
   ];
 }

@@ -1315,7 +1315,7 @@ class _SubscriptionPaywallScreenState extends State<SubscriptionPaywallScreen> {
                   MaterialPageRoute(
                     builder: (_) => const WebViewerScreen(
                       title: 'Terms of Use (EULA)',
-                      url: EnvConfig.termsOfServiceUrl,
+                      url: EnvConfig.appleStandardEulaUrl,
                       fallbackWidget: LegalDocumentScreen(
                         document: LegalDocument.terms,
                       ),

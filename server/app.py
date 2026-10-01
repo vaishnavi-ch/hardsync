@@ -41,6 +41,10 @@ MAX_CALL_SECONDS = 600
 # presenter, used as a fallback when no gender-matched replica is picked.
 DEFAULT_TAVUS_REPLICA_ID = 'rf4703150052'
 TAVUS_CONVERSATIONS = {}  # sid -> Tavus conversation_id, for ending on hangup
+# Replicas the shipped app still requests but that we no longer want to show,
+# mapped to their replacement. Lets us fix an avatar without an app release.
+# "Raj - Doctor" (white coat, clinic) -> "Nathan - Bookshelf" (David Kim).
+TAVUS_REPLICA_OVERRIDES = {'r18e9aebdc33': 'rfe12d8b9597'}
 
 class ApiError(Exception):
     def __init__(self, message, status=400, details=None):
@@ -319,6 +323,8 @@ def create_session(owner, data, access_token):
     tavus_replica_id = str(data.get('tavusReplicaId', ''))[:64]
     if not re.fullmatch(r'r[a-f0-9]{7,19}', tavus_replica_id):
         tavus_replica_id = None
+    else:
+        tavus_replica_id = TAVUS_REPLICA_OVERRIDES.get(tavus_replica_id, tavus_replica_id)
     reservation = reserve(owner, mode, provider if mode != 'text' else 'gemini_text', context,
                           str(data.get('scenarioId', '')), access_token, voice_name, avatar_name)
     sid = reservation['id']

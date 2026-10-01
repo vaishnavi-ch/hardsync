@@ -108,6 +108,7 @@ class EnvConfig {
   static const String landingPageUrl = 'https://vaishnavi-ch.github.io/hardsync/';
   static const String privacyPolicyUrl = 'https://vaishnavi-ch.github.io/hardsync/privacy.html';
   static const String termsOfServiceUrl = 'https://vaishnavi-ch.github.io/hardsync/terms.html';
+  static const String appleStandardEulaUrl = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
   static const String accountDeletionUrl = 'https://vaishnavi-ch.github.io/hardsync/account-deletion.html';
   static const String faqUrl = 'https://vaishnavi-ch.github.io/hardsync/faq.html';
   static const String supportEmail = 'vaishnavi26ch@gmail.com';
